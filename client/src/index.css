@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+@import "tailwindcss";
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+  margin:0;
+  padding:0;
+  background:#020b14;
+  color:white;
+  font-family:'Montserrat',sans-serif;
+}
+
+
+h1 {
+  font-family:'Anton',sans-serif;
+}
+
+
+h2,
+h3,
+h4,
+p,
+button,
+a {
+  font-family:'Montserrat',sans-serif;
+}
