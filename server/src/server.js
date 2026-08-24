@@ -9,6 +9,9 @@ require("./config/database");
 const authRoutes = require("./routes/auth.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const branchRoutes = require("./routes/branch.routes");
+const branchAdminRoutes = require("./routes/branchAdmin.routes");
+const studentRoutes = require("./routes/student.routes");
+const admissionRoutes = require("./routes/admission.routes");
 const app = express();
 
 app.use(express.json());
@@ -19,6 +22,11 @@ app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/dashboard", dashboardRoutes);
 app.use("/api/admin/branches", branchRoutes);
+app.use("/api/admin/branch-admins", branchAdminRoutes);
+
+app.use("/api/admin/students", studentRoutes);
+
+app.use("/api/admin/admissions", admissionRoutes);
 app.get("/", (req, res) => {
     res.send("SAMS Backend Running");
 });
