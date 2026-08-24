@@ -12,6 +12,11 @@ const branchRoutes = require("./routes/branch.routes");
 const branchAdminRoutes = require("./routes/branchAdmin.routes");
 const studentRoutes = require("./routes/student.routes");
 const admissionRoutes = require("./routes/admission.routes");
+const subscriptionRoutes = require("./routes/subscriptionPlan.routes");
+const feeRoutes = require("./routes/fee.routes");
+const paymentRoutes = require("./routes/payment.routes");
+const categoryRoutes = require("./routes/category.routes");
+const productRoutes =require("./routes/product.routes");
 const app = express();
 
 app.use(express.json());
@@ -23,10 +28,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin/dashboard", dashboardRoutes);
 app.use("/api/admin/branches", branchRoutes);
 app.use("/api/admin/branch-admins", branchAdminRoutes);
-
 app.use("/api/admin/students", studentRoutes);
-
 app.use("/api/admin/admissions", admissionRoutes);
+app.use("/api/admin/subscription-plans", subscriptionRoutes);
+app.use("/api/admin/fees", feeRoutes);
+app.use("/api/admin/payments", paymentRoutes);
+app.use("/api/admin/categories", categoryRoutes);
+app.use("/api/admin/products",productRoutes);
 app.get("/", (req, res) => {
     res.send("SAMS Backend Running");
 });
