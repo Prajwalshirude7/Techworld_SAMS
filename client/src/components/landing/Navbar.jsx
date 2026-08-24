@@ -1,3 +1,5 @@
+import logo from "../../assets/images/logosams.png";
+
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -6,12 +8,30 @@ import { motion } from "framer-motion";
 
 export default function Navbar(){
 
+
 const [open,setOpen]=useState(false);
+
+
+
+const menuItems=[
+
+"About",
+"Features",
+"Programs",
+"Accessories",
+"Branches",
+"Achievements",
+"Contact"
+
+];
+
 
 
 return(
 
+
 <header
+
 className="
 fixed
 top-0
@@ -23,61 +43,91 @@ backdrop-blur-xl
 border-b
 border-white/10
 "
+
 >
 
 
 <div
+
 className="
 max-w-7xl
 mx-auto
-h-24
+h-20
 flex
 items-center
 justify-between
 px-5
 sm:px-8
 "
+
 >
+
 
 
 {/* BRAND */}
 
 
+
 <Link
+
 to="/"
+
 className="
 flex
 items-center
-gap-4
+gap-3
 "
+
 >
 
 
+
 <motion.div
+
 
 whileHover={{
 scale:1.08
 }}
 
+
+transition={{
+duration:0.3
+}}
+
+
 className="
-w-14
-h-14
+w-12
+h-12
 rounded-full
-bg-teal-500
+overflow-hidden
+bg-black
 flex
 items-center
 justify-center
-text-white
-font-black
-text-3xl
 shadow-[0_0_30px_rgba(20,184,166,.6)]
 "
 
 >
 
-R
+
+<img
+
+src={logo}
+
+alt="RTSA Logo"
+
+className="
+w-full
+h-full
+object-cover
+"
+
+/>
+
 
 </motion.div>
+
+
 
 
 
@@ -85,12 +135,15 @@ R
 
 
 <h2
+
 className="
 text-white
-font-extrabold
-text-xl
-sm:text-3xl
+font-black
+text-lg
+sm:text-xl
 tracking-wide
+leading-tight
+whitespace-nowrap
 "
 
 >
@@ -102,12 +155,13 @@ Rushikesh Tarde
 
 
 <p
+
 className="
 text-teal-400
 font-bold
-tracking-[5px]
-text-xs
-sm:text-sm
+tracking-[4px]
+text-[10px]
+sm:text-xs
 "
 
 >
@@ -117,6 +171,7 @@ SKATES ARENA
 </p>
 
 
+
 </div>
 
 
@@ -126,40 +181,43 @@ SKATES ARENA
 
 
 
-{/* DESKTOP MENU */}
+
+
+{/* DESKTOP NAV */}
+
 
 
 <nav
+
 className="
 hidden
 lg:flex
 items-center
-gap-8
+gap-6
 font-semibold
 text-slate-300
 "
+
 >
 
 
 {
-[
-"About",
-"Features",
-"Programs",
-"Accessories",
-"Branches",
-"Achievements",
-"Contact"
 
-].map((item)=>(
+menuItems.map((item)=>(
+
 
 <a
+
 key={item}
+
 href={`#${item.toLowerCase()}`}
+
 className="
 hover:text-teal-400
 transition
+duration-300
 "
+
 >
 
 {item}
@@ -168,7 +226,9 @@ transition
 
 
 ))
+
 }
+
 
 
 </nav>
@@ -177,27 +237,41 @@ transition
 
 
 
+
+
+{/* BUTTONS */}
+
+
+
 <div
+
 className="
 hidden
 md:flex
+items-center
 gap-4
 "
+
 >
 
 
+
 <Link
+
 to="/login"
+
 className="
-px-6
-py-3
+px-7
+py-2.5
 rounded-xl
 bg-teal-500
-font-bold
 text-white
+font-bold
 hover:bg-teal-600
 transition
+shadow-[0_0_20px_rgba(20,184,166,.3)]
 "
+
 >
 
 Login
@@ -206,18 +280,24 @@ Login
 
 
 
+
+
 <Link
+
 to="/register"
+
 className="
-px-6
-py-3
+px-7
+py-2.5
 rounded-xl
 bg-teal-500
-font-bold
 text-white
+font-bold
 hover:bg-teal-600
 transition
+shadow-[0_0_20px_rgba(20,184,166,.3)]
 "
+
 >
 
 Register
@@ -232,9 +312,18 @@ Register
 
 
 
+
+
+
+{/* MOBILE BUTTON */}
+
+
+
 <button
 
+
 onClick={()=>setOpen(!open)}
+
 
 className="
 lg:hidden
@@ -243,14 +332,24 @@ text-white
 
 >
 
+
 {
-open?
-<X size={32}/>
+
+open
+
+?
+
+<X size={30}/>
+
 :
-<Menu size={32}/>
+
+<Menu size={30}/>
+
 }
 
+
 </button>
+
 
 
 </div>
@@ -258,20 +357,35 @@ open?
 
 
 
+
+
+
+
+{/* MOBILE MENU */}
+
+
+
 {
+
 open &&
 
+
 <div
+
 className="
 lg:hidden
 bg-[#06111b]
+border-t
+border-white/10
 px-6
 py-6
 "
+
 >
 
 
 <div
+
 className="
 flex
 flex-col
@@ -279,71 +393,103 @@ gap-5
 text-white
 font-semibold
 "
+
 >
 
-{
-[
-"Home",
-"About",
-"Features",
-"Programs",
-"Accessories",
-"Branches",
-"Achievements",
-"Contact"
 
-].map(item=>(
+{
+
+
+menuItems.map((item)=>(
+
 
 <a
+
 key={item}
+
 href={`#${item.toLowerCase()}`}
+
 onClick={()=>setOpen(false)}
+
+className="
+hover:text-teal-400
+transition
+"
+
 >
 
 {item}
 
 </a>
 
+
 ))
+
+
 }
 
 
+
+
+
 <Link
+
 to="/login"
+
 className="
 bg-teal-500
 text-center
 py-3
 rounded-xl
+font-bold
 "
+
 >
+
 Login
+
 </Link>
+
+
+
 
 
 <Link
+
 to="/register"
+
 className="
 bg-teal-500
 text-center
 py-3
 rounded-xl
+font-bold
 "
+
 >
+
 Register
+
 </Link>
 
 
+
 </div>
 
 
+
 </div>
+
+
 
 }
+
 
 
 </header>
 
+
 )
+
 
 }
