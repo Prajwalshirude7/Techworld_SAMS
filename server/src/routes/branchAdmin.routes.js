@@ -9,56 +9,56 @@ const {
 } = require("../middleware/role.middleware");
 
 const {
-  createBranch,
-  getAllBranches,
-  getBranchById,
-  updateBranch,
-  deleteBranch
-} = require("../controllers/branch.controller");
+  createBranchAdmin,
+  getBranchAdmins,
+  getBranchAdminById,
+  updateBranchAdmin,
+  deleteBranchAdmin
+} = require("../controllers/branchAdmin.controller");
 
 
-// CREATE BRANCH
+// CREATE BRANCH ADMIN
 router.post(
   "/",
   authenticateToken,
   requireSuperAdmin,
-  createBranch
+  createBranchAdmin
 );
 
 
-// GET ALL BRANCHES
+// GET ALL BRANCH ADMINS
 router.get(
   "/",
   authenticateToken,
   requireSuperAdmin,
-  getAllBranches
+  getBranchAdmins
 );
 
 
-// GET BRANCH BY ID
+// GET BRANCH ADMIN BY ID
 router.get(
   "/:id",
   authenticateToken,
   requireSuperAdmin,
-  getBranchById
+  getBranchAdminById
 );
 
 
-// UPDATE BRANCH
+// UPDATE BRANCH ADMIN
 router.put(
   "/:id",
   authenticateToken,
   requireSuperAdmin,
-  updateBranch
+  updateBranchAdmin
 );
 
 
-// DEACTIVATE BRANCH
+// DEACTIVATE BRANCH ADMIN
 router.delete(
   "/:id",
   authenticateToken,
   requireSuperAdmin,
-  deleteBranch
+  deleteBranchAdmin
 );
 
 module.exports = router;
