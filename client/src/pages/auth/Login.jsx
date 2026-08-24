@@ -24,7 +24,6 @@ const navigate = useNavigate();
 
 const [showPassword,setShowPassword]=useState(false);
 
-
 const [email,setEmail]=useState("");
 const [password,setPassword]=useState("");
 
@@ -35,7 +34,6 @@ const [password,setPassword]=useState("");
 const handleLogin=(e)=>{
 
 e.preventDefault();
-
 
 
 if(!email || !password){
@@ -50,11 +48,9 @@ return;
 
 
 
-
 const savedUser = JSON.parse(
 localStorage.getItem("user")
 );
-
 
 
 
@@ -69,19 +65,16 @@ savedUser.password === password
 ){
 
 
-
 localStorage.setItem(
 "isLoggedIn",
 "true"
 );
 
 
-
 localStorage.setItem(
 "userRole",
 String(savedUser.role_id)
 );
-
 
 
 localStorage.setItem(
@@ -91,9 +84,8 @@ savedUser.name
 
 
 
-
 toast.success(
-`Welcome ${savedUser.name}! Login successful!`
+`Welcome ${savedUser.name}!`
 );
 
 
@@ -102,7 +94,7 @@ setTimeout(()=>{
 
 navigate("/student/dashboard");
 
-},1000);
+},800);
 
 
 
@@ -126,7 +118,9 @@ toast.error(
 
 
 
+
 return(
+
 
 
 <div
@@ -139,27 +133,31 @@ overflow-hidden
 flex
 items-center
 justify-center
-px-6
+px-4
+py-8
 "
 
 >
 
 
 
-{/* Glow */}
+{/* BACKGROUND GLOW */}
+
 
 
 <div
 
 className="
 absolute
-w-96
-h-96
+w-72
+h-72
+sm:w-96
+sm:h-96
 bg-teal-500/20
 rounded-full
-blur-[150px]
--top-24
--left-24
+blur-[120px]
+top-0
+left-0
 "
 
 />
@@ -170,16 +168,21 @@ blur-[150px]
 
 className="
 absolute
-w-80
-h-80
+w-72
+h-72
+sm:w-80
+sm:h-80
 bg-cyan-500/20
 rounded-full
-blur-[150px]
+blur-[120px]
 bottom-0
 right-0
 "
 
 />
+
+
+
 
 
 
@@ -193,10 +196,10 @@ className="
 relative
 z-10
 w-full
-max-w-7xl
+max-w-6xl
 grid
 lg:grid-cols-2
-gap-16
+gap-10
 items-center
 "
 
@@ -208,25 +211,31 @@ items-center
 
 
 
-{/* LEFT SIDE */}
+
+
+{/* LEFT CONTENT */}
 
 
 
 <motion.div
 
+
 initial={{
 opacity:0,
-x:-60
+x:-40
 }}
+
 
 animate={{
 opacity:1,
 x:0
 }}
 
+
 transition={{
-duration:0.8
+duration:0.7
 }}
+
 
 className="
 hidden
@@ -236,11 +245,13 @@ lg:block
 >
 
 
+
 <h1
 
 className="
-text-6xl
-font-bold
+text-5xl
+xl:text-6xl
+font-black
 text-white
 leading-tight
 "
@@ -258,7 +269,7 @@ text-teal-400
 
 >
 
-Skating Academy
+SAMS Academy
 
 </span>
 
@@ -275,6 +286,7 @@ className="
 mt-6
 text-slate-300
 text-lg
+max-w-lg
 leading-8
 "
 
@@ -290,16 +302,14 @@ modern management system.
 
 
 
-
 <div
 
 className="
-mt-10
+mt-8
 space-y-4
 "
 
 >
-
 
 
 {
@@ -309,7 +319,7 @@ space-y-4
 "Smart Student Management",
 "Attendance & Fee Tracking"
 
-].map(item=>(
+].map((item)=>(
 
 
 <div
@@ -337,8 +347,13 @@ bg-teal-400
 />
 
 
+<p
 
-<p className="text-white">
+className="
+text-white
+"
+
+>
 
 {item}
 
@@ -359,7 +374,14 @@ bg-teal-400
 
 
 
+
+
 </motion.div>
+
+
+
+
+
 
 
 
@@ -373,18 +395,38 @@ bg-teal-400
 
 
 
+
+
 <AuthCard>
 
 
 
-<div
+<motion.div
+
+
+initial={{
+opacity:0,
+y:30
+}}
+
+
+animate={{
+opacity:1,
+y:0
+}}
+
+
 
 className="
+w-full
+max-w-md
+mx-auto
 bg-[#102235]
 border
 border-teal-500/20
 rounded-3xl
-p-10
+p-6
+sm:p-8
 shadow-2xl
 "
 
@@ -392,21 +434,14 @@ shadow-2xl
 
 
 
-<motion.h2
 
-initial={{
-opacity:0,
-y:-15
-}}
 
-animate={{
-opacity:1,
-y:0
-}}
+<h2
 
 className="
 text-3xl
-font-bold
+sm:text-4xl
+font-black
 text-center
 text-white
 "
@@ -415,7 +450,7 @@ text-white
 
 Welcome Back
 
-</motion.h2>
+</h2>
 
 
 
@@ -426,8 +461,9 @@ Welcome Back
 className="
 text-center
 text-slate-400
-mt-2
-mb-8
+mt-3
+mb-7
+text-base
 "
 
 >
@@ -435,6 +471,7 @@ mb-8
 Sign in to continue
 
 </p>
+
 
 
 
@@ -456,17 +493,27 @@ space-y-5
 
 
 
+
+
 <AuthInput
+
 
 icon={Mail}
 
+
 type="email"
+
 
 placeholder="Enter Email"
 
+
 value={email}
 
-onChange={(e)=>setEmail(e.target.value)}
+
+onChange={(e)=>
+setEmail(e.target.value)
+}
+
 
 />
 
@@ -478,12 +525,21 @@ onChange={(e)=>setEmail(e.target.value)}
 
 
 
-<div className="relative">
+<div
+
+className="
+relative
+"
+
+>
+
 
 
 <AuthInput
 
+
 icon={Lock}
+
 
 type={
 showPassword
@@ -493,11 +549,17 @@ showPassword
 "password"
 }
 
+
 placeholder="Enter Password"
+
 
 value={password}
 
-onChange={(e)=>setPassword(e.target.value)}
+
+onChange={(e)=>
+setPassword(e.target.value)
+}
+
 
 />
 
@@ -506,9 +568,12 @@ onChange={(e)=>setPassword(e.target.value)}
 
 <button
 
+
 type="button"
 
+
 onClick={()=>setShowPassword(!showPassword)}
+
 
 className="
 absolute
@@ -537,6 +602,7 @@ showPassword
 }
 
 
+
 </button>
 
 
@@ -550,16 +616,18 @@ showPassword
 
 
 
+
 <div
 
 className="
 flex
-justify-between
 items-center
+justify-between
 text-sm
 "
 
 >
+
 
 
 <label
@@ -585,10 +653,12 @@ accent-teal-500
 />
 
 
-Remember Me
+Remember me
 
 
 </label>
+
+
 
 
 
@@ -635,17 +705,20 @@ Login
 
 
 
+
 <p
 
 className="
 text-center
 text-slate-400
+text-sm
 "
 
 >
 
-Don't have an account?{" "}
+Don't have an account?
 
+{" "}
 
 
 <Link
@@ -654,8 +727,7 @@ to="/register"
 
 className="
 text-teal-400
-font-semibold
-hover:text-teal-300
+font-bold
 "
 
 >
@@ -663,7 +735,6 @@ hover:text-teal-300
 Register
 
 </Link>
-
 
 
 </p>
@@ -678,7 +749,8 @@ Register
 
 
 
-</div>
+
+</motion.div>
 
 
 
@@ -689,12 +761,19 @@ Register
 
 
 
+
+
+
 </div>
 
 
 
 
+
+
+
 </div>
+
 
 
 );

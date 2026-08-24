@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
-// Public Pages
+// ================= PUBLIC PAGES =================
+
 import Home from "./pages/public/Home";
 import Programs from "./pages/public/Programs";
 
 
-// Auth Pages
+// ================= AUTH PAGES =================
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -14,14 +16,18 @@ import VerifyOTP from "./pages/auth/VerifyOTP";
 import ResetPassword from "./pages/auth/ResetPassword";
 
 
-// Student Pages
+// ================= STUDENT PAGES =================
+
 import StudentDashboard from "./pages/student/StudentDashboard";
 import Admission from "./pages/student/admission/Admission";
 
 
-// Super Admin Pages
+// ================= SUPER ADMIN PAGES =================
+
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import Admissions from "./pages/superadmin/Admissions";
+import AdmissionDetails from "./pages/superadmin/AdmissionDetails";
+
 import Branches from "./pages/superadmin/Branches";
 import BranchAdmins from "./pages/superadmin/BranchAdmins";
 import Students from "./pages/superadmin/Students";
@@ -33,15 +39,18 @@ import Reports from "./pages/superadmin/Reports";
 import Settings from "./pages/superadmin/Settings";
 
 
-// Protected Route
+// ================= PROTECTED ROUTE =================
+
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 
 
-function App() {
 
 
-return (
+function App(){
+
+
+return(
 
 <BrowserRouter>
 
@@ -50,80 +59,54 @@ return (
 
 
 
-{/* ================= PUBLIC ROUTES ================= */}
-
+{/* ================= PUBLIC ================= */}
 
 
 <Route
-
 path="/"
-
 element={<Home />}
-
 />
 
 
-
 <Route
-
 path="/programs"
-
 element={<Programs />}
-
 />
 
 
 
-{/* ================= AUTH ROUTES ================= */}
 
+
+{/* ================= AUTH ================= */}
 
 
 <Route
-
 path="/login"
-
 element={<Login />}
-
 />
 
 
-
 <Route
-
 path="/register"
-
 element={<Register />}
-
 />
 
 
-
 <Route
-
 path="/forgot-password"
-
 element={<ForgotPassword />}
-
 />
 
 
-
 <Route
-
 path="/verify-otp"
-
 element={<VerifyOTP />}
-
 />
-
 
 
 <Route
-
 path="/reset-password"
-
 element={<ResetPassword />}
-
 />
 
 
@@ -131,7 +114,8 @@ element={<ResetPassword />}
 
 
 
-{/* ================= STUDENT ROUTES ================= */}
+
+{/* ================= STUDENT ================= */}
 
 
 
@@ -176,8 +160,8 @@ element={
 
 
 
-{/* ================= SUPER ADMIN ROUTES ================= */}
 
+{/* ================= SUPER ADMIN ================= */}
 
 
 
@@ -202,6 +186,18 @@ element={<Admissions />}
 
 
 
+
+<Route
+
+path="/super-admin/admission-details"
+
+element={<AdmissionDetails />}
+
+/>
+
+
+
+
 <Route
 
 path="/super-admin/branches"
@@ -209,6 +205,7 @@ path="/super-admin/branches"
 element={<Branches />}
 
 />
+
 
 
 
@@ -222,6 +219,7 @@ element={<BranchAdmins />}
 
 
 
+
 <Route
 
 path="/super-admin/students"
@@ -229,6 +227,7 @@ path="/super-admin/students"
 element={<Students />}
 
 />
+
 
 
 
@@ -242,6 +241,7 @@ element={<Gallery />}
 
 
 
+
 <Route
 
 path="/super-admin/announcements"
@@ -249,6 +249,7 @@ path="/super-admin/announcements"
 element={<Announcements />}
 
 />
+
 
 
 
@@ -262,6 +263,7 @@ element={<Payments />}
 
 
 
+
 <Route
 
 path="/super-admin/products"
@@ -269,6 +271,7 @@ path="/super-admin/products"
 element={<Products />}
 
 />
+
 
 
 
@@ -282,6 +285,7 @@ element={<Reports />}
 
 
 
+
 <Route
 
 path="/super-admin/settings"
@@ -289,6 +293,9 @@ path="/super-admin/settings"
 element={<Settings />}
 
 />
+
+
+
 
 
 

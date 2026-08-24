@@ -1,46 +1,64 @@
-import { 
-Users,
-Clock,
-CheckCircle,
-XCircle,
-Search
+import {
+  Search,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+  MapPin,
+  Download,
+  Users
 } from "lucide-react";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export default function Admissions(){
 
 
-const [search,setSearch] = useState("");
+const navigate = useNavigate();
+
+
+const [search,setSearch]=useState("");
+
+const [status,setStatus]=useState("All");
+
+const [branch,setBranch]=useState("All");
 
 
 
-const applications=[
+const defaultApplications=[
 
 {
+id:1,
 name:"Rahul Sharma",
 email:"rahul@gmail.com",
-branch:"Pune",
+phone:"9876543210",
+branch:"Pune Camp",
 program:"Professional Skating",
 date:"24 Aug 2026",
 status:"Pending"
 },
 
 {
+id:2,
 name:"Aarav Patil",
 email:"aarav@gmail.com",
-branch:"Mumbai",
+phone:"8765432109",
+branch:"Mumbai Central",
 program:"Beginner Program",
 date:"22 Aug 2026",
 status:"Approved"
 },
 
 {
+id:3,
 name:"Riya Deshmukh",
 email:"riya@gmail.com",
-branch:"Pune",
+phone:"7654321098",
+branch:"Nashik Road",
 program:"Advanced Training",
 date:"20 Aug 2026",
 status:"Rejected"
@@ -50,37 +68,250 @@ status:"Rejected"
 
 
 
+
+const [applications,setApplications]=useState([]);
+
+
+
+
+
+// LOAD APPLICATIONS
+
+useEffect(()=>{
+
+
+const savedApplications = JSON.parse(
+
+localStorage.getItem("admissionApplications") || "[]"
+
+);
+
+
+
+if(savedApplications.length>0){
+
+setApplications(savedApplications);
+
+}
+
+else{
+
+setApplications(defaultApplications);
+
+}
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+// APPROVE
+
+const approveApplication=(id)=>{
+
+
+const updated = applications.map((item)=>{
+
+
+if(item.id===id){
+
+return{
+
+...item,
+
+status:"Approved"
+
+}
+
+}
+
+
+return item;
+
+
+});
+
+
+
+setApplications(updated);
+
+
+
+localStorage.setItem(
+
+"admissionApplications",
+
+JSON.stringify(updated)
+
+);
+
+
+
+};
+
+
+
+
+
+
+
+// REJECT
+
+
+const rejectApplication=(id)=>{
+
+
+const updated = applications.map((item)=>{
+
+
+if(item.id===id){
+
+return{
+
+...item,
+
+status:"Rejected"
+
+}
+
+}
+
+
+return item;
+
+
+});
+
+
+
+setApplications(updated);
+
+
+
+localStorage.setItem(
+
+"admissionApplications",
+
+JSON.stringify(updated)
+
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+
+const filteredApplications = applications.filter((item)=>{
+
+
+return(
+
+item.name
+.toLowerCase()
+.includes(search.toLowerCase())
+
+&&
+
+(status==="All" || item.status===status)
+
+&&
+
+(branch==="All" || item.branch===branch)
+
+);
+
+
+});
+
+
+
+
+
+
+
+
+
+const statusStyle=(value)=>{
+
+
+if(value==="Approved")
+
+return "bg-green-500/20 text-green-400";
+
+
+if(value==="Rejected")
+
+return "bg-red-500/20 text-red-400";
+
+
+return "bg-yellow-500/20 text-yellow-400";
+
+
+};
+
+
+
+
+
+
+
+
+
 const stats=[
+
 
 {
 title:"Total Applications",
-value:"120",
-icon:Users,
-color:"text-teal-400"
+value:applications.length,
+icon:Users
 },
 
+
 {
-title:"Pending Requests",
-value:"45",
-icon:Clock,
-color:"text-yellow-400"
+title:"Pending",
+value:applications.filter(
+x=>x.status==="Pending"
+).length,
+icon:Clock
 },
+
 
 {
 title:"Approved",
-value:"65",
-icon:CheckCircle,
-color:"text-green-400"
+value:applications.filter(
+x=>x.status==="Approved"
+).length,
+icon:CheckCircle
 },
+
 
 {
 title:"Rejected",
-value:"10",
-icon:XCircle,
-color:"text-red-400"
+value:applications.filter(
+x=>x.status==="Rejected"
+).length,
+icon:XCircle
 }
 
+
 ];
+
+
+
+
 
 
 
@@ -89,69 +320,35 @@ color:"text-red-400"
 return(
 
 
-<div
-
-className="
+<div className="
 min-h-screen
 bg-[#07131f]
 p-5
-sm:p-8
+sm:p-6
 lg:p-10
 text-white
-"
-
->
+">
 
 
 
-{/* HEADER */}
-
-
-<motion.div
-
-initial={{
-opacity:0,
-y:-20
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
-
->
-
-
-<h1
-
-className="
-text-3xl
-sm:text-4xl
+<h1 className="
+text-4xl
 font-black
-"
-
->
+">
 
 Admissions Management
 
 </h1>
 
 
-<p
-
-className="
+<p className="
 text-slate-400
 mt-2
-"
-
->
+">
 
 Review, approve and manage student admission requests.
 
 </p>
-
-
-</motion.div>
 
 
 
@@ -162,23 +359,16 @@ Review, approve and manage student admission requests.
 {/* STATS */}
 
 
-
-<div
-
-className="
+<div className="
 grid
-grid-cols-1
-sm:grid-cols-2
+grid-cols-2
 lg:grid-cols-4
-gap-6
+gap-4
 mt-8
-"
-
->
+">
 
 
 {
-
 stats.map((item,index)=>{
 
 
@@ -187,78 +377,67 @@ const Icon=item.icon;
 
 return(
 
-
 <motion.div
 
 key={index}
 
-whileHover={{
-y:-6
-}}
+whileHover={{y:-5}}
 
 className="
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
 
 
-<div
-
-className="
+<div className="
 flex
-items-center
 justify-between
-"
-
->
+items-center
+">
 
 
 <div>
 
-<p
-
-className="
+<p className="
 text-slate-400
-"
-
->
+text-sm
+">
 
 {item.title}
 
 </p>
 
 
-<h2
-
-className="
+<h2 className="
 text-3xl
 font-black
 mt-2
-"
-
->
+">
 
 {item.value}
 
 </h2>
 
-
 </div>
 
 
 
+<div className="
+bg-teal-500/20
+p-3
+rounded-xl
+">
+
 <Icon
-
-size={35}
-
-className={item.color}
-
+className="text-teal-400"
 />
+
+</div>
 
 
 </div>
@@ -266,11 +445,10 @@ className={item.color}
 
 </motion.div>
 
-
 )
 
-
 })
+
 
 }
 
@@ -285,30 +463,54 @@ className={item.color}
 
 
 
-{/* SEARCH */}
+{/* FILTER */}
 
 
 
-<div
-
-className="
-mt-10
+<div className="
+mt-8
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
 p-5
-"
+grid
+grid-cols-1
+md:grid-cols-3
+gap-4
+">
 
->
 
+<input
 
-<div
+placeholder="Search student..."
+
+value={search}
+
+onChange={(e)=>setSearch(e.target.value)}
 
 className="
-flex
-items-center
-gap-3
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+py-3
+outline-none
+"
+
+/>
+
+
+
+
+<select
+
+value={status}
+
+onChange={(e)=>setStatus(e.target.value)}
+
+className="
 bg-[#07131f]
 border
 border-slate-700
@@ -318,320 +520,116 @@ px-4
 
 >
 
-<Search
+<option>All</option>
+<option>Pending</option>
+<option>Approved</option>
+<option>Rejected</option>
 
-className="
-text-slate-400
-"
-
-/>
-
-
-<input
-
-value={search}
-
-onChange={(e)=>setSearch(e.target.value)}
-
-placeholder="Search student..."
-
-className="
-w-full
-bg-transparent
-outline-none
-py-3
-text-white
-"
-
-/>
-
-
-</div>
-
-
-</div>
+</select>
 
 
 
 
 
+<select
 
+value={branch}
 
-
-
-{/* APPLICATIONS */}
-
-
-
-<div
-
-className="
-mt-8
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-overflow-hidden
-"
-
->
-
-
-
-<div
-
-className="
-p-6
-border-b
-border-slate-700
-"
-
->
-
-
-<h2
-
-className="
-text-xl
-font-bold
-"
-
->
-
-Admission Requests
-
-</h2>
-
-
-</div>
-
-
-
-
-
-
-
-{/* DESKTOP TABLE */}
-
-
-
-<div
-
-className="
-hidden
-lg:block
-overflow-x-auto
-"
-
->
-
-
-<table
-
-className="
-w-full
-"
-
->
-
-
-<thead
+onChange={(e)=>setBranch(e.target.value)}
 
 className="
 bg-[#07131f]
-text-slate-400
+border
+border-slate-700
+rounded-xl
+px-4
 "
 
 >
 
-<tr>
+<option>All</option>
+<option>Pune Camp</option>
+<option>Mumbai Central</option>
+<option>Nashik Road</option>
 
-<th className="p-4 text-left">
-Student
-</th>
+</select>
 
-<th className="p-4 text-left">
-Branch
-</th>
 
-<th className="p-4 text-left">
-Program
-</th>
-
-<th className="p-4 text-left">
-Date
-</th>
-
-<th className="p-4 text-left">
-Status
-</th>
-
-<th className="p-4 text-left">
-Action
-</th>
-
-</tr>
-
-</thead>
+</div>
 
 
 
-<tbody>
+
+
+
+
+
+
+{/* CARDS */}
+
+
+
+<div className="
+grid
+grid-cols-1
+lg:grid-cols-2
+gap-6
+mt-8
+">
 
 
 {
 
-applications
-
-.filter((item)=>
-
-item.name
-.toLowerCase()
-.includes(search.toLowerCase())
-
-)
-
-.map((item,index)=>(
+filteredApplications.map((item)=>(
 
 
-<tr
+<motion.div
 
-key={index}
+key={item.id}
+
+whileHover={{y:-5}}
 
 className="
-border-t
+bg-[#102235]
+border
 border-slate-700
+rounded-3xl
+p-6
 "
 
 >
 
 
-<td className="p-4">
 
-<div>
+<div className="
+flex
+justify-between
+">
 
-<p className="font-bold">
+<div className="
+bg-teal-500/20
+p-4
+rounded-2xl
+">
 
-{item.name}
-
-</p>
-
-<p className="text-sm text-slate-400">
-
-{item.email}
-
-</p>
+<FileText
+className="text-teal-400"
+/>
 
 </div>
 
-</td>
 
-
-
-<td className="p-4">
-
-{item.branch}
-
-</td>
-
-
-
-<td className="p-4">
-
-{item.program}
-
-</td>
-
-
-
-<td className="p-4">
-
-{item.date}
-
-</td>
-
-
-
-<td className="p-4">
-
-<span
-
-className="
-px-3
-py-1
+<span className={`
+px-4
+py-2
 rounded-full
-text-sm
-bg-yellow-500/20
-text-yellow-400
-"
-
->
+${statusStyle(item.status)}
+`}>
 
 {item.status}
 
 </span>
 
-</td>
-
-
-
-<td className="p-4">
-
-
-<button
-
-className="
-bg-green-500
-px-4
-py-2
-rounded-lg
-mr-2
-font-bold
-"
-
->
-
-Approve
-
-</button>
-
-
-<button
-
-className="
-bg-red-500
-px-4
-py-2
-rounded-lg
-font-bold
-"
-
->
-
-Reject
-
-</button>
-
-
-</td>
-
-
-
-</tr>
-
-
-))
-
-
-}
-
-
-
-</tbody>
-
-
-</table>
-
 
 </div>
 
@@ -639,57 +637,15 @@ Reject
 
 
 
-
-
-
-
-{/* MOBILE CARDS */}
-
-
-
-<div
-
-className="
-lg:hidden
-p-5
-space-y-5
-"
-
->
-
-
-{
-
-applications.map((item,index)=>(
-
-
-<div
-
-key={index}
-
-className="
-bg-[#07131f]
-rounded-2xl
-p-5
-border
-border-slate-700
-"
-
->
-
-
-<h3
-
-className="
+<h2 className="
+text-2xl
 font-bold
-text-lg
-"
-
->
+mt-5
+">
 
 {item.name}
 
-</h3>
+</h2>
 
 
 <p className="text-slate-400">
@@ -699,71 +655,163 @@ text-lg
 </p>
 
 
-<p className="mt-3">
 
-Branch: {item.branch}
+
+
+<div className="
+mt-5
+space-y-3
+">
+
+
+<p className="flex gap-2">
+
+<MapPin className="text-teal-400"/>
+
+{item.branch}
 
 </p>
 
 
 <p>
+Program:
+<span className="ml-2 text-white">
 
-Program: {item.program}
+{item.program}
 
+</span>
 </p>
 
 
-<div
+<p>
+Applied:
+<span className="ml-2 text-white">
 
-className="
+{item.date}
+
+</span>
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div className="
 flex
 gap-3
-mt-5
+mt-6
+flex-wrap
+">
+
+
+<button
+
+onClick={()=>navigate(
+"/super-admin/admission-details",
+{
+state:item
+}
+)}
+
+className="
+flex-1
+border
+border-slate-600
+rounded-xl
+py-3
 "
 
 >
 
+<Eye size={18}/>
+
+View
+
+</button>
+
+
+
+
+
+
+{
+item.status==="Pending" &&
+
+<>
+
+
 <button
 
+onClick={()=>approveApplication(item.id)}
+
 className="
+flex-1
 bg-green-500
-px-4
-py-2
-rounded-lg
+rounded-xl
 font-bold
 "
 
 >
+
+<CheckCircle size={18}/>
 
 Approve
 
 </button>
 
 
+
 <button
 
+onClick={()=>rejectApplication(item.id)}
+
 className="
+flex-1
 bg-red-500
-px-4
-py-2
-rounded-lg
+rounded-xl
 font-bold
 "
 
 >
+
+<XCircle size={18}/>
 
 Reject
 
 </button>
 
 
-</div>
+</>
+
+}
 
 
-</div>
 
+{
+item.status==="Approved" &&
 
-))
+<button
+
+className="
+flex-1
+bg-teal-500
+rounded-xl
+font-bold
+"
+
+>
+
+<Download size={18}/>
+
+Receipt
+
+</button>
 
 
 }
@@ -773,16 +821,19 @@ Reject
 
 
 
+</motion.div>
+
+
+))
+
+}
+
+
 </div>
 
 
 
-
-
-
-
 </div>
-
 
 )
 

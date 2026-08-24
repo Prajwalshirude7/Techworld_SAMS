@@ -1,72 +1,160 @@
 import {
   User,
   CreditCard,
-  FileText,
   MapPin,
   Calendar,
   ShoppingBag,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Download,
+  Trophy,
+  Bell
 } from "lucide-react";
+
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-
-export default function StudentDashboard() {
-
-
-  const navigate = useNavigate();
-
-
-  const studentName =
-    localStorage.getItem("studentName") || "Student";
-
-
-  const admissionData =
-    JSON.parse(
-      localStorage.getItem("admissionApplication") || "null"
-    );
-
-
-  const admissionStatus =
-    admissionData?.status || "Not Applied";
+import generateReceipt from "../../utils/generateReceipt";
 
 
 
-  const cards = [
+export default function StudentDashboard(){
 
-    {
-      title:"Subscription Plans",
-      desc:"Choose the best plan for your skating journey",
-      icon:CreditCard
-    },
 
-    {
-      title:"Our Branches",
-      desc:"Find nearby skating academy branches",
-      icon:MapPin
-    },
-
-    {
-      title:"Our Programs",
-      desc:"View available skating programs",
-      icon:Calendar
-    },
-
-    {
-      title:"Skating Products",
-      desc:"Buy quality skating equipment",
-      icon:ShoppingBag
-    }
-
-  ];
+const navigate = useNavigate();
 
 
 
-return (
+const studentName =
+localStorage.getItem("studentName") || "Student";
+
+
+
+const [admissionStatus,setAdmissionStatus] =
+useState("Not Applied");
+
+
+const [approvedStudent,setApprovedStudent] =
+useState(null);
+
+
+
+
+
+
+
+useEffect(()=>{
+
+
+const admissionData =
+JSON.parse(
+localStorage.getItem("admissionApplication") || "null"
+);
+
+
+
+const status =
+localStorage.getItem("admissionStatus")
+||
+admissionData?.status
+||
+"Not Applied";
+
+
+
+setAdmissionStatus(status);
+
+
+
+const student =
+JSON.parse(
+localStorage.getItem("admissionStudent") || "null"
+);
+
+
+
+setApprovedStudent(student);
+
+
+
+},[]);
+
+
+
+
+
+
+
+const normalizedStatus =
+admissionStatus?.trim();
+
+
+
+const isApproved =
+normalizedStatus === "Approved";
+
+
+
+const isPending =
+normalizedStatus === "Pending"
+||
+normalizedStatus === "Pending Approval";
+
+
+
+const hasApplied =
+isApproved || isPending;
+
+
+
+
+
+
+
+
+
+const cards=[
+
+{
+title:"Subscription Plans",
+desc:"Choose the best membership plan",
+icon:CreditCard
+},
+
+{
+title:"Our Branches",
+desc:"Find nearby academy branches",
+icon:MapPin
+},
+
+{
+title:"Programs",
+desc:"View available training programs",
+icon:Calendar
+},
+
+{
+title:"Products",
+desc:"Buy skating equipment",
+icon:ShoppingBag
+}
+
+];
+
+
+
+
+
+
+
+
+return(
+
 
 <div
+
 className="
 min-h-screen
 bg-[#07131f]
@@ -75,11 +163,14 @@ sm:p-6
 lg:p-10
 space-y-8
 "
+
 >
 
 
 
-{/* Welcome Section */}
+
+
+{/* HEADER */}
 
 
 <motion.div
@@ -124,20 +215,20 @@ Welcome, {studentName}! 👋
 </h1>
 
 
+
 <p
 
 className="
-mt-3
 text-slate-300
-text-base
-sm:text-lg
+mt-3
 "
 
 >
 
-Your journey with Skating Academy begins here.
+Your skating journey starts here.
 
 </p>
+
 
 
 </motion.div>
@@ -150,27 +241,17 @@ Your journey with Skating Academy begins here.
 
 
 
-{/* Admission Status */}
+{/* ADMISSION STATUS */}
 
 
 
-<motion.div
-
-initial={{
-opacity:0,
-y:20
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
+<div
 
 className="
-rounded-3xl
 bg-[#102235]
 border
 border-slate-700
+rounded-3xl
 p-6
 "
 
@@ -181,10 +262,7 @@ p-6
 
 className="
 flex
-flex-col
-sm:flex-row
-items-start
-sm:items-center
+items-center
 gap-5
 "
 
@@ -194,6 +272,7 @@ gap-5
 <div
 
 className={`
+
 w-16
 h-16
 rounded-2xl
@@ -201,17 +280,12 @@ flex
 items-center
 justify-center
 
-
 ${
-admissionStatus==="Approved"
-
+isApproved
 ?
 "bg-green-500/20"
-
 :
-
 "bg-yellow-500/20"
-
 }
 
 `}
@@ -221,23 +295,30 @@ admissionStatus==="Approved"
 
 {
 
-admissionStatus==="Approved"
+isApproved
 
 ?
 
 <CheckCircle
+
 size={35}
+
 className="text-green-400"
+
 />
 
 :
 
 <Clock
+
 size={35}
+
 className="text-yellow-400"
+
 />
 
 }
+
 
 
 </div>
@@ -245,15 +326,10 @@ className="text-yellow-400"
 
 
 
-
 <div>
 
 
-<p
-className="
-text-slate-400
-"
->
+<p className="text-slate-400">
 
 Admission Status
 
@@ -277,20 +353,19 @@ text-white
 
 
 
+
 <p
 
 className={`
+
 mt-2
 
 ${
-admissionStatus==="Approved"
-
+isApproved
 ?
 "text-green-400"
-
 :
 "text-yellow-400"
-
 }
 
 `}
@@ -300,15 +375,23 @@ admissionStatus==="Approved"
 
 {
 
-admissionStatus==="Approved"
+isApproved
 
 ?
 
-"🎉 Welcome to Skating Academy. Your training journey starts now."
+"🎉 Your admission has been approved."
 
 :
 
-"Your admission request is waiting for academy approval."
+isPending
+
+?
+
+"Your admission application has been submitted. Waiting for admin approval."
+
+:
+
+"Start your admission process."
 
 }
 
@@ -316,7 +399,6 @@ admissionStatus==="Approved"
 </p>
 
 
-
 </div>
 
 
@@ -324,7 +406,7 @@ admissionStatus==="Approved"
 </div>
 
 
-</motion.div>
+</div>
 
 
 
@@ -334,8 +416,7 @@ admissionStatus==="Approved"
 
 
 
-
-{/* Account + Membership */}
+{/* ACCOUNT SECTION */}
 
 
 
@@ -349,6 +430,8 @@ gap-6
 "
 
 >
+
+
 
 
 
@@ -379,7 +462,9 @@ rounded-2xl
 >
 
 <User
+
 className="text-teal-400"
+
 />
 
 </div>
@@ -389,29 +474,22 @@ className="text-teal-400"
 <div>
 
 
-<p className="
-text-slate-400
-">
+<p className="text-slate-400">
 
 Account Status
 
 </p>
 
 
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 text-white
-"
-
->
+">
 
 Registered User
 
 </h2>
-
 
 
 </div>
@@ -454,61 +532,65 @@ rounded-2xl
 >
 
 <CreditCard
+
 className="text-cyan-400"
+
 />
 
 </div>
 
 
 
+
 <div>
 
 
-<p
-className="
-text-slate-400
-"
->
+<p className="text-slate-400">
 
 Academy Membership
 
 </p>
 
 
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 text-white
-"
+">
 
->
+{
 
-Not Enrolled
+isApproved
+?
+"Active Member"
+:
+"Not Enrolled"
+
+}
 
 </h2>
 
 
 
-<p
-
-className="
+<p className="
 text-slate-400
 text-sm
-"
+mt-1
+">
 
->
+{
 
-You are not enrolled in any program yet.
+isApproved
+?
+"Membership activated."
+:
+"Complete admission process."
+
+}
 
 </p>
 
 
-
-</div>
-
-
 </div>
 
 
@@ -517,21 +599,24 @@ You are not enrolled in any program yet.
 
 
 
+</div>
 
 
 
 
 
 
-{/* Admission CTA */}
 
 
+
+{/* APPLY BUTTON */}
+
+
+{
+
+!hasApplied && (
 
 <motion.div
-
-whileHover={{
-scale:1.01
-}}
 
 className="
 rounded-3xl
@@ -541,18 +626,9 @@ to-[#102235]
 border
 border-teal-500/40
 p-6
-flex
-flex-col
-md:flex-row
-items-center
-justify-between
-gap-5
 "
 
 >
-
-
-<div>
 
 
 <h2
@@ -565,9 +641,10 @@ text-white
 
 >
 
-Ready to start your skating journey? ⛸️
+Ready to start skating? ⛸️
 
 </h2>
+
 
 
 <p
@@ -579,35 +656,25 @@ mt-2
 
 >
 
-Apply for admission and become part of our academy.
+Apply for admission and join SAMS.
 
 </p>
-
-
-
-</div>
-
-
 
 
 
 
 <button
 
-
 onClick={()=>navigate("/admission")}
 
-
 className="
+mt-5
 bg-teal-500
 hover:bg-teal-600
-text-white
-font-bold
 px-8
 py-3
 rounded-xl
-w-full
-md:w-auto
+font-bold
 "
 
 >
@@ -620,6 +687,9 @@ Apply For Admission
 
 </motion.div>
 
+)
+
+}
 
 
 
@@ -629,28 +699,196 @@ Apply For Admission
 
 
 
-{/* Explore More */}
+{/* APPROVED SECTION */}
+
+
+
+{
+
+isApproved && (
+
+
+<motion.div
+
+className="
+rounded-3xl
+bg-gradient-to-r
+from-green-900/40
+to-[#102235]
+border
+border-green-500/40
+p-6
+"
+
+>
+
+
+<h2 className="
+text-2xl
+font-bold
+text-white
+">
+
+🎉 Welcome to SAMS Academy
+
+</h2>
+
+
+
+<p className="
+text-green-400
+mt-2
+">
+
+Your training journey begins now.
+
+</p>
+
+
+
+
+
+<div
+
+className="
+grid
+grid-cols-1
+sm:grid-cols-3
+gap-5
+mt-6
+"
+
+>
+
+
+<button
+
+onClick={()=>generateReceipt(approvedStudent)}
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-5
+font-bold
+"
+
+>
+
+<Download
+
+className="
+mx-auto
+mb-2
+text-teal-400
+"
+
+/>
+
+Download Receipt
+
+</button>
+
+
+
+
+
+<button
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-5
+font-bold
+"
+
+>
+
+<Trophy
+
+className="
+mx-auto
+mb-2
+text-teal-400
+"
+
+/>
+
+My Programs
+
+</button>
+
+
+
+
+
+<button
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-5
+font-bold
+"
+
+>
+
+<Bell
+
+className="
+mx-auto
+mb-2
+text-teal-400
+"
+
+/>
+
+Announcements
+
+</button>
+
+
+
+</div>
+
+
+
+</motion.div>
+
+)
+
+}
+
+
+
+
+
+
+
+
+
+{/* EXPLORE MORE */}
 
 
 
 <div>
 
 
-<h2
-
-className="
+<h2 className="
 text-3xl
 font-bold
-text-white
 mb-6
-"
-
->
+text-white
+">
 
 Explore More
 
 </h2>
-
 
 
 
@@ -676,20 +914,15 @@ cards.map((item,index)=>{
 const Icon=item.icon;
 
 
-
 return(
-
 
 <motion.div
 
-
 key={index}
-
 
 whileHover={{
 y:-8
 }}
-
 
 className="
 bg-[#102235]
@@ -697,11 +930,9 @@ border
 border-slate-700
 rounded-3xl
 p-6
-cursor-pointer
 "
 
 >
-
 
 
 <div
@@ -719,11 +950,9 @@ mb-5
 
 <Icon
 
-className="
-text-teal-400
-"
-
 size={28}
+
+className="text-teal-400"
 
 />
 
@@ -732,16 +961,11 @@ size={28}
 
 
 
-
-<h3
-
-className="
+<h3 className="
 text-white
 font-bold
 text-lg
-"
-
->
+">
 
 {item.title}
 
@@ -749,16 +973,10 @@ text-lg
 
 
 
-
-<p
-
-className="
+<p className="
 text-slate-400
 mt-2
-text-sm
-"
-
->
+">
 
 {item.desc}
 
@@ -767,8 +985,6 @@ text-sm
 
 
 </motion.div>
-
-
 
 )
 
