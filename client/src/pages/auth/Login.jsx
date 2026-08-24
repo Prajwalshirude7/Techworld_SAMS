@@ -1,374 +1,13 @@
-// import { useState } from "react";
-// import { Link, useNavigate } from "react-router-dom";
-// import {
-//   Mail,
-//   Lock,
-//   Eye,
-//   EyeOff,
-// } from "lucide-react";
-// import { motion } from "framer-motion";
-// import toast from "react-hot-toast";
-
-// import AuthCard from "../../components/auth/AuthCard";
-// import AuthButton from "../../components/auth/AuthButton";
-// import AuthInput from "../../components/auth/AuthInput";
-
-// export default function Login() {
-
-//   const navigate = useNavigate();
-
-//   const [showPassword, setShowPassword] = useState(false);
-
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-
-
-//   const handleLogin = (e) => {
-//     e.preventDefault();
-
-
-//     // Validation
-//     if (!email || !password) {
-//       toast.error("Please enter email and password.");
-//       return;
-//     }
-
-
-//     // Get registered student name
-//     const studentName =
-//       localStorage.getItem("studentName") || "Student";
-
-
-//     // Store login details
-//     localStorage.setItem(
-//       "isLoggedIn",
-//       "true"
-//     );
-
-//     localStorage.setItem(
-//       "userRole",
-//       "student"
-//     );
-
-
-//     toast.success(
-//       `Welcome ${studentName}! Login successful!`
-//     );
-
-
-//     setTimeout(() => {
-//       navigate("/student/dashboard");
-//     }, 1000);
-
-//   };
-
-
-//   return (
-//     <div className="min-h-screen bg-[#08131E] relative overflow-hidden flex items-center justify-center px-6">
-
-
-//       {/* Background Glow */}
-
-//       <div className="absolute w-96 h-96 bg-teal-500/20 rounded-full blur-[150px] -top-24 -left-24"></div>
-
-//       <div className="absolute w-80 h-80 bg-cyan-500/20 rounded-full blur-[150px] bottom-0 right-0"></div>
-
-
-
-//       <div className="relative z-10 w-full max-w-7xl grid lg:grid-cols-2 gap-16 items-center">
-
-
-//         {/* Left Section */}
-
-//         <motion.div
-//           initial={{
-//             opacity:0,
-//             x:-60
-//           }}
-//           animate={{
-//             opacity:1,
-//             x:0
-//           }}
-//           transition={{
-//             duration:0.8
-//           }}
-//           className="hidden lg:block"
-//         >
-
-//           <h1 className="text-6xl font-bold text-white leading-tight">
-
-//             Welcome to
-
-//             <span className="block text-teal-400">
-//               Skating Academy
-//             </span>
-
-//           </h1>
-
-
-//           <p className="mt-6 text-slate-300 text-lg leading-8">
-
-//             Manage students, coaches, attendance,
-//             fees and competitions through one
-//             modern management system.
-
-//           </p>
-
-
-
-//           <div className="mt-10 space-y-4">
-
-
-//             <div className="flex items-center gap-3">
-
-//               <div className="w-3 h-3 rounded-full bg-teal-400"></div>
-
-//               <p className="text-white">
-//                 Professional Coaches
-//               </p>
-
-//             </div>
-
-
-
-//             <div className="flex items-center gap-3">
-
-//               <div className="w-3 h-3 rounded-full bg-teal-400"></div>
-
-//               <p className="text-white">
-//                 Smart Student Management
-//               </p>
-
-//             </div>
-
-
-
-//             <div className="flex items-center gap-3">
-
-//               <div className="w-3 h-3 rounded-full bg-teal-400"></div>
-
-//               <p className="text-white">
-//                 Attendance & Fee Tracking
-//               </p>
-
-//             </div>
-
-
-//           </div>
-
-
-//         </motion.div>
-
-
-
-
-//         {/* Login Card */}
-
-
-//         <AuthCard>
-
-
-//           <div className="bg-[#102235] border border-teal-500/20 rounded-3xl p-10 shadow-2xl">
-
-
-//             <motion.h2
-//               initial={{
-//                 opacity:0,
-//                 y:-15
-//               }}
-//               animate={{
-//                 opacity:1,
-//                 y:0
-//               }}
-//               className="text-3xl font-bold text-center text-white"
-//             >
-
-//               Welcome Back
-
-//             </motion.h2>
-
-
-
-//             <p className="text-center text-slate-400 mt-2 mb-8">
-
-//               Sign in to continue
-
-//             </p>
-
-
-
-//             <form
-//               onSubmit={handleLogin}
-//               className="space-y-5"
-//             >
-
-
-//               <AuthInput
-
-//                 icon={Mail}
-
-//                 type="email"
-
-//                 placeholder="Enter Email"
-
-//                 value={email}
-
-//                 onChange={(e)=>setEmail(e.target.value)}
-
-//               />
-
-
-
-
-//               <div className="relative">
-
-
-//                 <AuthInput
-
-//                   icon={Lock}
-
-//                   type={
-//                     showPassword
-//                     ? "text"
-//                     : "password"
-//                   }
-
-//                   placeholder="Enter Password"
-
-//                   value={password}
-
-//                   onChange={(e)=>setPassword(e.target.value)}
-
-//                 />
-
-
-
-//                 <button
-
-//                   type="button"
-
-//                   onClick={() =>
-//                     setShowPassword(!showPassword)
-//                   }
-
-//                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-teal-400"
-
-//                 >
-
-//                   {
-//                     showPassword
-//                     ?
-//                     <EyeOff size={20}/>
-//                     :
-//                     <Eye size={20}/>
-//                   }
-
-
-//                 </button>
-
-
-//               </div>
-
-
-
-
-
-//               <div className="flex justify-between items-center text-sm">
-
-
-//                 <label className="flex items-center gap-2 text-slate-300">
-
-
-//                   <input
-
-//                     type="checkbox"
-
-//                     className="accent-teal-500"
-
-//                   />
-
-
-//                   Remember Me
-
-
-//                 </label>
-
-
-
-//                 <Link
-
-//                   to="/forgot-password"
-
-//                   className="text-teal-400 hover:text-teal-300"
-
-//                 >
-
-//                   Forgot Password?
-
-//                 </Link>
-
-
-//               </div>
-
-
-
-
-//               <AuthButton type="submit">
-
-//                 Login
-
-//               </AuthButton>
-
-
-
-
-
-//               <p className="text-center text-slate-400">
-
-//                 Don't have an account?{" "}
-
-//                 <Link
-
-//                   to="/register"
-
-//                   className="text-teal-400 hover:text-teal-300 font-semibold"
-
-//                 >
-
-//                   Register
-
-//                 </Link>
-
-
-//               </p>
-
-
-
-//             </form>
-
-
-
-//           </div>
-
-
-//         </AuthCard>
-
-
-
-//       </div>
-
-
-//     </div>
-//   );
-// }
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   Mail,
   Lock,
   Eye,
   EyeOff,
 } from "lucide-react";
+
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
@@ -376,302 +15,689 @@ import AuthCard from "../../components/auth/AuthCard";
 import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
-import api from "../../services/api";
 
-export default function Login() {
-  const navigate = useNavigate();
+export default function Login(){
 
-  const [showPassword, setShowPassword] = useState(false);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+const [showPassword,setShowPassword]=useState(false);
 
-    // Validation
-    if (!email || !password) {
-      toast.error("Please enter email and password.");
-      return;
-    }
 
-    try {
-      setLoading(true);
+const [email,setEmail]=useState("");
+const [password,setPassword]=useState("");
 
-      // Send login details to backend
-      const response = await api.post("/auth/login", {
-        email,
-        password,
-      });
 
-      if (response.data.success) {
-        const { token, user } = response.data;
 
-        // Store JWT token
-        localStorage.setItem("token", token);
 
-        // Store login status
-        localStorage.setItem("isLoggedIn", "true");
 
-        // Store complete user information
-        localStorage.setItem("user", JSON.stringify(user));
+const handleLogin=(e)=>{
 
-        // Store role ID
-        localStorage.setItem(
-          "userRole",
-          String(user.role_id)
-        );
+e.preventDefault();
 
-        toast.success(
-          `Welcome ${user.name}! Login successful!`
-        );
 
-        setTimeout(() => {
-          navigate("/student/dashboard");
-        }, 1000);
-      }
-    } catch (error) {
-      console.error("Login Error:", error);
 
-      const message =
-        error.response?.data?.message ||
-        "Login failed. Please check your credentials.";
+if(!email || !password){
 
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+toast.error(
+"Please enter email and password."
+);
 
-  return (
-    <div className="min-h-screen bg-[#08131E] relative overflow-hidden flex items-center justify-center px-6">
+return;
 
-      {/* Background Glow */}
+}
 
-      <div className="absolute w-96 h-96 bg-teal-500/20 rounded-full blur-[150px] -top-24 -left-24"></div>
 
-      <div className="absolute w-80 h-80 bg-cyan-500/20 rounded-full blur-[150px] bottom-0 right-0"></div>
 
-      <div className="relative z-10 w-full max-w-7xl grid lg:grid-cols-2 gap-16 items-center">
 
-        {/* Left Section */}
+const savedUser = JSON.parse(
+localStorage.getItem("user")
+);
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            x: -60,
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-          transition={{
-            duration: 0.8,
-          }}
-          className="hidden lg:block"
-        >
 
-          <h1 className="text-6xl font-bold text-white leading-tight">
 
-            Welcome to
 
-            <span className="block text-teal-400">
-              Skating Academy
-            </span>
+if(
 
-          </h1>
+savedUser &&
 
-          <p className="mt-6 text-slate-300 text-lg leading-8">
+savedUser.email === email &&
 
-            Manage students, coaches, attendance,
-            fees and competitions through one
-            modern management system.
+savedUser.password === password
 
-          </p>
+){
 
-          <div className="mt-10 space-y-4">
 
-            <div className="flex items-center gap-3">
 
-              <div className="w-3 h-3 rounded-full bg-teal-400"></div>
+localStorage.setItem(
+"isLoggedIn",
+"true"
+);
 
-              <p className="text-white">
-                Professional Coaches
-              </p>
 
-            </div>
 
-            <div className="flex items-center gap-3">
+localStorage.setItem(
+"userRole",
+String(savedUser.role_id)
+);
 
-              <div className="w-3 h-3 rounded-full bg-teal-400"></div>
 
-              <p className="text-white">
-                Smart Student Management
-              </p>
 
-            </div>
+localStorage.setItem(
+"studentName",
+savedUser.name
+);
 
-            <div className="flex items-center gap-3">
 
-              <div className="w-3 h-3 rounded-full bg-teal-400"></div>
 
-              <p className="text-white">
-                Attendance & Fee Tracking
-              </p>
 
-            </div>
+toast.success(
+`Welcome ${savedUser.name}! Login successful!`
+);
 
-          </div>
 
-        </motion.div>
 
-        {/* Login Card */}
+setTimeout(()=>{
 
-        <AuthCard>
+navigate("/student/dashboard");
 
-          <div className="bg-[#102235] border border-teal-500/20 rounded-3xl p-10 shadow-2xl">
+},1000);
 
-            <motion.h2
-              initial={{
-                opacity: 0,
-                y: -15,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              className="text-3xl font-bold text-center text-white"
-            >
 
-              Welcome Back
 
-            </motion.h2>
+}
 
-            <p className="text-center text-slate-400 mt-2 mb-8">
+else{
 
-              Sign in to continue
 
-            </p>
+toast.error(
+"Invalid email or password"
+);
 
-            <form
-              onSubmit={handleLogin}
-              className="space-y-5"
-            >
 
-              {/* Email */}
+}
 
-              <AuthInput
-                icon={Mail}
-                type="email"
-                placeholder="Enter Email"
-                value={email}
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
-              />
 
-              {/* Password */}
+};
 
-              <div className="relative">
 
-                <AuthInput
-                  icon={Lock}
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
-                  placeholder="Enter Password"
-                  value={password}
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
-                />
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowPassword(!showPassword)
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-teal-400"
-                >
 
-                  {showPassword ? (
-                    <EyeOff size={20} />
-                  ) : (
-                    <Eye size={20} />
-                  )}
 
-                </button>
 
-              </div>
+return(
 
-              {/* Remember / Forgot */}
 
-              <div className="flex justify-between items-center text-sm">
+<div
 
-                <label className="flex items-center gap-2 text-slate-300">
+className="
+min-h-screen
+bg-[#08131E]
+relative
+overflow-hidden
+flex
+items-center
+justify-center
+px-6
+"
 
-                  <input
-                    type="checkbox"
-                    className="accent-teal-500"
-                  />
+>
 
-                  Remember Me
 
-                </label>
 
-                <Link
-                  to="/forgot-password"
-                  className="text-teal-400 hover:text-teal-300"
-                >
+{/* Glow */}
 
-                  Forgot Password?
 
-                </Link>
+<div
 
-              </div>
+className="
+absolute
+w-96
+h-96
+bg-teal-500/20
+rounded-full
+blur-[150px]
+-top-24
+-left-24
+"
 
-              {/* Login Button */}
+/>
 
-              <AuthButton
-                type="submit"
-                disabled={loading}
-              >
 
-                {loading
-                  ? "Logging in..."
-                  : "Login"}
 
-              </AuthButton>
+<div
 
-              {/* Register */}
+className="
+absolute
+w-80
+h-80
+bg-cyan-500/20
+rounded-full
+blur-[150px]
+bottom-0
+right-0
+"
 
-              <p className="text-center text-slate-400">
+/>
 
-                Don't have an account?{" "}
 
-                <Link
-                  to="/register"
-                  className="text-teal-400 hover:text-teal-300 font-semibold"
-                >
 
-                  Register
 
-                </Link>
 
-              </p>
 
-            </form>
 
-          </div>
+<div
 
-        </AuthCard>
+className="
+relative
+z-10
+w-full
+max-w-7xl
+grid
+lg:grid-cols-2
+gap-16
+items-center
+"
 
-      </div>
+>
 
-    </div>
-  );
+
+
+
+
+
+
+{/* LEFT SIDE */}
+
+
+
+<motion.div
+
+initial={{
+opacity:0,
+x:-60
+}}
+
+animate={{
+opacity:1,
+x:0
+}}
+
+transition={{
+duration:0.8
+}}
+
+className="
+hidden
+lg:block
+"
+
+>
+
+
+<h1
+
+className="
+text-6xl
+font-bold
+text-white
+leading-tight
+"
+
+>
+
+Welcome to
+
+<span
+
+className="
+block
+text-teal-400
+"
+
+>
+
+Skating Academy
+
+</span>
+
+
+</h1>
+
+
+
+
+
+<p
+
+className="
+mt-6
+text-slate-300
+text-lg
+leading-8
+"
+
+>
+
+Manage students, coaches, attendance,
+fees and competitions through one
+modern management system.
+
+</p>
+
+
+
+
+
+
+<div
+
+className="
+mt-10
+space-y-4
+"
+
+>
+
+
+
+{
+
+[
+"Professional Coaches",
+"Smart Student Management",
+"Attendance & Fee Tracking"
+
+].map(item=>(
+
+
+<div
+
+key={item}
+
+className="
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<div
+
+className="
+w-3
+h-3
+rounded-full
+bg-teal-400
+"
+
+/>
+
+
+
+<p className="text-white">
+
+{item}
+
+</p>
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+</motion.div>
+
+
+
+
+
+
+
+
+
+{/* LOGIN CARD */}
+
+
+
+<AuthCard>
+
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-teal-500/20
+rounded-3xl
+p-10
+shadow-2xl
+"
+
+>
+
+
+
+<motion.h2
+
+initial={{
+opacity:0,
+y:-15
+}}
+
+animate={{
+opacity:1,
+y:0
+}}
+
+className="
+text-3xl
+font-bold
+text-center
+text-white
+"
+
+>
+
+Welcome Back
+
+</motion.h2>
+
+
+
+
+
+<p
+
+className="
+text-center
+text-slate-400
+mt-2
+mb-8
+"
+
+>
+
+Sign in to continue
+
+</p>
+
+
+
+
+
+
+<form
+
+onSubmit={handleLogin}
+
+className="
+space-y-5
+"
+
+>
+
+
+
+
+
+
+<AuthInput
+
+icon={Mail}
+
+type="email"
+
+placeholder="Enter Email"
+
+value={email}
+
+onChange={(e)=>setEmail(e.target.value)}
+
+/>
+
+
+
+
+
+
+
+
+
+<div className="relative">
+
+
+<AuthInput
+
+icon={Lock}
+
+type={
+showPassword
+?
+"text"
+:
+"password"
+}
+
+placeholder="Enter Password"
+
+value={password}
+
+onChange={(e)=>setPassword(e.target.value)}
+
+/>
+
+
+
+
+<button
+
+type="button"
+
+onClick={()=>setShowPassword(!showPassword)}
+
+className="
+absolute
+right-4
+top-1/2
+-translate-y-1/2
+text-slate-400
+hover:text-teal-400
+"
+
+>
+
+
+{
+
+showPassword
+
+?
+
+<EyeOff size={20}/>
+
+:
+
+<Eye size={20}/>
+
+}
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
+text-sm
+"
+
+>
+
+
+<label
+
+className="
+flex
+items-center
+gap-2
+text-slate-300
+"
+
+>
+
+
+<input
+
+type="checkbox"
+
+className="
+accent-teal-500
+"
+
+/>
+
+
+Remember Me
+
+
+</label>
+
+
+
+
+
+
+<Link
+
+to="/forgot-password"
+
+className="
+text-teal-400
+hover:text-teal-300
+"
+
+>
+
+Forgot Password?
+
+</Link>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<AuthButton type="submit">
+
+Login
+
+</AuthButton>
+
+
+
+
+
+
+
+
+<p
+
+className="
+text-center
+text-slate-400
+"
+
+>
+
+Don't have an account?{" "}
+
+
+
+<Link
+
+to="/register"
+
+className="
+text-teal-400
+font-semibold
+hover:text-teal-300
+"
+
+>
+
+Register
+
+</Link>
+
+
+
+</p>
+
+
+
+
+
+</form>
+
+
+
+
+
+</div>
+
+
+
+
+</AuthCard>
+
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+);
+
+
 }
