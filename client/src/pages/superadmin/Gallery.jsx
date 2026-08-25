@@ -16,7 +16,7 @@ export default function Gallery(){
 const [images,setImages]=useState([
 
 {
-title:"Training Session",
+title:"Training Session updated",
 category:"Training",
 url:"https://images.unsplash.com/photo-1547347298-4074fc3086f0"
 },
