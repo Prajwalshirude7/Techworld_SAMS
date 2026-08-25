@@ -1,57 +1,205 @@
 import {
-Search,
-User,
-MapPin,
-Calendar,
-CheckCircle,
-XCircle,
-Eye
+  Users,
+  Search,
+  Mail,
+  Phone,
+  MapPin,
+  GraduationCap,
+  Eye,
+  Trash2,
+  X
 } from "lucide-react";
 
-import {motion} from "framer-motion";
 
-import {useState} from "react";
+import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+
 
 
 export default function Students(){
 
 
+
 const [search,setSearch]=useState("");
 
+const [selectedStudent,setSelectedStudent]=useState(null);
 
 
-const students=[
-
-{
-name:"Rahul Sharma",
-email:"rahul@gmail.com",
-branch:"Pune Branch",
-program:"Professional Skating",
-date:"12 Aug 2026",
-status:"Active"
-},
+const [students,setStudents]=useState([]);
 
 
-{
-name:"Aarav Patil",
-email:"aarav@gmail.com",
-branch:"Mumbai Branch",
-program:"Beginner Program",
-date:"20 Aug 2026",
-status:"Active"
-},
 
 
-{
-name:"Riya Deshmukh",
-email:"riya@gmail.com",
-branch:"Nashik Branch",
-program:"Advanced Training",
-date:"18 Aug 2026",
-status:"Inactive"
+
+
+
+// LOAD APPROVED STUDENTS
+
+useEffect(()=>{
+
+
+const approvedStudent =
+
+JSON.parse(
+
+localStorage.getItem("admissionStudent") || "null"
+
+);
+
+
+
+
+
+if(!approvedStudent){
+
+setStudents([]);
+
+return;
+
 }
 
-];
+
+
+
+
+
+
+const formattedStudent = {
+
+
+id:1,
+
+
+name:
+approvedStudent.name
+||
+"Unknown",
+
+
+
+email:
+approvedStudent.email
+||
+"Not Available",
+
+
+
+phone:
+approvedStudent.phone
+||
+"Not Available",
+
+
+
+branch:
+approvedStudent.branch
+||
+"Not Assigned",
+
+
+
+program:
+approvedStudent.program
+||
+"Not Assigned",
+
+
+
+membership:
+
+approvedStudent.status==="Approved"
+
+?
+
+"Active"
+
+:
+
+"Inactive"
+
+
+
+};
+
+
+
+
+
+setStudents([formattedStudent]);
+
+
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+
+
+// DELETE STUDENT
+
+
+const deleteStudent=(id)=>{
+
+
+const updatedStudents =
+
+students.filter(
+
+(student)=>
+
+student.id!==id
+
+);
+
+
+
+setStudents(updatedStudents);
+
+
+
+localStorage.removeItem(
+"admissionStudent"
+);
+
+
+
+};
+
+
+
+
+
+
+
+
+
+const filteredStudents =
+
+students.filter((student)=>
+
+student.name
+
+.toLowerCase()
+
+.includes(
+
+search.toLowerCase()
+
+)
+
+);
+
+
+
+
 
 
 
@@ -66,7 +214,7 @@ className="
 min-h-screen
 bg-[#07131f]
 p-5
-sm:p-8
+sm:p-6
 lg:p-10
 text-white
 "
@@ -74,23 +222,18 @@ text-white
 >
 
 
+
+
+
+
+
+
+
 {/* HEADER */}
 
 
 
-<motion.div
-
-initial={{
-opacity:0,
-y:-20
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
-
->
+<div>
 
 
 <h1
@@ -103,9 +246,10 @@ font-black
 
 >
 
-Student Management
+Students Management
 
 </h1>
+
 
 
 <p
@@ -117,13 +261,163 @@ mt-2
 
 >
 
-View and manage all registered academy students.
+Manage registered students and academy members.
 
 </p>
 
 
-</motion.div>
+</div>
 
+
+
+
+
+
+
+
+
+{/* STUDENT COUNT */}
+
+
+
+<div
+
+className="
+mt-8
+grid
+grid-cols-1
+sm:grid-cols-3
+gap-5
+"
+
+>
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<p className="text-slate-400">
+
+Total Students
+
+</p>
+
+
+<h2 className="
+text-3xl
+font-black
+mt-2
+">
+
+{students.length}
+
+</h2>
+
+
+</div>
+
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<p className="text-slate-400">
+
+Active Members
+
+</p>
+
+
+<h2 className="
+text-3xl
+font-black
+mt-2
+text-green-400
+">
+
+{
+
+students.filter(
+
+(item)=>item.membership==="Active"
+
+).length
+
+}
+
+</h2>
+
+
+</div>
+
+
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<p className="text-slate-400">
+
+Inactive Members
+
+</p>
+
+
+<h2 className="
+text-3xl
+font-black
+mt-2
+text-yellow-400
+">
+
+{
+
+students.filter(
+
+(item)=>item.membership==="Inactive"
+
+).length
+
+}
+
+</h2>
+
+
+</div>
+
+
+
+</div>
 
 
 
@@ -169,28 +463,36 @@ px-4
 
 <Search
 
-className="
-text-slate-400
-"
+size={20}
+
+className="text-slate-400"
 
 />
+
 
 
 <input
 
 
-placeholder="Search student name..."
+placeholder="Search student..."
 
 value={search}
 
-onChange={(e)=>setSearch(e.target.value)}
+
+onChange={(e)=>
+
+setSearch(e.target.value)
+
+}
+
 
 
 className="
-bg-transparent
 w-full
+bg-transparent
 outline-none
 py-3
+text-white
 "
 
 />
@@ -200,7 +502,6 @@ py-3
 </div>
 
 
-
 </div>
 
 
@@ -211,34 +512,134 @@ py-3
 
 
 
-{/* STUDENT TABLE */}
+{/* STUDENT CARDS */}
 
 
 
 <div
 
 className="
+grid
+grid-cols-1
+md:grid-cols-2
+xl:grid-cols-3
+gap-6
 mt-8
+"
+
+>
+
+
+{
+
+
+filteredStudents.map((student)=>(
+
+
+<motion.div
+
+
+key={student.id}
+
+
+whileHover={{
+y:-8
+}}
+
+
+
+className="
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-overflow-hidden
+p-6
 "
 
 >
+
+
 
 
 
 <div
 
 className="
-p-6
-border-b
-border-slate-700
+flex
+justify-between
+items-start
 "
 
 >
+
+
+<div
+
+className="
+bg-teal-500/20
+p-4
+rounded-2xl
+"
+
+>
+
+
+<Users
+
+size={32}
+
+className="
+text-teal-400
+"
+
+/>
+
+
+</div>
+
+
+
+
+
+
+<span
+
+className={`
+px-4
+py-2
+rounded-full
+text-sm
+
+${
+student.membership==="Active"
+
+?
+
+"bg-green-500/20 text-green-400"
+
+:
+
+"bg-yellow-500/20 text-yellow-400"
+
+}
+
+`}
+
+>
+
+{student.membership}
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
 
 
 <h2
@@ -246,459 +647,226 @@ border-slate-700
 className="
 text-xl
 font-bold
+mt-6
 "
 
 >
 
-Registered Students
+{student.name}
 
 </h2>
 
 
-</div>
 
 
 
 
-
-
-
-
-
-{/* DESKTOP */}
 
 
 
 <div
 
 className="
-hidden
-lg:block
-overflow-x-auto
+mt-5
+space-y-4
+text-slate-300
 "
 
 >
 
-
-<table
-
-className="
-w-full
-"
-
->
-
-
-<thead
-
-className="
-bg-[#07131f]
-text-slate-400
-"
-
->
-
-<tr>
-
-
-<th className="p-4 text-left">
-Student
-</th>
-
-
-<th className="p-4 text-left">
-Branch
-</th>
-
-
-<th className="p-4 text-left">
-Program
-</th>
-
-
-<th className="p-4 text-left">
-Joined
-</th>
-
-
-<th className="p-4 text-left">
-Status
-</th>
-
-
-<th className="p-4 text-left">
-Action
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-<tbody>
-
-
-{
-
-students
-
-.filter((student)=>
-
-student.name
-.toLowerCase()
-.includes(search.toLowerCase())
-
-)
-
-.map((student,index)=>(
-
-
-<tr
-
-key={index}
-
-className="
-border-t
-border-slate-700
-"
-
->
-
-
-<td className="p-4">
-
-
-<div>
 
 
 <p className="
-font-bold
-">
-
-{student.name}
-
-</p>
-
-
-<p className="
-text-slate-400
-text-sm
-">
-
-{student.email}
-
-</p>
-
-
-</div>
-
-
-</td>
-
-
-
-
-<td className="p-4">
-
-
-<div className="
 flex
 items-center
-gap-2
+gap-3
 ">
 
-<MapPin size={16}/>
+<Mail
 
-{student.branch}
+size={18}
 
-</div>
-
-
-</td>
-
-
-
-
-<td className="p-4">
-
-{student.program}
-
-</td>
-
-
-
-<td className="p-4">
-
-<div className="
-flex
-items-center
-gap-2
-">
-
-<Calendar size={16}/>
-
-{student.date}
-
-</div>
-
-
-</td>
-
-
-
-
-<td className="p-4">
-
-
-{
-
-student.status==="Active"
-
-?
-
-<div className="
-flex
-items-center
-gap-2
-text-green-400
-">
-
-<CheckCircle size={16}/>
-
-Active
-
-</div>
-
-:
-
-<div className="
-flex
-items-center
-gap-2
-text-red-400
-">
-
-<XCircle size={16}/>
-
-Inactive
-
-</div>
-
-
-}
-
-
-</td>
-
-
-
-
-<td className="p-4">
-
-
-<button
-
-className="
-bg-teal-500/20
-text-teal-400
-px-4
-py-2
-rounded-lg
-flex
-items-center
-gap-2
-"
-
->
-
-
-<Eye size={16}/>
-
-View
-
-</button>
-
-
-</td>
-
-
-
-</tr>
-
-
-))
-
-
-}
-
-
-
-</tbody>
-
-
-
-</table>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* MOBILE CARDS */}
-
-
-
-<div
-
-className="
-lg:hidden
-p-5
-space-y-5
-"
-
->
-
-
-{
-
-students.map((student,index)=>(
-
-
-<motion.div
-
-key={index}
-
-whileHover={{
-y:-5
-}}
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-2xl
-p-5
-"
-
->
-
-
-
-<div
-
-className="
-flex
-items-center
-gap-4
-"
-
->
-
-
-<div
-
-className="
-bg-teal-500/20
-p-3
-rounded-xl
-"
-
->
-
-
-<User
-
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
-</div>
-
-
-
-<div>
-
-
-<h3
-
-className="
-font-bold
-"
-
->
-
-{student.name}
-
-</h3>
-
-
-<p
-
-className="
-text-slate-400
-text-sm
-"
-
->
-
 {student.email}
 
 </p>
 
 
-</div>
-
-
-</div>
 
 
 
 
 
-<p className="mt-4">
+<p className="
+flex
+items-center
+gap-3
+">
 
-Branch: {student.branch}
+<Phone
+
+size={18}
+
+className="text-teal-400"
+
+/>
+
+
+{student.phone}
 
 </p>
 
 
-<p>
 
-Program: {student.program}
+
+
+
+
+
+<p className="
+flex
+items-center
+gap-3
+">
+
+<MapPin
+
+size={18}
+
+className="text-teal-400"
+
+/>
+
+
+{student.branch}
 
 </p>
+
+
+
+
+
+
+
+<p className="
+flex
+items-center
+gap-3
+">
+
+<GraduationCap
+
+size={18}
+
+className="text-teal-400"
+
+/>
+
+
+{student.program}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+flex
+gap-4
+mt-8
+"
+
+>
+
+
+<button
+
+
+onClick={()=>setSelectedStudent(student)}
+
+
+
+className="
+flex-1
+border
+border-slate-600
+rounded-xl
+py-3
+flex
+justify-center
+items-center
+gap-2
+hover:bg-slate-800
+"
+
+>
+
+
+<Eye size={18}/>
+
+View
+
+
+</button>
+
+
+
+
 
 
 
 <button
 
+
+onClick={()=>deleteStudent(student.id)}
+
+
+
 className="
-mt-5
-w-full
-bg-teal-500
-py-3
+flex-1
+bg-red-500/20
+text-red-400
 rounded-xl
-font-bold
+py-3
+flex
+justify-center
+items-center
+gap-2
 "
 
 >
 
-View Profile
+
+<Trash2 size={18}/>
+
+Remove
+
 
 </button>
+
+
+
+
+
+</div>
+
+
+
 
 
 
@@ -716,6 +884,130 @@ View Profile
 
 
 
+
+
+
+
+
+
+{/* EMPTY STATE */}
+
+
+
+{
+
+filteredStudents.length===0 &&
+
+
+<div
+
+className="
+mt-10
+text-center
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-10
+text-slate-400
+"
+
+>
+
+
+No approved students found.
+
+
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+{/* PROFILE MODAL */}
+
+
+
+
+{
+
+selectedStudent &&
+
+
+<div
+
+className="
+fixed
+inset-0
+bg-black/60
+flex
+items-center
+justify-center
+p-5
+z-50
+"
+
+>
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-7
+w-full
+max-w-lg
+"
+
+>
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
+"
+
+>
+
+
+<h2 className="
+text-2xl
+font-bold
+">
+
+Student Profile
+
+</h2>
+
+
+
+
+<button
+
+onClick={()=>setSelectedStudent(null)}
+
+>
+
+<X/>
+
+</button>
+
+
+
 </div>
 
 
@@ -723,9 +1015,141 @@ View Profile
 
 
 
+
+<div
+
+className="
+mt-6
+space-y-4
+text-slate-300
+"
+
+>
+
+
+<p>
+Name:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.name}
+
+</span>
+
+</p>
+
+
+
+<p>
+Email:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.email}
+
+</span>
+
+</p>
+
+
+
+
+<p>
+Phone:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.phone}
+
+</span>
+
+</p>
+
+
+
+
+<p>
+Branch:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.branch}
+
+</span>
+
+</p>
+
+
+
+
+<p>
+Program:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.program}
+
+</span>
+
+</p>
+
+
+
+
+<p>
+Membership:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.membership}
+
+</span>
+
+</p>
+
+
+
 </div>
 
 
-)
+
+</div>
+
+
+</div>
+
+
+}
+
+
+
+</div>
+
+
+);
 
 }

@@ -1,12 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 
-// Public Pages
+// ================= PUBLIC PAGES =================
+
 import Home from "./pages/public/Home";
 import Programs from "./pages/public/Programs";
 
 
-// Auth Pages
+// ================= AUTH PAGES =================
+
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
@@ -14,34 +16,51 @@ import VerifyOTP from "./pages/auth/VerifyOTP";
 import ResetPassword from "./pages/auth/ResetPassword";
 
 
-// Student Pages
+// ================= STUDENT PAGES =================
+
 import StudentDashboard from "./pages/student/StudentDashboard";
 import Admission from "./pages/student/admission/Admission";
 
 
-// Super Admin Pages
+// ================= SUPER ADMIN PAGES =================
+
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+
 import Admissions from "./pages/superadmin/Admissions";
+import AdmissionDetails from "./pages/superadmin/AdmissionDetails";
+
 import Branches from "./pages/superadmin/Branches";
 import BranchAdmins from "./pages/superadmin/BranchAdmins";
 import Students from "./pages/superadmin/Students";
+
 import Gallery from "./pages/superadmin/Gallery";
 import Announcements from "./pages/superadmin/Announcements";
+
 import Payments from "./pages/superadmin/Payments";
+
 import Products from "./pages/superadmin/Products";
+
 import Reports from "./pages/superadmin/Reports";
+
 import Settings from "./pages/superadmin/Settings";
 
+import Subscriptions from "./pages/superadmin/Subscriptions";
 
-// Protected Route
+import ProgramsManagement from "./pages/superadmin/Programs";
+
+
+// ================= PROTECTED ROUTE =================
+
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 
 
-function App() {
 
 
-return (
+function App(){
+
+
+return(
 
 <BrowserRouter>
 
@@ -50,8 +69,7 @@ return (
 
 
 
-{/* ================= PUBLIC ROUTES ================= */}
-
+{/* ================= PUBLIC ================= */}
 
 
 <Route
@@ -74,8 +92,11 @@ element={<Programs />}
 
 
 
-{/* ================= AUTH ROUTES ================= */}
 
+
+
+
+{/* ================= AUTH ================= */}
 
 
 <Route
@@ -131,7 +152,8 @@ element={<ResetPassword />}
 
 
 
-{/* ================= STUDENT ROUTES ================= */}
+
+{/* ================= STUDENT ================= */}
 
 
 
@@ -150,6 +172,7 @@ element={
 }
 
 />
+
 
 
 
@@ -176,8 +199,10 @@ element={
 
 
 
-{/* ================= SUPER ADMIN ROUTES ================= */}
 
+
+
+{/* ================= SUPER ADMIN ================= */}
 
 
 
@@ -192,6 +217,8 @@ element={<SuperAdminDashboard />}
 
 
 
+
+
 <Route
 
 path="/super-admin/admissions"
@@ -199,6 +226,21 @@ path="/super-admin/admissions"
 element={<Admissions />}
 
 />
+
+
+
+
+
+<Route
+
+path="/super-admin/admission-details"
+
+element={<AdmissionDetails />}
+
+/>
+
+
+
 
 
 
@@ -212,6 +254,8 @@ element={<Branches />}
 
 
 
+
+
 <Route
 
 path="/super-admin/branch-admins"
@@ -219,6 +263,8 @@ path="/super-admin/branch-admins"
 element={<BranchAdmins />}
 
 />
+
+
 
 
 
@@ -232,6 +278,9 @@ element={<Students />}
 
 
 
+
+
+
 <Route
 
 path="/super-admin/gallery"
@@ -239,6 +288,9 @@ path="/super-admin/gallery"
 element={<Gallery />}
 
 />
+
+
+
 
 
 
@@ -252,6 +304,9 @@ element={<Announcements />}
 
 
 
+
+
+
 <Route
 
 path="/super-admin/payments"
@@ -259,6 +314,9 @@ path="/super-admin/payments"
 element={<Payments />}
 
 />
+
+
+
 
 
 
@@ -272,6 +330,9 @@ element={<Products />}
 
 
 
+
+
+
 <Route
 
 path="/super-admin/reports"
@@ -282,6 +343,9 @@ element={<Reports />}
 
 
 
+
+
+
 <Route
 
 path="/super-admin/settings"
@@ -289,6 +353,36 @@ path="/super-admin/settings"
 element={<Settings />}
 
 />
+
+
+
+
+
+
+
+<Route
+
+path="/super-admin/subscriptions"
+
+element={<Subscriptions />}
+
+/>
+
+
+
+
+
+
+
+<Route
+
+path="/super-admin/programs"
+
+element={<ProgramsManagement />}
+
+/>
+
+
 
 
 

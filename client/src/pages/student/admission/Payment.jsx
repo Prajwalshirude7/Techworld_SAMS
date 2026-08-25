@@ -5,18 +5,28 @@ import toast from "react-hot-toast";
 import scanner from "../../../assets/images/scanner.png";
 
 
+
 export default function Payment({
 
-data,
+formData,
+
 updateData
 
 }) {
 
 
+
 const navigate = useNavigate();
 
 
-const [paymentMethod,setPaymentMethod]=useState("");
+
+const [paymentMethod,setPaymentMethod]=useState(
+
+formData?.paymentMethod || ""
+
+);
+
+
 
 
 
@@ -42,39 +52,60 @@ paymentMethod:method
 
 
 
+
+
+
 const submitApplication=()=>{
 
 
+
 if(!paymentMethod){
+
 
 toast.error(
 "Please select payment method"
 );
 
+
 return;
+
 
 }
 
 
 
 
+
 const applicationData={
 
-...data,
+
+id:Date.now(),
+
+
+...formData,
+
 
 paymentMethod,
 
+
 status:"Pending Approval",
 
+
+
 submittedAt:
+
 new Date().toLocaleDateString()
+
 
 };
 
 
 
 
-// Save application data
+
+
+
+// Save current student's application
 
 localStorage.setItem(
 
@@ -86,9 +117,82 @@ JSON.stringify(applicationData)
 
 
 
-toast.success(
-"Application submitted successfully!"
+
+
+
+
+
+// Save for Super Admin list
+
+
+const oldApplications =
+
+JSON.parse(
+
+localStorage.getItem("admissionApplications")
+||
+"[]"
+
 );
+
+
+
+
+
+const updatedApplications=[
+
+
+...oldApplications,
+
+
+applicationData
+
+
+];
+
+
+
+
+
+localStorage.setItem(
+
+"admissionApplications",
+
+JSON.stringify(updatedApplications)
+
+);
+
+
+
+
+
+
+
+
+
+// Dashboard status
+
+
+localStorage.setItem(
+
+"admissionStatus",
+
+"Pending Approval"
+
+);
+
+
+
+
+
+
+
+toast.success(
+
+"Application submitted successfully!"
+
+);
+
 
 
 
@@ -112,10 +216,18 @@ navigate("/student/dashboard");
 
 
 
+
+
 return(
 
-<div className="space-y-6">
 
+<div
+
+className="
+space-y-6
+"
+
+>
 
 
 
@@ -159,6 +271,7 @@ space-y-6
 
 
 
+
 <h3
 
 className="
@@ -185,10 +298,14 @@ Choose Payment Method
 
 
 
+
 <div
 
 
-onClick={()=>selectPayment("Online Payment")}
+onClick={()=>selectPayment(
+"Online Payment"
+)}
+
 
 
 className={`
@@ -198,6 +315,7 @@ rounded-2xl
 border
 p-5
 transition
+
 
 ${
 paymentMethod==="Online Payment"
@@ -212,9 +330,8 @@ paymentMethod==="Online Payment"
 
 }
 
-`
+`}
 
-}
 
 
 >
@@ -235,10 +352,15 @@ Online Payment
 </h4>
 
 
-<p className="
+
+<p
+
+className="
 text-slate-400
 mt-2
-">
+"
+
+>
 
 Scan QR code and complete payment.
 
@@ -249,9 +371,11 @@ Scan QR code and complete payment.
 
 
 
+
 {
 
 paymentMethod==="Online Payment" &&
+
 
 
 <div
@@ -267,9 +391,13 @@ justify-center
 
 <img
 
+
 src={scanner}
 
+
 alt="Payment Scanner"
+
+
 
 className="
 w-52
@@ -277,14 +405,15 @@ sm:w-64
 rounded-xl
 "
 
+
 />
+
 
 
 </div>
 
 
 }
-
 
 
 
@@ -306,7 +435,12 @@ rounded-xl
 <div
 
 
-onClick={()=>selectPayment("Cash Payment")}
+
+onClick={()=>selectPayment(
+"Cash Payment"
+)}
+
+
 
 
 className={`
@@ -331,12 +465,12 @@ paymentMethod==="Cash Payment"
 
 }
 
-`
+`}
 
-}
 
 
 >
+
 
 
 <h4
@@ -355,6 +489,7 @@ Cash Payment
 
 
 
+
 <p
 
 className="
@@ -367,6 +502,7 @@ mt-2
 Pay directly at academy branch.
 
 </p>
+
 
 
 
@@ -386,6 +522,7 @@ Pay directly at academy branch.
 onClick={submitApplication}
 
 
+
 className="
 w-full
 bg-teal-500
@@ -396,6 +533,7 @@ text-white
 font-bold
 transition
 "
+
 
 >
 
@@ -409,13 +547,18 @@ Submit Application
 
 
 
-</div>
-
-
 
 </div>
 
 
-)
+
+
+
+</div>
+
+
+
+);
+
 
 }

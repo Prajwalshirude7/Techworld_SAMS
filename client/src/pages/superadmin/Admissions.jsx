@@ -1,86 +1,287 @@
-import { 
-Users,
-Clock,
-CheckCircle,
-XCircle,
-Search
+import {
+  Search,
+  FileText,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+  MapPin,
+  Download,
+  Users
 } from "lucide-react";
 
+
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import generateReceipt from "../../utils/generateReceipt";
+
 
 
 export default function Admissions(){
 
 
+const navigate = useNavigate();
+
+
+
 const [search,setSearch] = useState("");
 
+const [status,setStatus] = useState("All");
+
+const [branch,setBranch] = useState("All");
+
+const [applications,setApplications] = useState([]);
 
 
-const applications=[
 
-{
-name:"Rahul Sharma",
-email:"rahul@gmail.com",
-branch:"Pune",
-program:"Professional Skating",
-date:"24 Aug 2026",
-status:"Pending"
-},
 
-{
-name:"Aarav Patil",
-email:"aarav@gmail.com",
-branch:"Mumbai",
-program:"Beginner Program",
-date:"22 Aug 2026",
-status:"Approved"
-},
 
-{
-name:"Riya Deshmukh",
-email:"riya@gmail.com",
-branch:"Pune",
-program:"Advanced Training",
-date:"20 Aug 2026",
-status:"Rejected"
+// LOAD APPLICATIONS
+
+useEffect(()=>{
+
+
+const data = JSON.parse(
+
+localStorage.getItem("admissionApplications")
+||
+"[]"
+
+);
+
+
+setApplications(data);
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+// UPDATE STATUS
+
+const updateStatus=(id,newStatus)=>{
+
+
+const updatedApplications = applications.map((item)=>{
+
+
+if(item.id===id){
+
+return{
+
+...item,
+
+status:newStatus
+
+};
+
 }
 
-];
+
+return item;
+
+
+});
+
+
+
+setApplications(updatedApplications);
+
+
+
+localStorage.setItem(
+
+"admissionApplications",
+
+JSON.stringify(updatedApplications)
+
+);
+
+
+
+};
+
+
+
+
+
+
+
+
+const approveApplication=(id)=>{
+
+updateStatus(id,"Approved");
+
+};
+
+
+
+const rejectApplication=(id)=>{
+
+updateStatus(id,"Rejected");
+
+};
+
+
+
+
+
+
+
+
+
+const filteredApplications = applications.filter((item)=>{
+
+
+const searchMatch =
+
+item.name
+?.toLowerCase()
+.includes(
+
+search.toLowerCase()
+
+);
+
+
+
+const statusMatch =
+
+status==="All"
+||
+item.status===status;
+
+
+
+const branchMatch =
+
+branch==="All"
+||
+item.branch===branch;
+
+
+
+return(
+
+searchMatch &&
+statusMatch &&
+branchMatch
+
+);
+
+
+});
+
+
+
+
+
+
+
+
+
+const statusStyle=(value)=>{
+
+
+if(value==="Approved")
+
+return "bg-green-500/20 text-green-400";
+
+
+if(value==="Rejected")
+
+return "bg-red-500/20 text-red-400";
+
+
+return "bg-yellow-500/20 text-yellow-400";
+
+
+};
+
+
+
+
+
+
 
 
 
 const stats=[
 
-{
-title:"Total Applications",
-value:"120",
-icon:Users,
-color:"text-teal-400"
-},
 
 {
-title:"Pending Requests",
-value:"45",
-icon:Clock,
-color:"text-yellow-400"
+title:"Total Applications",
+value:applications.length,
+icon:Users
 },
+
+
+{
+title:"Pending",
+value:
+
+applications.filter(
+
+x=>
+
+x.status==="Pending Approval"
+
+).length,
+
+icon:Clock
+
+},
+
+
 
 {
 title:"Approved",
-value:"65",
-icon:CheckCircle,
-color:"text-green-400"
+value:
+
+applications.filter(
+
+x=>
+
+x.status==="Approved"
+
+).length,
+
+icon:CheckCircle
+
 },
+
+
 
 {
 title:"Rejected",
-value:"10",
-icon:XCircle,
-color:"text-red-400"
+value:
+
+applications.filter(
+
+x=>
+
+x.status==="Rejected"
+
+).length,
+
+icon:XCircle
+
 }
 
+
 ];
+
+
+
+
 
 
 
@@ -94,32 +295,22 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-5
-sm:p-8
-lg:p-10
 text-white
+p-4
+sm:p-6
+lg:p-10
 "
 
 >
 
 
 
+
+
 {/* HEADER */}
 
 
-<motion.div
-
-initial={{
-opacity:0,
-y:-20
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
-
->
+<div>
 
 
 <h1
@@ -127,6 +318,7 @@ y:0
 className="
 text-3xl
 sm:text-4xl
+lg:text-5xl
 font-black
 "
 
@@ -151,7 +343,9 @@ Review, approve and manage student admission requests.
 </p>
 
 
-</motion.div>
+</div>
+
+
 
 
 
@@ -170,7 +364,7 @@ grid
 grid-cols-1
 sm:grid-cols-2
 lg:grid-cols-4
-gap-6
+gap-5
 mt-8
 "
 
@@ -193,7 +387,7 @@ return(
 key={index}
 
 whileHover={{
-y:-6
+y:-5
 }}
 
 className="
@@ -201,7 +395,7 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
@@ -211,8 +405,8 @@ p-6
 
 className="
 flex
-items-center
 justify-between
+items-center
 "
 
 >
@@ -220,10 +414,12 @@ justify-between
 
 <div>
 
+
 <p
 
 className="
 text-slate-400
+text-sm
 "
 
 >
@@ -231,6 +427,7 @@ text-slate-400
 {item.title}
 
 </p>
+
 
 
 <h2
@@ -252,13 +449,31 @@ mt-2
 
 
 
+
+<div
+
+className="
+bg-teal-500/20
+p-3
+rounded-xl
+"
+
+>
+
+
 <Icon
 
-size={35}
+size={25}
 
-className={item.color}
+className="
+text-teal-400
+"
 
 />
+
+
+</div>
+
 
 
 </div>
@@ -268,7 +483,6 @@ className={item.color}
 
 
 )
-
 
 })
 
@@ -285,22 +499,28 @@ className={item.color}
 
 
 
-{/* SEARCH */}
+{/* FILTER */}
 
 
 
 <div
 
 className="
-mt-10
+mt-8
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-5
+p-4
+sm:p-6
+grid
+grid-cols-1
+md:grid-cols-3
+gap-4
 "
 
 >
+
 
 
 <div
@@ -318,37 +538,131 @@ px-4
 
 >
 
+
 <Search
 
-className="
-text-slate-400
-"
+size={20}
+
+className="text-slate-400"
 
 />
 
 
+
 <input
+
+placeholder="Search student..."
 
 value={search}
 
-onChange={(e)=>setSearch(e.target.value)}
+onChange={(e)=>
+setSearch(e.target.value)
+}
 
-placeholder="Search student..."
 
 className="
 w-full
 bg-transparent
 outline-none
 py-3
-text-white
 "
 
-/>
+ />
 
 
 </div>
 
 
+
+
+
+
+
+<select
+
+value={status}
+
+onChange={(e)=>setStatus(e.target.value)}
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+py-3
+"
+
+>
+
+
+<option value="All">
+All Status
+</option>
+
+<option value="Pending Approval">
+Pending
+</option>
+
+<option value="Approved">
+Approved
+</option>
+
+<option value="Rejected">
+Rejected
+</option>
+
+
+</select>
+
+
+
+
+
+
+
+
+<select
+
+value={branch}
+
+onChange={(e)=>setBranch(e.target.value)}
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+py-3
+"
+
+>
+
+
+<option value="All">
+All Branches
+</option>
+
+
+<option>
+Pune Camp
+</option>
+
+
+<option>
+Mumbai Central
+</option>
+
+
+<option>
+Nashik Road
+</option>
+
+
+</select>
+
+
 </div>
 
 
@@ -359,7 +673,7 @@ text-white
 
 
 
-{/* APPLICATIONS */}
+{/* CARDS */}
 
 
 
@@ -367,203 +681,131 @@ text-white
 
 className="
 mt-8
+grid
+grid-cols-1
+sm:grid-cols-2
+xl:grid-cols-3
+gap-6
+"
+
+>
+
+
+{
+
+filteredApplications.length===0 &&
+
+<div
+
+className="
+col-span-full
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-overflow-hidden
-"
-
->
-
-
-
-<div
-
-className="
-p-6
-border-b
-border-slate-700
-"
-
->
-
-
-<h2
-
-className="
-text-xl
-font-bold
-"
-
->
-
-Admission Requests
-
-</h2>
-
-
-</div>
-
-
-
-
-
-
-
-{/* DESKTOP TABLE */}
-
-
-
-<div
-
-className="
-hidden
-lg:block
-overflow-x-auto
-"
-
->
-
-
-<table
-
-className="
-w-full
-"
-
->
-
-
-<thead
-
-className="
-bg-[#07131f]
+p-10
+text-center
 text-slate-400
 "
 
 >
 
-<tr>
+No admission applications found.
 
-<th className="p-4 text-left">
-Student
-</th>
+</div>
 
-<th className="p-4 text-left">
-Branch
-</th>
 
-<th className="p-4 text-left">
-Program
-</th>
-
-<th className="p-4 text-left">
-Date
-</th>
-
-<th className="p-4 text-left">
-Status
-</th>
-
-<th className="p-4 text-left">
-Action
-</th>
-
-</tr>
-
-</thead>
+}
 
 
 
-<tbody>
+
 
 
 {
 
-applications
-
-.filter((item)=>
-
-item.name
-.toLowerCase()
-.includes(search.toLowerCase())
-
-)
-
-.map((item,index)=>(
+filteredApplications.map((item)=>(
 
 
-<tr
+<motion.div
 
-key={index}
+
+key={item.id}
+
+
+whileHover={{
+y:-6
+}}
+
 
 className="
-border-t
+bg-[#102235]
+border
 border-slate-700
+rounded-3xl
+p-5
+flex
+flex-col
+justify-between
+"
+
+
+>
+
+
+<div>
+
+
+<div
+
+className="
+flex
+justify-between
+items-start
 "
 
 >
 
 
-<td className="p-4">
+<div
 
-<div>
+className="
+bg-teal-500/20
+p-4
+rounded-2xl
+"
 
-<p className="font-bold">
+>
 
-{item.name}
 
-</p>
+<FileText
 
-<p className="text-sm text-slate-400">
+size={28}
 
-{item.email}
+className="
+text-teal-400
+"
 
-</p>
+/>
+
 
 </div>
 
-</td>
 
 
 
-<td className="p-4">
 
-{item.branch}
-
-</td>
-
-
-
-<td className="p-4">
-
-{item.program}
-
-</td>
-
-
-
-<td className="p-4">
-
-{item.date}
-
-</td>
-
-
-
-<td className="p-4">
 
 <span
 
-className="
-px-3
-py-1
+className={`
+px-4
+py-2
 rounded-full
 text-sm
-bg-yellow-500/20
-text-yellow-400
-"
+font-semibold
+${statusStyle(item.status)}
+`}
 
 >
 
@@ -571,66 +813,6 @@ text-yellow-400
 
 </span>
 
-</td>
-
-
-
-<td className="p-4">
-
-
-<button
-
-className="
-bg-green-500
-px-4
-py-2
-rounded-lg
-mr-2
-font-bold
-"
-
->
-
-Approve
-
-</button>
-
-
-<button
-
-className="
-bg-red-500
-px-4
-py-2
-rounded-lg
-font-bold
-"
-
->
-
-Reject
-
-</button>
-
-
-</td>
-
-
-
-</tr>
-
-
-))
-
-
-}
-
-
-
-</tbody>
-
-
-</table>
 
 
 </div>
@@ -641,126 +823,307 @@ Reject
 
 
 
-
-
-{/* MOBILE CARDS */}
-
-
-
-<div
+<h2
 
 className="
-lg:hidden
-p-5
-space-y-5
-"
-
->
-
-
-{
-
-applications.map((item,index)=>(
-
-
-<div
-
-key={index}
-
-className="
-bg-[#07131f]
-rounded-2xl
-p-5
-border
-border-slate-700
-"
-
->
-
-
-<h3
-
-className="
+text-2xl
 font-bold
-text-lg
+mt-6
 "
 
 >
 
 {item.name}
 
-</h3>
+</h2>
 
 
-<p className="text-slate-400">
+
+<p
+
+className="
+text-slate-400
+break-all
+"
+
+>
 
 {item.email}
 
 </p>
 
 
-<p className="mt-3">
-
-Branch: {item.branch}
-
-</p>
 
 
-<p>
 
-Program: {item.program}
-
-</p>
 
 
 <div
 
 className="
-flex
-gap-3
-mt-5
+mt-6
+space-y-4
 "
 
 >
+
+
+<p className="
+flex
+gap-3
+items-center
+">
+
+<MapPin
+
+size={18}
+
+className="text-teal-400"
+
+/>
+
+
+{item.branch || "Not Assigned"}
+
+</p>
+
+
+
+
+
+<p>
+
+<span className="text-slate-400">
+
+Program:
+
+</span>
+
+
+<span className="ml-2">
+
+{item.program || "Not Assigned"}
+
+</span>
+
+</p>
+
+
+
+
+
+<p>
+
+<span className="text-slate-400">
+
+Applied:
+
+</span>
+
+
+<span className="ml-2">
+
+{item.submittedAt || "N/A"}
+
+</span>
+
+</p>
+
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+mt-8
+flex
+gap-3
+flex-wrap
+"
+
+>
+
+
+
+
+
 
 <button
 
+
+onClick={()=>navigate(
+
+"/super-admin/admission-details",
+
+{
+
+state:{
+student:item
+}
+
+}
+
+)}
+
+
 className="
-bg-green-500
-px-4
-py-2
-rounded-lg
-font-bold
+flex-1
+h-12
+rounded-xl
+border
+border-slate-600
+flex
+items-center
+justify-center
+gap-2
+hover:bg-slate-800
 "
 
 >
+
+
+<Eye size={18}/>
+
+View
+
+
+</button>
+
+
+
+
+
+
+
+
+{
+
+item.status==="Pending Approval" &&
+
+<>
+
+
+<button
+
+onClick={()=>approveApplication(item.id)}
+
+className="
+flex-1
+h-12
+rounded-xl
+bg-green-500
+flex
+items-center
+justify-center
+gap-2
+font-semibold
+"
+
+>
+
+<CheckCircle size={18}/>
 
 Approve
 
 </button>
 
 
+
+
 <button
 
+onClick={()=>rejectApplication(item.id)}
+
 className="
+flex-1
+h-12
+rounded-xl
 bg-red-500
-px-4
-py-2
-rounded-lg
-font-bold
+flex
+items-center
+justify-center
+gap-2
+font-semibold
 "
 
 >
 
+
+<XCircle size={18}/>
+
 Reject
+
 
 </button>
 
 
+</>
+
+}
+
+
+
+
+
+
+
+{
+
+item.status==="Approved" &&
+
+
+<button
+
+
+onClick={()=>generateReceipt(item)}
+
+
+className="
+flex-1
+h-12
+rounded-xl
+bg-teal-500
+flex
+items-center
+justify-center
+gap-2
+font-semibold
+"
+
+>
+
+
+<Download size={18}/>
+
+Receipt
+
+
+</button>
+
+
+}
+
+
+
 </div>
 
 
-</div>
+
+
+
+</motion.div>
 
 
 ))
@@ -773,17 +1136,16 @@ Reject
 
 
 
+
+
+
+
+
+
 </div>
 
 
+);
 
-
-
-
-
-</div>
-
-
-)
 
 }
