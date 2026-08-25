@@ -25,18 +25,28 @@ import Admission from "./pages/student/admission/Admission";
 // ================= SUPER ADMIN PAGES =================
 
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+
 import Admissions from "./pages/superadmin/Admissions";
 import AdmissionDetails from "./pages/superadmin/AdmissionDetails";
 
 import Branches from "./pages/superadmin/Branches";
 import BranchAdmins from "./pages/superadmin/BranchAdmins";
 import Students from "./pages/superadmin/Students";
+
 import Gallery from "./pages/superadmin/Gallery";
 import Announcements from "./pages/superadmin/Announcements";
+
 import Payments from "./pages/superadmin/Payments";
+
 import Products from "./pages/superadmin/Products";
+
 import Reports from "./pages/superadmin/Reports";
+
 import Settings from "./pages/superadmin/Settings";
+
+import Subscriptions from "./pages/superadmin/Subscriptions";
+
+import ProgramsManagement from "./pages/superadmin/Programs";
 
 
 // ================= PROTECTED ROUTE =================
@@ -63,15 +73,24 @@ return(
 
 
 <Route
+
 path="/"
+
 element={<Home />}
+
 />
+
 
 
 <Route
+
 path="/programs"
+
 element={<Programs />}
+
 />
+
+
 
 
 
@@ -81,32 +100,51 @@ element={<Programs />}
 
 
 <Route
+
 path="/login"
+
 element={<Login />}
+
 />
 
 
+
 <Route
+
 path="/register"
+
 element={<Register />}
+
 />
 
 
+
 <Route
+
 path="/forgot-password"
+
 element={<ForgotPassword />}
+
 />
 
 
+
 <Route
+
 path="/verify-otp"
+
 element={<VerifyOTP />}
+
 />
 
 
+
 <Route
+
 path="/reset-password"
+
 element={<ResetPassword />}
+
 />
 
 
@@ -138,6 +176,7 @@ element={
 
 
 
+
 <Route
 
 path="/admission"
@@ -161,6 +200,8 @@ element={
 
 
 
+
+
 {/* ================= SUPER ADMIN ================= */}
 
 
@@ -176,6 +217,8 @@ element={<SuperAdminDashboard />}
 
 
 
+
+
 <Route
 
 path="/super-admin/admissions"
@@ -183,6 +226,7 @@ path="/super-admin/admissions"
 element={<Admissions />}
 
 />
+
 
 
 
@@ -198,6 +242,8 @@ element={<AdmissionDetails />}
 
 
 
+
+
 <Route
 
 path="/super-admin/branches"
@@ -205,6 +251,7 @@ path="/super-admin/branches"
 element={<Branches />}
 
 />
+
 
 
 
@@ -220,6 +267,7 @@ element={<BranchAdmins />}
 
 
 
+
 <Route
 
 path="/super-admin/students"
@@ -227,6 +275,8 @@ path="/super-admin/students"
 element={<Students />}
 
 />
+
+
 
 
 
@@ -242,6 +292,8 @@ element={<Gallery />}
 
 
 
+
+
 <Route
 
 path="/super-admin/announcements"
@@ -249,6 +301,8 @@ path="/super-admin/announcements"
 element={<Announcements />}
 
 />
+
+
 
 
 
@@ -264,6 +318,8 @@ element={<Payments />}
 
 
 
+
+
 <Route
 
 path="/super-admin/products"
@@ -271,6 +327,8 @@ path="/super-admin/products"
 element={<Products />}
 
 />
+
+
 
 
 
@@ -286,6 +344,8 @@ element={<Reports />}
 
 
 
+
+
 <Route
 
 path="/super-admin/settings"
@@ -294,6 +354,33 @@ element={<Settings />}
 
 />
 
+
+
+
+
+
+
+<Route
+
+path="/super-admin/subscriptions"
+
+element={<Subscriptions />}
+
+/>
+
+
+
+
+
+
+
+<Route
+
+path="/super-admin/programs"
+
+element={<ProgramsManagement />}
+
+/>
 
 
 

@@ -93,6 +93,14 @@ localStorage.setItem(
 JSON.stringify(user)
 );
 
+// Clear previous student's admission data
+
+localStorage.removeItem("admissionStatus");
+
+localStorage.removeItem("admissionApplication");
+
+localStorage.removeItem("admissionStudent");
+
 
 
 localStorage.setItem(

@@ -19,6 +19,7 @@ import { useState, useEffect } from "react";
 export default function Students(){
 
 
+
 const [search,setSearch]=useState("");
 
 const [selectedStudent,setSelectedStudent]=useState(null);
@@ -31,51 +32,108 @@ const [students,setStudents]=useState([]);
 
 
 
-// LOAD REGISTERED STUDENTS
+
+// LOAD APPROVED STUDENTS
 
 useEffect(()=>{
 
 
-const storedStudents =
+const approvedStudent =
+
 JSON.parse(
-localStorage.getItem("students") || "[]"
+
+localStorage.getItem("admissionStudent") || "null"
+
 );
 
 
 
-const formattedStudents =
-
-storedStudents.map((student,index)=>(
 
 
-{
+if(!approvedStudent){
 
-id:index+1,
+setStudents([]);
 
-name:student.name || "Unknown",
-
-email:student.email || "Not Available",
-
-phone:student.phone || "Not Available",
-
-branch:student.branch || "Not Assigned",
-
-program:student.program || "Not Assigned",
-
-membership:"Inactive"
+return;
 
 }
 
 
-));
 
 
 
-setStudents(formattedStudents);
+
+
+const formattedStudent = {
+
+
+id:1,
+
+
+name:
+approvedStudent.name
+||
+"Unknown",
+
+
+
+email:
+approvedStudent.email
+||
+"Not Available",
+
+
+
+phone:
+approvedStudent.phone
+||
+"Not Available",
+
+
+
+branch:
+approvedStudent.branch
+||
+"Not Assigned",
+
+
+
+program:
+approvedStudent.program
+||
+"Not Assigned",
+
+
+
+membership:
+
+approvedStudent.status==="Approved"
+
+?
+
+"Active"
+
+:
+
+"Inactive"
+
+
+
+};
+
+
+
+
+
+setStudents([formattedStudent]);
+
+
 
 
 
 },[]);
+
+
 
 
 
@@ -96,6 +154,7 @@ const updatedStudents =
 students.filter(
 
 (student)=>
+
 student.id!==id
 
 );
@@ -106,16 +165,37 @@ setStudents(updatedStudents);
 
 
 
-localStorage.setItem(
-
-"students",
-
-JSON.stringify(updatedStudents)
-
+localStorage.removeItem(
+"admissionStudent"
 );
 
 
+
 };
+
+
+
+
+
+
+
+
+
+const filteredStudents =
+
+students.filter((student)=>
+
+student.name
+
+.toLowerCase()
+
+.includes(
+
+search.toLowerCase()
+
+)
+
+);
 
 
 
@@ -130,7 +210,6 @@ return(
 
 <div
 
-
 className="
 min-h-screen
 bg-[#07131f]
@@ -140,8 +219,8 @@ lg:p-10
 text-white
 "
 
-
 >
+
 
 
 
@@ -187,6 +266,156 @@ Manage registered students and academy members.
 </p>
 
 
+</div>
+
+
+
+
+
+
+
+
+
+{/* STUDENT COUNT */}
+
+
+
+<div
+
+className="
+mt-8
+grid
+grid-cols-1
+sm:grid-cols-3
+gap-5
+"
+
+>
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<p className="text-slate-400">
+
+Total Students
+
+</p>
+
+
+<h2 className="
+text-3xl
+font-black
+mt-2
+">
+
+{students.length}
+
+</h2>
+
+
+</div>
+
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<p className="text-slate-400">
+
+Active Members
+
+</p>
+
+
+<h2 className="
+text-3xl
+font-black
+mt-2
+text-green-400
+">
+
+{
+
+students.filter(
+
+(item)=>item.membership==="Active"
+
+).length
+
+}
+
+</h2>
+
+
+</div>
+
+
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<p className="text-slate-400">
+
+Inactive Members
+
+</p>
+
+
+<h2 className="
+text-3xl
+font-black
+mt-2
+text-yellow-400
+">
+
+{
+
+students.filter(
+
+(item)=>item.membership==="Inactive"
+
+).length
+
+}
+
+</h2>
+
+
+</div>
+
+
 
 </div>
 
@@ -198,12 +427,7 @@ Manage registered students and academy members.
 
 
 
-
-
-
-
 {/* SEARCH */}
-
 
 
 
@@ -237,7 +461,6 @@ px-4
 >
 
 
-
 <Search
 
 size={20}
@@ -248,18 +471,18 @@ className="text-slate-400"
 
 
 
-
 <input
 
 
 placeholder="Search student..."
 
-
 value={search}
 
 
 onChange={(e)=>
+
 setSearch(e.target.value)
+
 }
 
 
@@ -289,15 +512,11 @@ text-white
 
 
 
-
-
-
-{/* STUDENTS GRID */}
+{/* STUDENT CARDS */}
 
 
 
 <div
-
 
 className="
 grid
@@ -308,27 +527,13 @@ gap-6
 mt-8
 "
 
-
 >
-
 
 
 {
 
-students
 
-.filter((student)=>
-
-student.name
-.toLowerCase()
-.includes(
-search.toLowerCase()
-)
-
-)
-
-.map((student)=>(
-
+filteredStudents.map((student)=>(
 
 
 <motion.div
@@ -342,6 +547,7 @@ y:-8
 }}
 
 
+
 className="
 bg-[#102235]
 border
@@ -350,16 +556,13 @@ rounded-3xl
 p-6
 "
 
-
 >
 
 
 
 
 
-
 <div
-
 
 className="
 flex
@@ -371,7 +574,6 @@ items-start
 
 
 <div
-
 
 className="
 bg-teal-500/20
@@ -400,18 +602,28 @@ text-teal-400
 
 
 
-
 <span
 
-
-className="
+className={`
 px-4
 py-2
 rounded-full
 text-sm
-bg-yellow-500/20
-text-yellow-400
-"
+
+${
+student.membership==="Active"
+
+?
+
+"bg-green-500/20 text-green-400"
+
+:
+
+"bg-yellow-500/20 text-yellow-400"
+
+}
+
+`}
 
 >
 
@@ -430,9 +642,7 @@ text-yellow-400
 
 
 
-
 <h2
-
 
 className="
 text-xl
@@ -442,9 +652,7 @@ mt-6
 
 >
 
-
 {student.name}
-
 
 </h2>
 
@@ -452,8 +660,11 @@ mt-6
 
 
 
-<div
 
+
+
+
+<div
 
 className="
 mt-5
@@ -465,32 +676,23 @@ text-slate-300
 
 
 
-
-
-<p
-
-className="
+<p className="
 flex
 items-center
 gap-3
-"
-
->
+">
 
 <Mail
 
 size={18}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
 {student.email}
 
-
 </p>
 
 
@@ -499,31 +701,23 @@ text-teal-400
 
 
 
-<p
-
-className="
+<p className="
 flex
 items-center
 gap-3
-"
-
->
-
+">
 
 <Phone
 
 size={18}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
 {student.phone}
 
-
 </p>
 
 
@@ -532,32 +726,23 @@ text-teal-400
 
 
 
-<p
 
-className="
+<p className="
 flex
 items-center
 gap-3
-"
-
->
-
+">
 
 <MapPin
 
 size={18}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
-
 {student.branch}
-
-
 
 </p>
 
@@ -567,38 +752,24 @@ text-teal-400
 
 
 
-<p
-
-className="
+<p className="
 flex
 items-center
 gap-3
-"
-
->
-
-
+">
 
 <GraduationCap
 
 size={18}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
-
 {student.program}
 
-
-
-
 </p>
-
-
 
 
 
@@ -614,7 +785,6 @@ text-teal-400
 
 <div
 
-
 className="
 flex
 gap-4
@@ -624,11 +794,11 @@ mt-8
 >
 
 
-
 <button
 
 
 onClick={()=>setSelectedStudent(student)}
+
 
 
 className="
@@ -647,16 +817,12 @@ hover:bg-slate-800
 >
 
 
-
 <Eye size={18}/>
 
 View
 
 
-
 </button>
-
-
 
 
 
@@ -691,10 +857,7 @@ gap-2
 Remove
 
 
-
 </button>
-
-
 
 
 
@@ -710,12 +873,10 @@ Remove
 </motion.div>
 
 
-
 ))
 
 
 }
-
 
 
 
@@ -735,7 +896,7 @@ Remove
 
 {
 
-students.length===0 &&
+filteredStudents.length===0 &&
 
 
 <div
@@ -754,7 +915,7 @@ text-slate-400
 >
 
 
-No registered students found.
+No approved students found.
 
 
 
@@ -771,12 +932,7 @@ No registered students found.
 
 
 
-
-
-
-
 {/* PROFILE MODAL */}
-
 
 
 
@@ -787,7 +943,6 @@ selectedStudent &&
 
 
 <div
-
 
 className="
 fixed
@@ -805,7 +960,6 @@ z-50
 
 <div
 
-
 className="
 bg-[#102235]
 border
@@ -819,9 +973,7 @@ max-w-lg
 >
 
 
-
 <div
-
 
 className="
 flex
@@ -832,14 +984,10 @@ items-center
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-2xl
 font-bold
-"
-
->
+">
 
 Student Profile
 
@@ -847,20 +995,17 @@ Student Profile
 
 
 
+
 <button
 
-
-onClick={()=>
-setSelectedStudent(null)
-}
+onClick={()=>setSelectedStudent(null)}
 
 >
 
-
 <X/>
 
-
 </button>
+
 
 
 </div>
@@ -883,63 +1028,88 @@ text-slate-300
 
 
 <p>
-
 Name:
 
-<span className="text-white ml-2 font-bold">
+<span className="
+text-white
+font-bold
+ml-2
+">
 
 {selectedStudent.name}
 
 </span>
 
-
 </p>
 
 
 
-
 <p>
-
 Email:
 
-<span className="text-white ml-2 font-bold">
+<span className="
+text-white
+font-bold
+ml-2
+">
 
 {selectedStudent.email}
 
 </span>
 
-
 </p>
 
 
 
 
 <p>
-
 Phone:
 
-<span className="text-white ml-2 font-bold">
+<span className="
+text-white
+font-bold
+ml-2
+">
 
 {selectedStudent.phone}
 
 </span>
 
-
 </p>
 
 
 
 
 <p>
-
 Branch:
 
-<span className="text-white ml-2 font-bold">
+<span className="
+text-white
+font-bold
+ml-2
+">
 
 {selectedStudent.branch}
 
 </span>
 
+</p>
+
+
+
+
+<p>
+Program:
+
+<span className="
+text-white
+font-bold
+ml-2
+">
+
+{selectedStudent.program}
+
+</span>
 
 </p>
 
@@ -947,30 +1117,27 @@ Branch:
 
 
 <p>
+Membership:
 
-Program:
+<span className="
+text-white
+font-bold
+ml-2
+">
 
-<span className="text-white ml-2 font-bold">
-
-{selectedStudent.program}
+{selectedStudent.membership}
 
 </span>
-
 
 </p>
 
 
 
-
-
 </div>
 
 
 
-
-
 </div>
-
 
 
 </div>
@@ -984,6 +1151,5 @@ Program:
 
 
 );
-
 
 }

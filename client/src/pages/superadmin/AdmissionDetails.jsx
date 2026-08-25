@@ -12,13 +12,15 @@ import {
 import { motion } from "framer-motion";
 
 import {
-useNavigate,
-useLocation
+  useNavigate,
+  useLocation
 } from "react-router-dom";
 
-import { useState,useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import generateReceipt from "../../utils/generateReceipt";
+
+
 
 
 
@@ -30,68 +32,157 @@ const navigate = useNavigate();
 const location = useLocation();
 
 
-const studentData = location.state;
 
+
+// RECEIVE DATA
+
+const receivedStudent = location.state?.student;
+
+
+
+
+
+const [student,setStudent] = useState(null);
 
 
 const [status,setStatus] = useState(
-studentData?.status || "Pending"
+receivedStudent?.status || "Pending Approval"
 );
 
 
 
 
 
-const student = studentData || {
 
 
-name:"Rahul Sharma",
-
-email:"rahul@gmail.com",
-
-phone:"9876543210",
-
-dob:"12 March 2010",
-
-gender:"Male",
-
-address:"Pune Camp",
-
-city:"Pune",
-
-state:"Maharashtra",
-
-pincode:"411001",
-
-experience:"Beginner",
-
-program:"Professional Skating",
-
-branch:"Pune Camp",
-
-document:"Aadhar Card.pdf",
-
-status:"Pending"
-
-};
-
-
-
-
-
+// LOAD STUDENT DATA
 
 
 useEffect(()=>{
 
 
-if(!studentData){
+if(!receivedStudent){
 
 navigate("/super-admin/admissions");
+
+return;
 
 }
 
 
-},[]);
+
+const formattedStudent={
+
+...receivedStudent,
+
+
+phone:
+receivedStudent.phone || "N/A",
+
+
+dob:
+receivedStudent.dob || "N/A",
+
+
+gender:
+receivedStudent.gender || "N/A",
+
+
+address:
+receivedStudent.address || "N/A",
+
+
+city:
+receivedStudent.city || "",
+
+
+state:
+receivedStudent.state || "",
+
+
+pincode:
+receivedStudent.pincode || "",
+
+
+experience:
+receivedStudent.experience || "N/A",
+
+
+program:
+receivedStudent.program || "N/A",
+
+
+branch:
+receivedStudent.branch || "Not Assigned",
+
+
+
+document:
+
+typeof receivedStudent.document === "object"
+
+?
+
+receivedStudent.document?.name || "Uploaded Document"
+
+:
+
+receivedStudent.document || "No Document"
+
+
+
+
+};
+
+
+
+setStudent(formattedStudent);
+
+setStatus(
+formattedStudent.status
+);
+
+
+
+},[receivedStudent,navigate]);
+
+
+
+
+
+
+
+if(!student){
+
+return null;
+
+}
+
+
+
+
+
+
+
+const isPending =
+
+status==="Pending Approval"
+||
+status==="Pending";
+
+
+
+const isApproved =
+
+status==="Approved";
+
+
+
+const isRejected =
+
+status==="Rejected";
+
+
 
 
 
@@ -101,11 +192,8 @@ navigate("/super-admin/admissions");
 
 // UPDATE STATUS
 
+
 const updateAdmissionStatus=(newStatus)=>{
-
-
-setStatus(newStatus);
-
 
 
 const updatedStudent={
@@ -119,18 +207,44 @@ status:newStatus
 
 
 
-// Student dashboard data
+setStudent(updatedStudent);
+
+setStatus(newStatus);
+
+
+
+
 
 localStorage.setItem(
+
 "admissionStatus",
+
 newStatus
+
 );
+
+
 
 
 
 localStorage.setItem(
+
 "admissionStudent",
+
 JSON.stringify(updatedStudent)
+
+);
+
+
+
+
+
+localStorage.setItem(
+
+"admissionApplication",
+
+JSON.stringify(updatedStudent)
+
 );
 
 
@@ -138,12 +252,15 @@ JSON.stringify(updatedStudent)
 
 
 
-// Super admin data update
 
 
-const applications =
-JSON.parse(
-localStorage.getItem("admissionApplications") || "[]"
+
+const applications = JSON.parse(
+
+localStorage.getItem("admissionApplications")
+||
+"[]"
+
 );
 
 
@@ -152,17 +269,9 @@ localStorage.getItem("admissionApplications") || "[]"
 const updatedApplications = applications.map((item)=>{
 
 
-if(item.email === student.email){
+if(item.id===student.id){
 
-
-return{
-
-...item,
-
-status:newStatus
-
-};
-
+return updatedStudent;
 
 }
 
@@ -185,6 +294,7 @@ JSON.stringify(updatedApplications)
 
 
 
+
 };
 
 
@@ -198,13 +308,20 @@ JSON.stringify(updatedApplications)
 return(
 
 
-<div className="
+<div
+
+className="
 min-h-screen
 bg-[#07131f]
-p-5
-lg:p-10
 text-white
-">
+p-4
+sm:p-6
+lg:p-10
+"
+
+>
+
+
 
 
 
@@ -215,11 +332,15 @@ text-white
 {/* HEADER */}
 
 
-<div className="
+<div
+
+className="
 flex
 items-center
 gap-4
-">
+"
+
+>
 
 
 <button
@@ -230,6 +351,7 @@ className="
 bg-[#102235]
 p-3
 rounded-xl
+hover:bg-slate-800
 "
 
 >
@@ -243,21 +365,29 @@ rounded-xl
 
 <div>
 
-<h1 className="
+
+<h1
+
+className="
 text-3xl
 sm:text-4xl
 font-black
-">
+"
+
+>
 
 Admission Details
 
 </h1>
 
 
-<p className="
+<p
+
+className="
 text-slate-400
-mt-2
-">
+"
+
+>
 
 Review complete student application.
 
@@ -265,6 +395,7 @@ Review complete student application.
 
 
 </div>
+
 
 
 </div>
@@ -278,6 +409,7 @@ Review complete student application.
 
 
 {/* PROFILE */}
+
 
 
 <motion.div
@@ -298,38 +430,50 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
+sm:p-7
 "
 
 >
 
 
-<div className="
+
+<div
+
+className="
 flex
 flex-col
 sm:flex-row
 justify-between
 gap-5
-">
+"
+
+>
 
 
-<div className="
+<div
+
+className="
 flex
 items-center
-gap-5
-">
+gap-4
+"
+
+>
 
 
-<div className="
+<div
+
+className="
 bg-teal-500/20
-p-5
+p-4
 rounded-2xl
-">
+"
+
+>
 
 
 <User
-
-size={35}
 
 className="
 text-teal-400
@@ -346,19 +490,29 @@ text-teal-400
 <div>
 
 
-<h2 className="
+<h2
+
+className="
 text-2xl
 font-bold
-">
+"
+
+>
 
 {student.name}
 
 </h2>
 
 
-<p className="
+
+<p
+
+className="
 text-slate-400
-">
+break-all
+"
+
+>
 
 {student.email}
 
@@ -374,22 +528,28 @@ text-slate-400
 
 
 
-<span className={`
+
+
+<span
+
+className={`
 
 px-5
 py-2
 rounded-full
 font-bold
+w-fit
 
 ${
-status==="Approved"
+isApproved
 
 ?
+
 "bg-green-500/20 text-green-400"
 
 :
 
-status==="Rejected"
+isRejected
 
 ?
 
@@ -401,11 +561,14 @@ status==="Rejected"
 
 }
 
-`}>
+`}
+
+>
 
 {status}
 
 </span>
+
 
 
 </div>
@@ -424,17 +587,24 @@ status==="Rejected"
 {/* DETAILS */}
 
 
-<div className="
+
+<div
+
+className="
 grid
 grid-cols-1
 lg:grid-cols-2
 gap-6
 mt-6
-">
+"
+
+>
 
 
 
 
+
+{/* PERSONAL */}
 
 
 <div className="
@@ -458,71 +628,40 @@ Personal Information
 </h2>
 
 
-<div className="
-space-y-3
-text-slate-300
-">
-
-
 <p>
-
 Phone:
-
-<span className="
-text-white
-ml-2
-">
-
+<span className="ml-2 text-white">
 {student.phone}
-
 </span>
-
 </p>
 
 
-<p>
-
+<p className="mt-3">
 DOB:
-
-<span className="
-text-white
-ml-2
-">
-
+<span className="ml-2 text-white">
 {student.dob}
-
 </span>
-
 </p>
 
 
-<p>
-
+<p className="mt-3">
 Gender:
-
-<span className="
-text-white
-ml-2
-">
-
+<span className="ml-2 text-white">
 {student.gender}
-
 </span>
-
 </p>
 
 
 </div>
 
 
-</div>
 
 
 
 
 
 
-
+{/* ADDRESS */}
 
 
 <div className="
@@ -541,22 +680,17 @@ text-teal-400
 mb-5
 ">
 
-Address Details
+Address
 
 </h2>
-
 
 
 <div className="
 flex
 gap-3
-text-slate-300
 ">
 
-
-<MapPin className="
-text-teal-400
-"/>
+<MapPin className="text-teal-400"/>
 
 
 <p>
@@ -569,7 +703,7 @@ text-teal-400
 
 {student.state}
 
--
+<br/>
 
 {student.pincode}
 
@@ -586,6 +720,9 @@ text-teal-400
 
 
 
+
+
+{/* SKATING */}
 
 
 
@@ -614,10 +751,7 @@ Skating Details
 
 Program:
 
-<span className="
-text-white
-ml-2
-">
+<span className="ml-2 text-white">
 
 {student.program}
 
@@ -628,16 +762,11 @@ ml-2
 
 
 
-<p className="
-mt-3
-">
+<p className="mt-3">
 
 Experience:
 
-<span className="
-text-white
-ml-2
-">
+<span className="ml-2 text-white">
 
 {student.experience}
 
@@ -649,16 +778,11 @@ ml-2
 
 
 
-<p className="
-mt-3
-">
+<p className="mt-3">
 
 Branch:
 
-<span className="
-text-white
-ml-2
-">
+<span className="ml-2 text-white">
 
 {student.branch}
 
@@ -675,6 +799,11 @@ ml-2
 
 
 
+
+
+
+
+{/* DOCUMENT */}
 
 
 
@@ -701,46 +830,32 @@ Documents
 
 
 <div className="
-flex
-justify-between
-items-center
 bg-[#07131f]
-p-4
 rounded-xl
-">
-
-
-<div className="
+p-4
 flex
-gap-3
 items-center
+gap-3
 ">
 
 
-<FileText className="
-text-teal-400
-"/>
+<FileText className="text-teal-400"/>
 
+
+<span>
 
 {student.document}
 
-
-</div>
-
-
-<button className="
-text-teal-400
-">
-
-<Download/>
-
-</button>
+</span>
 
 
 </div>
 
 
 </div>
+
+
+
 
 
 
@@ -759,19 +874,23 @@ text-teal-400
 
 
 
-<div className="
+<div
+
+className="
 mt-8
 flex
 flex-col
 sm:flex-row
 gap-4
-">
+"
 
+>
 
 
 {
 
-status==="Pending" &&
+
+isPending &&
 
 <>
 
@@ -783,23 +902,23 @@ onClick={()=>updateAdmissionStatus("Approved")}
 className="
 flex-1
 bg-green-500
+hover:bg-green-600
 py-4
 rounded-xl
 font-bold
 flex
 justify-center
+items-center
 gap-2
 "
 
 >
-
 
 <CheckCircle/>
 
 Approve Admission
 
 </button>
-
 
 
 
@@ -812,11 +931,13 @@ onClick={()=>updateAdmissionStatus("Rejected")}
 className="
 flex-1
 bg-red-500
+hover:bg-red-600
 py-4
 rounded-xl
 font-bold
 flex
 justify-center
+items-center
 gap-2
 "
 
@@ -840,9 +961,12 @@ Reject Admission
 
 
 
+
+
 {
 
-status==="Approved" &&
+isApproved &&
+
 
 <button
 
@@ -851,11 +975,13 @@ onClick={()=>generateReceipt(student)}
 className="
 w-full
 bg-teal-500
+hover:bg-teal-600
 py-4
 rounded-xl
 font-bold
 flex
 justify-center
+items-center
 gap-2
 "
 
@@ -873,6 +999,43 @@ Generate Receipt
 }
 
 
+
+
+
+
+
+{
+
+isRejected &&
+
+
+<div
+
+className="
+w-full
+bg-red-500/20
+border
+border-red-500/30
+text-red-400
+py-4
+rounded-xl
+text-center
+font-bold
+"
+
+>
+
+Admission Rejected
+
+</div>
+
+
+}
+
+
+
+
+
 </div>
 
 
@@ -882,6 +1045,8 @@ Generate Receipt
 
 </div>
 
-)
+
+);
+
 
 }
