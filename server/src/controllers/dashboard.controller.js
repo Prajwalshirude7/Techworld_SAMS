@@ -5,7 +5,7 @@ exports.getDashboard = async (req, res) => {
   try {
 
     const dashboardData =
-      await dashboardService.getDashboard();
+      await dashboardService.getDashboardData();
 
     return res.status(200).json({
       success: true,
