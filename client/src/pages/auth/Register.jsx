@@ -17,24 +17,34 @@ import AuthCard from "../../components/auth/AuthCard";
 import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
+
 export default function Register() {
+
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
 
   const [loading, setLoading] = useState(false);
 
+
+  // ================= REGISTER =================
+
   const handleRegister = async (e) => {
+
     e.preventDefault();
 
-    // Frontend validation
+
+    // ================= VALIDATION =================
+
     if (
       !name ||
       !email ||
@@ -42,34 +52,55 @@ export default function Register() {
       !password ||
       !confirmPassword
     ) {
+
       toast.error("Please fill all fields");
+
       return;
     }
+
 
     if (password !== confirmPassword) {
+
       toast.error("Passwords do not match");
+
       return;
     }
+
 
     if (phone.length !== 10) {
-      toast.error("Please enter a valid 10-digit mobile number");
+
+      toast.error(
+        "Please enter a valid 10-digit mobile number"
+      );
+
       return;
     }
 
+
     try {
+
       setLoading(true);
+
+
+      // ================= API CALL =================
 
       const response = await fetch(
         "http://localhost:5001/api/auth/register",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
+
             name: name,
+
             email: email,
+
             phone: phone,
+
             password: password,
 
             // 3 = STUDENT
@@ -77,48 +108,90 @@ export default function Register() {
 
             // Testing branch
             branch_id: 1,
+
           }),
         }
       );
 
+
       const data = await response.json();
 
-      console.log("REGISTER RESPONSE:", data);
+
+      console.log(
+        "REGISTER RESPONSE:",
+        data
+      );
+
+
+      // ================= API ERROR =================
 
       if (!response.ok) {
-        toast.error(data.message || "Registration failed");
+
+        toast.error(
+          data.message ||
+          "Registration failed"
+        );
+
         return;
       }
 
-      toast.success("Registration successful!");
+
+      // ================= SUCCESS =================
+
+      toast.success(
+        "Registration successful!"
+      );
+
 
       // Store only non-sensitive information
-      localStorage.setItem("studentName", name);
+      localStorage.setItem(
+        "studentName",
+        name
+      );
+
 
       // Clear form
+
       setName("");
       setEmail("");
       setPhone("");
       setPassword("");
       setConfirmPassword("");
 
-      // Go to login page
+
+      // Go to login
+
       setTimeout(() => {
+
         navigate("/login");
+
       }, 1000);
 
+
     } catch (error) {
-      console.error("REGISTER ERROR:", error);
+
+      console.error(
+        "REGISTER ERROR:",
+        error
+      );
+
 
       toast.error(
         "Unable to connect to server. Please check backend."
       );
+
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
+
   return (
+
     <div
       className="
         min-h-screen
@@ -132,7 +205,7 @@ export default function Register() {
       "
     >
 
-      {/* Background Glow */}
+      {/* ================= BACKGROUND GLOW ================= */}
 
       <div
         className="
@@ -147,6 +220,7 @@ export default function Register() {
         "
       />
 
+
       <div
         className="
           absolute
@@ -159,6 +233,9 @@ export default function Register() {
           right-0
         "
       />
+
+
+      {/* ================= MAIN CONTAINER ================= */}
 
       <div
         className="
@@ -173,21 +250,29 @@ export default function Register() {
         "
       >
 
-        {/* LEFT SECTION */}
+
+        {/* ================= LEFT SECTION ================= */}
 
         <motion.div
+
           initial={{
             opacity: 0,
             x: -60,
           }}
+
           animate={{
             opacity: 1,
             x: 0,
           }}
+
           transition={{
             duration: 0.8,
           }}
-          className="hidden lg:block"
+
+          className="
+            hidden
+            lg:block
+          "
         >
 
           <h1
@@ -198,6 +283,7 @@ export default function Register() {
               leading-tight
             "
           >
+
             Join the
 
             <span
@@ -208,7 +294,9 @@ export default function Register() {
             >
               Skating Academy
             </span>
+
           </h1>
+
 
           <p
             className="
@@ -218,9 +306,12 @@ export default function Register() {
               leading-8
             "
           >
+
             Create your account and start your journey with
             professional coaching and modern management.
+
           </p>
+
 
           <div
             className="
@@ -234,6 +325,7 @@ export default function Register() {
               "Competition Training",
               "Progress Tracking",
             ].map((item) => (
+
               <div
                 key={item}
                 className="
@@ -257,13 +349,15 @@ export default function Register() {
                 </p>
 
               </div>
+
             ))}
 
           </div>
 
         </motion.div>
 
-        {/* REGISTER CARD */}
+
+        {/* ================= REGISTER CARD ================= */}
 
         <AuthCard>
 
@@ -279,14 +373,17 @@ export default function Register() {
           >
 
             <motion.h2
+
               initial={{
                 opacity: 0,
                 y: -15,
               }}
+
               animate={{
                 opacity: 1,
                 y: 0,
               }}
+
               className="
                 text-3xl
                 font-bold
@@ -294,8 +391,11 @@ export default function Register() {
                 text-white
               "
             >
+
               Create Account
+
             </motion.h2>
+
 
             <p
               className="
@@ -305,55 +405,110 @@ export default function Register() {
                 mb-8
               "
             >
+
               Register to continue
+
             </p>
+
 
             <form
               onSubmit={handleRegister}
               className="space-y-5"
             >
 
+
+              {/* ================= NAME ================= */}
+
               <AuthInput
+
                 icon={User}
+
                 type="text"
+
                 placeholder="Full Name"
+
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
+
               />
 
+
+              {/* ================= EMAIL ================= */}
+
               <AuthInput
+
                 icon={Mail}
+
                 type="email"
+
                 placeholder="Email Address"
+
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+
               />
+
+
+              {/* ================= PHONE ================= */}
 
               <AuthInput
+
                 icon={Phone}
+
                 type="tel"
+
                 placeholder="Mobile Number"
+
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+
+                onChange={(e) =>
+                  setPhone(e.target.value)
+                }
+
               />
 
-              {/* PASSWORD */}
+
+              {/* ================= PASSWORD ================= */}
 
               <div className="relative">
 
                 <AuthInput
+
                   icon={Lock}
-                  type={showPassword ? "text" : "password"}
+
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+
                   placeholder="Password"
+
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
+
                 />
 
+
                 <button
+
                   type="button"
+
                   onClick={() =>
-                    setShowPassword(!showPassword)
+                    setShowPassword(
+                      !showPassword
+                    )
                   }
+
                   className="
                     absolute
                     right-4
@@ -363,40 +518,59 @@ export default function Register() {
                     hover:text-teal-400
                   "
                 >
+
                   {showPassword ? (
+
                     <EyeOff size={20} />
+
                   ) : (
+
                     <Eye size={20} />
+
                   )}
+
                 </button>
 
               </div>
 
-              {/* CONFIRM PASSWORD */}
+
+              {/* ================= CONFIRM PASSWORD ================= */}
 
               <div className="relative">
 
                 <AuthInput
+
                   icon={Lock}
+
                   type={
                     showConfirmPassword
                       ? "text"
                       : "password"
                   }
+
                   placeholder="Confirm Password"
+
                   value={confirmPassword}
+
                   onChange={(e) =>
-                    setConfirmPassword(e.target.value)
+                    setConfirmPassword(
+                      e.target.value
+                    )
                   }
+
                 />
 
+
                 <button
+
                   type="button"
+
                   onClick={() =>
                     setShowConfirmPassword(
                       !showConfirmPassword
                     )
                   }
+
                   className="
                     absolute
                     right-4
@@ -406,25 +580,40 @@ export default function Register() {
                     hover:text-teal-400
                   "
                 >
+
                   {showConfirmPassword ? (
+
                     <EyeOff size={20} />
+
                   ) : (
+
                     <Eye size={20} />
+
                   )}
+
                 </button>
 
               </div>
 
-              {/* REGISTER BUTTON */}
+
+              {/* ================= REGISTER BUTTON ================= */}
 
               <AuthButton
+
                 type="submit"
+
                 disabled={loading}
+
               >
+
                 {loading
                   ? "Creating Account..."
                   : "Create Account"}
+
               </AuthButton>
+
+
+              {/* ================= LOGIN LINK ================= */}
 
               <p
                 className="
@@ -432,19 +621,26 @@ export default function Register() {
                   text-slate-400
                 "
               >
+
                 Already have an account?{" "}
 
                 <Link
+
                   to="/login"
+
                   className="
                     text-teal-400
                     font-semibold
+                    hover:text-teal-300
                   "
                 >
+
                   Login
+
                 </Link>
 
               </p>
+
 
             </form>
 
@@ -452,8 +648,11 @@ export default function Register() {
 
         </AuthCard>
 
+
       </div>
 
     </div>
+
   );
+
 }

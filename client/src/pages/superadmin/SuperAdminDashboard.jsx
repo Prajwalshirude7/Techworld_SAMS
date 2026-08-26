@@ -63,7 +63,6 @@ useEffect(() => {
   fetchDashboard();
 }, []);
 
-
 const stats=[
 
 {
@@ -209,10 +208,11 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-5
-sm:p-8
+p-4
+sm:p-6
 lg:p-10
 space-y-8
+overflow-x-hidden
 "
 
 >
@@ -221,7 +221,8 @@ space-y-8
 
 
 
-{/* WELCOME CARD */}
+{/* WELCOME */}
+
 
 <motion.div
 
@@ -245,63 +246,57 @@ to-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 sm:p-8
-flex
-items-center
-justify-between
-gap-5
+min-h-[240px]
 "
 
 >
 
 
-{/* TEXT */}
 
 <div
+
 className="
-flex-1
+max-w-[75%]
 "
+
 >
 
 
 <h1
 
 className="
-text-white
-text-3xl
+text-2xl
 sm:text-4xl
 lg:text-5xl
 font-black
-flex
-items-center
-gap-3
+text-white
+leading-tight
 "
 
 >
 
 Welcome,
 
+<br className="sm:hidden"/>
+
 <span
 
 className="
 text-teal-400
-text-3xl
-sm:text-4xl
-lg:text-5xl
-font-black
-drop-shadow-[0_0_15px_rgba(20,184,166,0.5)]
+drop-shadow-[0_0_15px_rgba(20,184,166,.5)]
 "
 
 >
 
-Rushikesh Tarde
+ Rushikesh Tarde
 
 </span>
 
 
 <span>
-👋
+ 👋
 </span>
 
 
@@ -309,14 +304,17 @@ Rushikesh Tarde
 
 
 
+
+
 <p
 
 className="
 text-slate-300
-text-base
-sm:text-lg
-mt-5
-max-w-2xl
+text-sm
+sm:text-base
+lg:text-lg
+mt-4
+leading-relaxed
 "
 
 >
@@ -345,12 +343,18 @@ scale:1.05
 }}
 
 className="
-hidden
-md:flex
-w-28
-h-28
+absolute
+top-5
+right-5
+sm:top-8
+sm:right-8
+w-20
+h-20
+sm:w-28
+sm:h-28
 rounded-full
 bg-teal-500/10
+flex
 items-center
 justify-center
 shadow-[0_0_35px_rgba(20,184,166,.35)]
@@ -366,8 +370,10 @@ src={logo}
 alt="SAMS Logo"
 
 className="
-w-20
-h-20
+w-14
+h-14
+sm:w-20
+sm:h-20
 rounded-full
 object-cover
 "
@@ -379,8 +385,8 @@ object-cover
 
 
 
-
 </motion.div>
+
 
 
 
@@ -400,7 +406,8 @@ grid
 grid-cols-1
 sm:grid-cols-2
 xl:grid-cols-4
-gap-6
+gap-4
+sm:gap-6
 "
 
 >
@@ -422,7 +429,7 @@ return(
 key={index}
 
 whileHover={{
-y:-8
+y:-6
 }}
 
 className="
@@ -430,7 +437,8 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-4
+sm:p-5
 "
 
 >
@@ -440,8 +448,8 @@ p-6
 
 className="
 flex
-justify-between
 items-center
+justify-between
 "
 
 >
@@ -454,6 +462,8 @@ items-center
 
 className="
 text-slate-400
+text-sm
+sm:text-base
 "
 
 >
@@ -463,14 +473,14 @@ text-slate-400
 </p>
 
 
-
 <h2
 
 className="
 text-white
 font-black
-text-3xl
-mt-3
+text-2xl
+sm:text-3xl
+mt-2
 "
 
 >
@@ -484,11 +494,13 @@ mt-3
 
 
 
+
 <div
 
 className="
 bg-teal-500/20
-p-4
+p-3
+sm:p-4
 rounded-2xl
 "
 
@@ -497,7 +509,7 @@ rounded-2xl
 
 <Icon
 
-size={32}
+size={26}
 
 className="
 text-teal-400
@@ -507,6 +519,7 @@ text-teal-400
 
 
 </div>
+
 
 
 </div>
@@ -519,7 +532,6 @@ text-teal-400
 
 
 })
-
 
 }
 
@@ -545,9 +557,10 @@ text-teal-400
 
 className="
 text-white
-text-3xl
+text-2xl
+sm:text-3xl
 font-black
-mb-6
+mb-5
 "
 
 >
@@ -564,9 +577,9 @@ Quick Actions
 className="
 grid
 grid-cols-1
-md:grid-cols-2
+sm:grid-cols-2
 xl:grid-cols-3
-gap-6
+gap-5
 "
 
 >
@@ -590,11 +603,8 @@ key={index}
 
 
 whileHover={{
-
-y:-10,
-
-scale:1.02
-
+y:-8,
+scale:1.01
 }}
 
 
@@ -607,8 +617,8 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
-transition
+p-4
+sm:p-6
 "
 
 >
@@ -619,7 +629,7 @@ transition
 className="
 bg-teal-500/20
 w-fit
-p-4
+p-3
 rounded-2xl
 "
 
@@ -628,7 +638,7 @@ rounded-2xl
 
 <Icon
 
-size={30}
+size={26}
 
 className="
 text-teal-400
@@ -647,9 +657,10 @@ text-teal-400
 
 className="
 text-white
-text-xl
+text-lg
+sm:text-xl
 font-bold
-mt-5
+mt-4
 "
 
 >
@@ -661,10 +672,12 @@ mt-5
 
 
 
+
 <p
 
 className="
 text-slate-400
+text-sm
 mt-2
 "
 
@@ -673,6 +686,7 @@ mt-2
 {item.desc}
 
 </p>
+
 
 
 
@@ -703,10 +717,9 @@ Open
 </span>
 
 
-
 <ArrowRight
 
-size={20}
+size={18}
 
 className="
 text-teal-400
@@ -729,6 +742,7 @@ text-teal-400
 
 
 }
+
 
 
 </div>
@@ -755,7 +769,8 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
+sm:p-6
 "
 
 >
@@ -765,9 +780,10 @@ p-6
 
 className="
 text-white
-text-2xl
+text-xl
+sm:text-2xl
 font-black
-mb-6
+mb-5
 "
 
 >
@@ -824,9 +840,9 @@ rounded-xl
 
 <Icon
 
-className="
-text-teal-400
-"
+size={22}
+
+className="text-teal-400"
 
 />
 
@@ -843,6 +859,8 @@ text-teal-400
 className="
 text-white
 font-semibold
+text-sm
+sm:text-base
 "
 
 >
@@ -857,7 +875,8 @@ font-semibold
 
 className="
 text-slate-400
-text-sm
+text-xs
+sm:text-sm
 "
 
 >
@@ -895,15 +914,11 @@ text-sm
 
 
 
-{/* OVERVIEW */}
+{/* SYSTEM OVERVIEW */}
 
 
 
-<motion.div
-
-whileHover={{
-scale:1.01
-}}
+<div
 
 className="
 bg-gradient-to-r
@@ -912,10 +927,11 @@ to-[#102235]
 border
 border-teal-500/30
 rounded-3xl
-p-6
+p-5
+sm:p-6
 flex
+gap-4
 items-center
-gap-5
 "
 
 >
@@ -925,23 +941,19 @@ gap-5
 
 className="
 bg-teal-500/20
-p-4
+p-3
 rounded-2xl
 "
 
 >
 
-
 <TrendingUp
 
-className="
-text-teal-400
-"
+size={28}
 
-size={35}
+className="text-teal-400"
 
 />
-
 
 </div>
 
@@ -954,8 +966,8 @@ size={35}
 
 className="
 text-white
-text-xl
 font-bold
+text-lg
 "
 
 >
@@ -970,7 +982,8 @@ System Overview
 
 className="
 text-slate-300
-mt-2
+text-sm
+mt-1
 "
 
 >
@@ -984,7 +997,7 @@ Monitor organization growth, users and daily activities.
 
 
 
-</motion.div>
+</div>
 
 
 

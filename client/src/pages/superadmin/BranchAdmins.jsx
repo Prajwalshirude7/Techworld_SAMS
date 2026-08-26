@@ -1,1320 +1,1113 @@
 import {
-    Plus,
-    MapPin,
-    Users,
-    Edit,
-    Trash2,
-    X,
-    Phone,
-    Mail,
-    User,
-    Clock,
-    Map,
-  } from "lucide-react";
-  
-  import { motion } from "framer-motion";
-  import { useEffect, useState } from "react";
-  import toast from "react-hot-toast";
-  
-  export default function Branches() {
-    const API_URL = "http://localhost:5001";
-  
-    // =====================================================
-    // STATES
-    // =====================================================
-  
-    const [branches, setBranches] = useState([]);
-  
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-  
-    const [showModal, setShowModal] = useState(false);
-  
-    const [editingBranch, setEditingBranch] = useState(null);
-  
-    const [formData, setFormData] = useState({
-      branch_name: "",
-      branch_code: "",
-      manager: "",
-      phone: "",
-      email: "",
-      address: "",
-      city: "",
-      state: "",
-      country: "",
-      google_map: "",
-      working_hours: "",
-      status: "ACTIVE",
-    });
-  
-    // =====================================================
-    // TOKEN
-    // =====================================================
-  
-    const getToken = () => {
-      const token = localStorage.getItem("token");
-  
-      console.log(
-        "TOKEN:",
-        token ? "Token exists" : "Token not found"
-      );
-  
-      return token;
-    };
-  
-    // =====================================================
-    // FETCH BRANCHES FROM DATABASE
-    // =====================================================
-  
-    const fetchBranches = async () => {
-      try {
-        const token = getToken();
-  
-        if (!token) {
-          toast.error("Please login as Super Admin");
-          return;
-        }
-  
-        const response = await fetch(
-          `${API_URL}/api/admin/branches`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        const data = await response.json();
-  
-        console.log("GET BRANCHES:", data);
-  
-        if (!response.ok) {
-          throw new Error(
-            data.message || "Failed to fetch branches"
-          );
-        }
-  
-        setBranches(data.data || []);
-      } catch (error) {
-        console.error("FETCH BRANCHES ERROR:", error);
-  
-        toast.error(
-          error.message || "Unable to load branches"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    // =====================================================
-    // LOAD BRANCHES WHEN PAGE OPENS
-    // =====================================================
-  
-    useEffect(() => {
-      fetchBranches();
-    }, []);
-  
-    // =====================================================
-    // INPUT CHANGE
-    // =====================================================
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-  
-      setFormData((previous) => ({
-        ...previous,
-        [name]: value,
-      }));
-    };
-  
-    // =====================================================
-    // RESET FORM
-    // =====================================================
-  
-    const resetForm = () => {
-      setFormData({
-        branch_name: "",
-        branch_code: "",
-        manager: "",
-        phone: "",
-        email: "",
-        address: "",
-        city: "",
-        state: "",
-        country: "",
-        google_map: "",
-        working_hours: "",
-        status: "ACTIVE",
-      });
-  
-      setEditingBranch(null);
-    };
-  
-    // =====================================================
-    // OPEN ADD BRANCH
-    // =====================================================
-  
-    const openAddModal = () => {
-      resetForm();
-      setShowModal(true);
-    };
-  
-    // =====================================================
-    // OPEN EDIT BRANCH
-    // =====================================================
-  
-    const openEditModal = (branch) => {
-      setEditingBranch(branch);
-  
-      setFormData({
-        branch_name: branch.branch_name || "",
-        branch_code: branch.branch_code || "",
-        manager: branch.manager || "",
-        phone: branch.phone || "",
-        email: branch.email || "",
-        address: branch.address || "",
-        city: branch.city || "",
-        state: branch.state || "",
-        country: branch.country || "",
-        google_map: branch.google_map || "",
-        working_hours: branch.working_hours || "",
-        status: branch.status || "ACTIVE",
-      });
-  
-      setShowModal(true);
-    };
-  
-    // =====================================================
-    // CLOSE MODAL
-    // =====================================================
-  
-    const closeModal = () => {
-      if (saving) return;
-  
-      setShowModal(false);
-      resetForm();
-    };
-  
-    // =====================================================
-    // VALIDATION
-    // =====================================================
-  
-    const validateForm = () => {
-      if (!formData.branch_name.trim()) {
-        toast.error("Branch name is required");
-        return false;
-      }
-  
-      if (!formData.branch_code.trim()) {
-        toast.error("Branch code is required");
-        return false;
-      }
-  
-      if (!formData.phone.trim()) {
-        toast.error("Phone number is required");
-        return false;
-      }
-  
-      if (!formData.email.trim()) {
-        toast.error("Email is required");
-        return false;
-      }
-  
-      if (!formData.address.trim()) {
-        toast.error("Address is required");
-        return false;
-      }
-  
-      if (!formData.city.trim()) {
-        toast.error("City is required");
-        return false;
-      }
-  
-      if (!formData.state.trim()) {
-        toast.error("State is required");
-        return false;
-      }
-  
-      if (!formData.country.trim()) {
-        toast.error("Country is required");
-        return false;
-      }
-  
-      return true;
-    };
-  
-    // =====================================================
-    // CREATE / UPDATE BRANCH
-    // =====================================================
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-  
-      if (!validateForm()) {
-        return;
-      }
-  
+  UserCog,
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  Mail,
+  Phone,
+  Building2,
+  X,
+} from "lucide-react";
+
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+export default function BranchAdmins() {
+  const API_URL = "http://localhost:5001";
+
+  const [admins, setAdmins] = useState([]);
+  const [branches, setBranches] = useState([]);
+
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
+
+  const [adminData, setAdminData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    branch_id: "",
+  });
+
+  // =====================================================
+  // TOKEN
+  // =====================================================
+
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
+  // =====================================================
+  // GET BRANCH ADMINS
+  // =====================================================
+
+  const fetchAdmins = async () => {
+    try {
       const token = getToken();
-  
+
       if (!token) {
         toast.error("Please login as Super Admin");
         return;
       }
-  
-      try {
-        setSaving(true);
-  
-        let url;
-        let method;
-  
-        // =================================================
-        // CREATE
-        // =================================================
-  
-        if (!editingBranch) {
-          url = `${API_URL}/api/admin/branches`;
-          method = "POST";
+
+      const response = await fetch(
+        `${API_URL}/api/admin/branch-admins`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-  
-        // =================================================
-        // UPDATE
-        // =================================================
-  
-        else {
-          url = `${API_URL}/api/admin/branches/${editingBranch.id}`;
-          method = "PUT";
+      );
+
+      const data = await response.json();
+
+      console.log("BRANCH ADMINS:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch branch admins"
+        );
+      }
+
+      setAdmins(data.data || []);
+    } catch (error) {
+      console.error("FETCH ADMINS ERROR:", error);
+
+      toast.error(
+        error.message || "Unable to load branch admins"
+      );
+    }
+  };
+
+  // =====================================================
+  // GET BRANCHES
+  // =====================================================
+
+  const fetchBranches = async () => {
+    try {
+      const token = getToken();
+
+      if (!token) return;
+
+      const response = await fetch(
+        `${API_URL}/api/admin/branches`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-  
-        const body = {
-          branch_name: formData.branch_name.trim(),
-          branch_code: formData.branch_code.trim(),
-          manager: formData.manager.trim() || null,
-          phone: formData.phone.trim(),
-          email: formData.email.trim(),
-          address: formData.address.trim(),
-          city: formData.city.trim(),
-          state: formData.state.trim(),
-          country: formData.country.trim(),
-          google_map: formData.google_map.trim() || null,
-          working_hours:
-            formData.working_hours.trim() || null,
-          status: formData.status,
-        };
-  
-        console.log("================================");
-        console.log("BRANCH API REQUEST");
-        console.log("URL:", url);
-        console.log("METHOD:", method);
-        console.log("BODY:", body);
-        console.log("================================");
-  
-        const response = await fetch(url, {
-          method,
+      );
+
+      const data = await response.json();
+
+      console.log("BRANCHES:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch branches"
+        );
+      }
+
+      setBranches(data.data || []);
+    } catch (error) {
+      console.error("FETCH BRANCHES ERROR:", error);
+
+      toast.error(
+        error.message || "Unable to load branches"
+      );
+    }
+  };
+
+  // =====================================================
+  // INITIAL LOAD
+  // =====================================================
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+
+      await Promise.all([
+        fetchAdmins(),
+        fetchBranches(),
+      ]);
+
+      setLoading(false);
+    };
+
+    loadData();
+  }, []);
+
+  // =====================================================
+  // INPUT CHANGE
+  // =====================================================
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setAdminData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  // =====================================================
+  // RESET FORM
+  // =====================================================
+
+  const resetForm = () => {
+    setAdminData({
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      branch_id: "",
+    });
+
+    setSelectedAdmin(null);
+    setEditMode(false);
+  };
+
+  // =====================================================
+  // CLOSE MODAL
+  // =====================================================
+
+  const closeModal = () => {
+    if (saving) return;
+
+    setShowModal(false);
+    resetForm();
+  };
+
+  // =====================================================
+  // OPEN ADD MODAL
+  // =====================================================
+
+  const openAddModal = () => {
+    resetForm();
+    setShowModal(true);
+  };
+
+  // =====================================================
+  // OPEN EDIT MODAL
+  // =====================================================
+
+  const openEditModal = (admin) => {
+    setSelectedAdmin(admin);
+    setEditMode(true);
+
+    setAdminData({
+      name: admin.name || "",
+      email: admin.email || "",
+      phone: admin.phone || "",
+      password: "",
+      branch_id: admin.branch_id || "",
+    });
+
+    setShowModal(true);
+  };
+
+  // =====================================================
+  // CREATE ADMIN
+  // =====================================================
+
+  const createAdmin = async () => {
+    if (
+      !adminData.name ||
+      !adminData.email ||
+      !adminData.phone ||
+      !adminData.password ||
+      !adminData.branch_id
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    const token = getToken();
+
+    if (!token) {
+      toast.error("Please login as Super Admin");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const response = await fetch(
+        `${API_URL}/api/admin/branch-admins`,
+        {
+          method: "POST",
+
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(body),
-        });
-  
-        const data = await response.json();
-  
-        console.log(
-          "BRANCH API RESPONSE STATUS:",
-          response.status
-        );
-  
-        console.log(
-          "BRANCH API RESPONSE:",
-          data
-        );
-  
-        if (!response.ok) {
-          throw new Error(
-            data.message ||
-              `Request failed with status ${response.status}`
-          );
+
+          body: JSON.stringify({
+            name: adminData.name,
+            email: adminData.email,
+            phone: adminData.phone,
+            password: adminData.password,
+            branch_id: Number(adminData.branch_id),
+          }),
         }
-  
-        // =================================================
-        // SUCCESS
-        // =================================================
-  
-        if (editingBranch) {
-          toast.success(
-            "Branch updated successfully"
-          );
-        } else {
-          toast.success(
-            "Branch created successfully"
-          );
-        }
-  
-        setShowModal(false);
-        resetForm();
-  
-        // IMPORTANT:
-        // Reload actual data from MySQL
-        await fetchBranches();
-  
-      } catch (error) {
-        console.error(
-          "CREATE/UPDATE BRANCH ERROR:",
-          error
-        );
-  
-        toast.error(
-          error.message ||
-            "Unable to save branch"
-        );
-      } finally {
-        setSaving(false);
-      }
-    };
-  
-    // =====================================================
-    // DELETE BRANCH
-    // =====================================================
-  
-    const handleDelete = async (branch) => {
-      const confirmed = window.confirm(
-        `Are you sure you want to delete ${branch.branch_name}?`
       );
-  
-      if (!confirmed) return;
-  
-      const token = getToken();
-  
-      if (!token) {
-        toast.error("Please login as Super Admin");
-        return;
+
+      const data = await response.json();
+
+      console.log("CREATE ADMIN RESPONSE:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to create branch admin"
+        );
       }
-  
-      try {
-        const response = await fetch(
-          `${API_URL}/api/admin/branches/${branch.id}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-  
-        const data = await response.json();
-  
-        console.log(
-          "DELETE BRANCH RESPONSE:",
-          data
-        );
-  
-        if (!response.ok) {
-          throw new Error(
-            data.message ||
-              "Failed to delete branch"
-          );
+
+      toast.success(
+        "Branch Admin created successfully"
+      );
+
+      setShowModal(false);
+      resetForm();
+
+      await fetchAdmins();
+    } catch (error) {
+      console.error("CREATE ADMIN ERROR:", error);
+
+      toast.error(
+        error.message || "Unable to create branch admin"
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // =====================================================
+  // UPDATE ADMIN
+  // =====================================================
+
+  const updateAdmin = async () => {
+    if (
+      !adminData.name ||
+      !adminData.email ||
+      !adminData.phone ||
+      !adminData.branch_id
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    const token = getToken();
+
+    if (!token) {
+      toast.error("Please login as Super Admin");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const response = await fetch(
+        `${API_URL}/api/admin/branch-admins/${selectedAdmin.id}`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+
+          body: JSON.stringify({
+            name: adminData.name,
+            email: adminData.email,
+            phone: adminData.phone,
+            branch_id: Number(adminData.branch_id),
+          }),
         }
-  
-        toast.success(
-          "Branch deleted successfully"
-        );
-  
-        await fetchBranches();
-  
-      } catch (error) {
-        console.error(
-          "DELETE BRANCH ERROR:",
-          error
-        );
-  
-        toast.error(
-          error.message ||
-            "Unable to delete branch"
+      );
+
+      const data = await response.json();
+
+      console.log("UPDATE ADMIN RESPONSE:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to update branch admin"
         );
       }
-    };
-  
-    // =====================================================
-    // LOADING
-    // =====================================================
-  
-    if (loading) {
-      return (
-        <div
-          className="
-            min-h-screen
-            bg-[#07131f]
-            flex
-            items-center
-            justify-center
-            text-white
-          "
-        >
-          <div className="text-center">
-  
-            <div
-              className="
-                w-12
-                h-12
-                border-4
-                border-teal-400
-                border-t-transparent
-                rounded-full
-                animate-spin
-                mx-auto
-              "
-            />
-  
-            <p className="mt-4 text-slate-400">
-              Loading branches...
-            </p>
-  
-          </div>
-        </div>
+
+      toast.success(
+        "Branch Admin updated successfully"
+      );
+
+      setShowModal(false);
+      resetForm();
+
+      await fetchAdmins();
+    } catch (error) {
+      console.error("UPDATE ADMIN ERROR:", error);
+
+      toast.error(
+        error.message || "Unable to update branch admin"
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // =====================================================
+  // DELETE / DEACTIVATE ADMIN
+  // =====================================================
+
+  const deleteAdmin = async (admin) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to deactivate ${admin.name}?`
+    );
+
+    if (!confirmed) return;
+
+    const token = getToken();
+
+    if (!token) {
+      toast.error("Please login as Super Admin");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/admin/branch-admins/${admin.id}`,
+        {
+          method: "DELETE",
+
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(
+        "DELETE ADMIN RESPONSE:",
+        data
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to deactivate branch admin"
+        );
+      }
+
+      toast.success(
+        "Branch Admin deactivated successfully"
+      );
+
+      await fetchAdmins();
+    } catch (error) {
+      console.error("DELETE ADMIN ERROR:", error);
+
+      toast.error(
+        error.message ||
+          "Unable to deactivate branch admin"
       );
     }
-  
-    // =====================================================
-    // UI
-    // =====================================================
-  
+  };
+
+  // =====================================================
+  // SUBMIT
+  // =====================================================
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (editMode) {
+      await updateAdmin();
+    } else {
+      await createAdmin();
+    }
+  };
+
+  // =====================================================
+  // SEARCH
+  // =====================================================
+
+  const filteredAdmins = admins.filter((admin) => {
+    const searchText = search.toLowerCase();
+
+    return (
+      admin.name?.toLowerCase().includes(searchText) ||
+      admin.email?.toLowerCase().includes(searchText) ||
+      admin.phone?.toLowerCase().includes(searchText) ||
+      admin.branch_name
+        ?.toLowerCase()
+        .includes(searchText)
+    );
+  });
+
+  // =====================================================
+  // LOADING
+  // =====================================================
+
+  if (loading) {
     return (
       <div
         className="
           min-h-screen
           bg-[#07131f]
-          p-5
-          sm:p-8
-          lg:p-10
+          flex
+          items-center
+          justify-center
           text-white
         "
       >
-  
-        {/* HEADER */}
-  
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: -20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          className="
-            flex
-            flex-col
-            sm:flex-row
-            justify-between
-            gap-5
-          "
-        >
-  
-          <div>
-  
-            <h1
-              className="
-                text-3xl
-                sm:text-4xl
-                font-black
-              "
-            >
-              Branch Management
-            </h1>
-  
-            <p
-              className="
-                text-slate-400
-                mt-2
-              "
-            >
-              Manage academy branches and branch administrators.
-            </p>
-  
-          </div>
-  
-          {/* ADD BRANCH */}
-  
-          <button
-            type="button"
-            onClick={openAddModal}
-            className="
-              bg-teal-500
-              hover:bg-teal-600
-              px-6
-              py-3
-              rounded-xl
-              font-bold
-              flex
-              items-center
-              justify-center
-              gap-2
-              transition
-            "
-          >
-  
-            <Plus size={20} />
-  
-            Add Branch
-  
-          </button>
-  
-        </motion.div>
-  
-        {/* =====================================================
-            BRANCH CARDS
-        ===================================================== */}
-  
-        {branches.length === 0 ? (
-  
+        <div className="text-center">
+
           <div
             className="
-              mt-10
-              bg-[#102235]
-              border
-              border-slate-700
-              rounded-3xl
-              p-10
-              text-center
+              w-12
+              h-12
+              border-4
+              border-teal-400
+              border-t-transparent
+              rounded-full
+              animate-spin
+              mx-auto
             "
-          >
-  
-            <MapPin
-              size={50}
-              className="
-                mx-auto
-                text-slate-500
-              "
-            />
-  
-            <h2
-              className="
-                text-xl
-                font-bold
-                mt-4
-              "
-            >
-              No Branches Found
-            </h2>
-  
-            <p
-              className="
-                text-slate-400
-                mt-2
-              "
-            >
-              Click "Add Branch" to create your first branch.
-            </p>
-  
-          </div>
-  
-        ) : (
-  
-          <div
-            className="
-              grid
-              grid-cols-1
-              md:grid-cols-2
-              xl:grid-cols-3
-              gap-6
-              mt-10
-            "
-          >
-  
-            {branches.map((branch) => (
-  
-              <motion.div
-                key={branch.id}
-                whileHover={{
-                  y: -8,
-                }}
-                className="
-                  bg-[#102235]
-                  border
-                  border-slate-700
-                  rounded-3xl
-                  p-6
-                "
-              >
-  
-                {/* TOP */}
-  
-                <div
-                  className="
-                    flex
-                    justify-between
-                    items-start
-                  "
-                >
-  
-                  <div
-                    className="
-                      w-14
-                      h-14
-                      rounded-2xl
-                      bg-teal-500/20
-                      flex
-                      items-center
-                      justify-center
-                    "
-                  >
-  
-                    <MapPin
-                      className="text-teal-400"
-                      size={27}
-                    />
-  
-                  </div>
-  
-                  <div className="flex gap-2">
-  
-                    {/* EDIT */}
-  
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openEditModal(branch)
-                      }
-                      className="
-                        p-3
-                        bg-blue-500/20
-                        text-blue-400
-                        rounded-lg
-                        hover:bg-blue-500/30
-                      "
-                    >
-  
-                      <Edit size={18} />
-  
-                    </button>
-  
-                    {/* DELETE */}
-  
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDelete(branch)
-                      }
-                      className="
-                        p-3
-                        bg-red-500/20
-                        text-red-400
-                        rounded-lg
-                        hover:bg-red-500/30
-                      "
-                    >
-  
-                      <Trash2 size={18} />
-  
-                    </button>
-  
-                  </div>
-  
-                </div>
-  
-                {/* BRANCH NAME */}
-  
-                <h2
-                  className="
-                    text-xl
-                    font-bold
-                    mt-5
-                  "
-                >
-                  {branch.branch_name}
-                </h2>
-  
-                {/* LOCATION */}
-  
-                <p
-                  className="
-                    text-slate-400
-                    mt-2
-                  "
-                >
-                  {branch.city}, {branch.state}
-                </p>
-  
-                {/* STUDENTS */}
-  
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                    text-slate-300
-                    mt-6
-                  "
-                >
-  
-                  <Users size={18} />
-  
-                  <span>
-                    Students:{" "}
-                    {branch.student_count || 0}
-                  </span>
-  
-                </div>
-  
-                {/* MANAGER */}
-  
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                    text-slate-300
-                    mt-4
-                  "
-                >
-  
-                  <User size={18} />
-  
-                  <span>
-                    Manager:{" "}
-                    {branch.manager || "Not Assigned"}
-                  </span>
-  
-                </div>
-  
-                {/* PHONE */}
-  
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-3
-                    text-slate-300
-                    mt-4
-                  "
-                >
-  
-                  <Phone size={18} />
-  
-                  <span>
-                    {branch.phone}
-                  </span>
-  
-                </div>
-  
-                {/* STATUS */}
-  
-                <div className="mt-5">
-  
-                  <span
-                    className={`
-                      inline-block
-                      px-3
-                      py-1
-                      rounded-full
-                      text-xs
-                      font-bold
-                      ${
-                        branch.status === "ACTIVE"
-                          ? "bg-green-500/20 text-green-400"
-                          : "bg-red-500/20 text-red-400"
-                      }
-                    `}
-                  >
-                    {branch.status}
-                  </span>
-  
-                </div>
-  
-                {/* ASSIGN ADMIN */}
-  
-                <button
-                  type="button"
-                  className="
-                    mt-6
-                    w-full
-                    bg-[#0c4854]
-                    hover:bg-[#0f5a68]
-                    text-teal-300
-                    py-3
-                    rounded-xl
-                    font-bold
-                    transition
-                  "
-                >
-                  Assign Branch Admin
-                </button>
-  
-              </motion.div>
-  
-            ))}
-  
-          </div>
-  
-        )}
-  
-        {/* =====================================================
-            ADD / EDIT BRANCH MODAL
-        ===================================================== */}
-  
-        {showModal && (
-  
-          <div
-            className="
-              fixed
-              inset-0
-              z-50
-              bg-black/70
-              backdrop-blur-sm
-              flex
-              items-center
-              justify-center
-              p-5
-            "
-          >
-  
-            <motion.div
-              initial={{
-                opacity: 0,
-                scale: 0.9,
-              }}
-              animate={{
-                opacity: 1,
-                scale: 1,
-              }}
-              className="
-                w-full
-                max-w-2xl
-                bg-[#102235]
-                border
-                border-teal-500/20
-                rounded-3xl
-                p-7
-                shadow-2xl
-                max-h-[90vh]
-                overflow-y-auto
-              "
-            >
-  
-              {/* MODAL HEADER */}
-  
-              <div
-                className="
-                  flex
-                  justify-between
-                  items-center
-                  mb-6
-                "
-              >
-  
-                <div>
-  
-                  <h2
-                    className="
-                      text-2xl
-                      font-bold
-                    "
-                  >
-                    {editingBranch
-                      ? "Edit Branch"
-                      : "Add New Branch"}
-                  </h2>
-  
-                  <p
-                    className="
-                      text-slate-400
-                      text-sm
-                      mt-1
-                    "
-                  >
-                    {editingBranch
-                      ? "Update branch information"
-                      : "Enter branch details"}
-                  </p>
-  
-                </div>
-  
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  disabled={saving}
-                  className="
-                    p-2
-                    rounded-lg
-                    hover:bg-slate-700
-                    text-slate-400
-                  "
-                >
-  
-                  <X size={22} />
-  
-                </button>
-  
-              </div>
-  
-              {/* FORM */}
-  
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-5"
-              >
-  
-                {/* NAME + CODE */}
-  
-                <div
-                  className="
-                    grid
-                    grid-cols-1
-                    md:grid-cols-2
-                    gap-4
-                  "
-                >
-  
-                  <InputField
-                    label="Branch Name"
-                    name="branch_name"
-                    value={formData.branch_name}
-                    onChange={handleChange}
-                    placeholder="Pune Branch"
-                    required
-                    disabled={saving}
-                  />
-  
-                  <InputField
-                    label="Branch Code"
-                    name="branch_code"
-                    value={formData.branch_code}
-                    onChange={handleChange}
-                    placeholder="PUNE001"
-                    required
-                    disabled={saving}
-                  />
-  
-                </div>
-  
-                {/* MANAGER + PHONE */}
-  
-                <div
-                  className="
-                    grid
-                    grid-cols-1
-                    md:grid-cols-2
-                    gap-4
-                  "
-                >
-  
-                  <InputField
-                    label="Manager"
-                    name="manager"
-                    value={formData.manager}
-                    onChange={handleChange}
-                    placeholder="Manager name"
-                    disabled={saving}
-                  />
-  
-                  <InputField
-                    label="Phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="9876543210"
-                    required
-                    disabled={saving}
-                  />
-  
-                </div>
-  
-                {/* EMAIL */}
-  
-                <InputField
-                  label="Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="branch@example.com"
-                  required
-                  disabled={saving}
-                />
-  
-                {/* ADDRESS */}
-  
-                <div>
-  
-                  <label
-                    className="
-                      block
-                      text-sm
-                      text-slate-300
-                      mb-2
-                    "
-                  >
-                    Address
-                  </label>
-  
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    placeholder="Complete branch address"
-                    required
-                    disabled={saving}
-                    rows="3"
-                    className="
-                      w-full
-                      bg-[#07131f]
-                      border
-                      border-slate-700
-                      rounded-xl
-                      py-3
-                      px-4
-                      text-white
-                      outline-none
-                      resize-none
-                      focus:border-teal-400
-                      disabled:opacity-50
-                    "
-                  />
-  
-                </div>
-  
-                {/* CITY STATE */}
-  
-                <div
-                  className="
-                    grid
-                    grid-cols-1
-                    md:grid-cols-2
-                    gap-4
-                  "
-                >
-  
-                  <InputField
-                    label="City"
-                    name="city"
-                    value={formData.city}
-                    onChange={handleChange}
-                    placeholder="Pune"
-                    required
-                    disabled={saving}
-                  />
-  
-                  <InputField
-                    label="State"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleChange}
-                    placeholder="Maharashtra"
-                    required
-                    disabled={saving}
-                  />
-  
-                </div>
-  
-                {/* COUNTRY + WORKING HOURS */}
-  
-                <div
-                  className="
-                    grid
-                    grid-cols-1
-                    md:grid-cols-2
-                    gap-4
-                  "
-                >
-  
-                  <InputField
-                    label="Country"
-                    name="country"
-                    value={formData.country}
-                    onChange={handleChange}
-                    placeholder="India"
-                    required
-                    disabled={saving}
-                  />
-  
-                  <InputField
-                    label="Working Hours"
-                    name="working_hours"
-                    value={formData.working_hours}
-                    onChange={handleChange}
-                    placeholder="9:00 AM - 6:00 PM"
-                    disabled={saving}
-                  />
-  
-                </div>
-  
-                {/* GOOGLE MAP */}
-  
-                <InputField
-                  label="Google Map Link"
-                  name="google_map"
-                  value={formData.google_map}
-                  onChange={handleChange}
-                  placeholder="https://maps.google.com/..."
-                  disabled={saving}
-                />
-  
-                {/* STATUS */}
-  
-                <div>
-  
-                  <label
-                    className="
-                      block
-                      text-sm
-                      text-slate-300
-                      mb-2
-                    "
-                  >
-                    Status
-                  </label>
-  
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    disabled={saving}
-                    className="
-                      w-full
-                      bg-[#07131f]
-                      border
-                      border-slate-700
-                      rounded-xl
-                      py-3
-                      px-4
-                      text-white
-                      outline-none
-                      focus:border-teal-400
-                    "
-                  >
-  
-                    <option value="ACTIVE">
-                      ACTIVE
-                    </option>
-  
-                    <option value="INACTIVE">
-                      INACTIVE
-                    </option>
-  
-                  </select>
-  
-                </div>
-  
-                {/* BUTTONS */}
-  
-                <div
-                  className="
-                    flex
-                    gap-3
-                    pt-3
-                  "
-                >
-  
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    disabled={saving}
-                    className="
-                      flex-1
-                      border
-                      border-slate-700
-                      py-3
-                      rounded-xl
-                      font-bold
-                      text-slate-300
-                      hover:bg-slate-800
-                      disabled:opacity-50
-                    "
-                  >
-                    Cancel
-                  </button>
-  
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="
-                      flex-1
-                      bg-teal-500
-                      hover:bg-teal-600
-                      py-3
-                      rounded-xl
-                      font-bold
-                      disabled:opacity-50
-                      disabled:cursor-not-allowed
-                    "
-                  >
-  
-                    {saving
-                      ? "Saving..."
-                      : editingBranch
-                      ? "Update Branch"
-                      : "Create Branch"}
-  
-                  </button>
-  
-                </div>
-  
-              </form>
-  
-            </motion.div>
-  
-          </div>
-  
-        )}
-  
+          />
+
+          <p className="text-slate-400 mt-4">
+            Loading branch admins...
+          </p>
+
+        </div>
       </div>
     );
   }
-  
-  
+
   // =====================================================
-  // INPUT COMPONENT
+  // UI
   // =====================================================
-  
-  function InputField({
-    label,
-    name,
-    type = "text",
-    value,
-    onChange,
-    placeholder,
-    required = false,
-    disabled = false,
-  }) {
-    return (
-      <div>
-  
-        <label
+
+  return (
+    <div
+      className="
+        min-h-screen
+        bg-[#07131f]
+        p-6
+        lg:p-10
+        text-white
+      "
+    >
+
+      {/* HEADER */}
+
+      <div
+        className="
+          flex
+          flex-col
+          sm:flex-row
+          justify-between
+          gap-5
+        "
+      >
+
+        <div>
+
+          <h1
+            className="
+              text-3xl
+              sm:text-4xl
+              font-black
+            "
+          >
+            Branch Admin Management
+          </h1>
+
+          <p
+            className="
+              text-slate-400
+              mt-2
+            "
+          >
+            Manage branch administrators and access control.
+          </p>
+
+        </div>
+
+        <button
+          type="button"
+          onClick={openAddModal}
           className="
-            block
-            text-sm
-            text-slate-300
-            mb-2
+            bg-teal-500
+            hover:bg-teal-600
+            px-6
+            py-3
+            rounded-xl
+            font-bold
+            flex
+            items-center
+            justify-center
+            gap-2
           "
         >
-          {label}
-        </label>
-  
-        <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          required={required}
-          disabled={disabled}
+
+          <Plus size={20} />
+
+          Add Admin
+
+        </button>
+
+      </div>
+
+      {/* SEARCH */}
+
+      <div
+        className="
+          mt-8
+          bg-[#102235]
+          border
+          border-slate-700
+          rounded-3xl
+          p-5
+        "
+      >
+
+        <div
           className="
-            w-full
+            flex
+            items-center
+            gap-3
             bg-[#07131f]
             border
             border-slate-700
             rounded-xl
-            py-3
             px-4
-            text-white
-            outline-none
-            placeholder:text-slate-600
-            focus:border-teal-400
-            disabled:opacity-50
           "
-        />
-  
+        >
+
+          <Search
+            className="text-slate-400"
+          />
+
+          <input
+            placeholder="Search admin..."
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
+            className="
+              bg-transparent
+              outline-none
+              w-full
+              py-3
+              text-white
+            "
+          />
+
+        </div>
+
       </div>
-    );
-  }
+
+      {/* ADMIN CARDS */}
+
+      {filteredAdmins.length === 0 ? (
+
+        <div
+          className="
+            mt-8
+            bg-[#102235]
+            border
+            border-slate-700
+            rounded-3xl
+            p-10
+            text-center
+          "
+        >
+
+          <UserCog
+            size={50}
+            className="
+              mx-auto
+              text-slate-500
+            "
+          />
+
+          <h2
+            className="
+              text-xl
+              font-bold
+              mt-4
+            "
+          >
+            No Branch Admins Found
+          </h2>
+
+          <p
+            className="
+              text-slate-400
+              mt-2
+            "
+          >
+            Click "Add Admin" to create a branch administrator.
+          </p>
+
+        </div>
+
+      ) : (
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            md:grid-cols-2
+            xl:grid-cols-3
+            gap-7
+            mt-8
+          "
+        >
+
+          {filteredAdmins.map((admin) => (
+
+            <motion.div
+              key={admin.id}
+              whileHover={{
+                y: -8,
+              }}
+              className="
+                bg-[#102235]
+                border
+                border-slate-700
+                rounded-3xl
+                p-6
+              "
+            >
+
+              <div
+                className="
+                  flex
+                  justify-between
+                "
+              >
+
+                <div
+                  className="
+                    bg-teal-500/20
+                    p-4
+                    rounded-2xl
+                  "
+                >
+
+                  <UserCog
+                    className="text-teal-400"
+                    size={32}
+                  />
+
+                </div>
+
+                <span
+                  className={`
+                    ${
+                      admin.status === "ACTIVE"
+                        ? "bg-green-500/20 text-green-400"
+                        : "bg-red-500/20 text-red-400"
+                    }
+                    px-4
+                    py-2
+                    rounded-full
+                    h-fit
+                    text-sm
+                    font-semibold
+                  `}
+                >
+                  {admin.status}
+                </span>
+
+              </div>
+
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  mt-6
+                "
+              >
+                {admin.name}
+              </h2>
+
+              <div
+                className="
+                  mt-5
+                  space-y-4
+                  text-slate-300
+                "
+              >
+
+                <p className="flex gap-3">
+
+                  <Mail
+                    size={20}
+                    className="text-teal-400"
+                  />
+
+                  {admin.email}
+
+                </p>
+
+                <p className="flex gap-3">
+
+                  <Phone
+                    size={20}
+                    className="text-teal-400"
+                  />
+
+                  {admin.phone}
+
+                </p>
+
+                <p className="flex gap-3">
+
+                  <Building2
+                    size={20}
+                    className="text-teal-400"
+                  />
+
+                  {admin.branch_name ||
+                    "Not Assigned"}
+
+                </p>
+
+              </div>
+
+              <div
+                className="
+                  flex
+                  gap-4
+                  mt-8
+                "
+              >
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    openEditModal(admin)
+                  }
+                  className="
+                    flex-1
+                    border
+                    border-slate-600
+                    rounded-xl
+                    py-3
+                    flex
+                    justify-center
+                    gap-2
+                    hover:border-teal-400
+                  "
+                >
+
+                  <Pencil size={18} />
+
+                  Edit
+
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    deleteAdmin(admin)
+                  }
+                  className="
+                    flex-1
+                    bg-red-500/20
+                    text-red-400
+                    rounded-xl
+                    py-3
+                    flex
+                    justify-center
+                    gap-2
+                    hover:bg-red-500/30
+                  "
+                >
+
+                  <Trash2 size={18} />
+
+                  Deactivate
+
+                </button>
+
+              </div>
+
+            </motion.div>
+
+          ))}
+
+        </div>
+
+      )}
+
+      {/* =====================================================
+          ADD / EDIT MODAL
+      ===================================================== */}
+
+      {showModal && (
+
+        <div
+          className="
+            fixed
+            inset-0
+            bg-black/60
+            backdrop-blur-sm
+            flex
+            items-center
+            justify-center
+            p-5
+            z-50
+          "
+        >
+
+          <motion.div
+            initial={{
+              opacity: 0,
+              scale: 0.9,
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+            }}
+            className="
+              bg-[#102235]
+              border
+              border-slate-700
+              rounded-3xl
+              p-8
+              w-full
+              max-w-xl
+              max-h-[90vh]
+              overflow-y-auto
+            "
+          >
+
+            <div
+              className="
+                flex
+                justify-between
+                items-center
+                mb-6
+              "
+            >
+
+              <div>
+
+                <h2
+                  className="
+                    text-2xl
+                    font-bold
+                  "
+                >
+                  {editMode
+                    ? "Edit Admin"
+                    : "Add Branch Admin"}
+                </h2>
+
+                <p
+                  className="
+                    text-slate-400
+                    text-sm
+                    mt-1
+                  "
+                >
+                  {editMode
+                    ? "Update branch administrator"
+                    : "Create a new branch administrator"}
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={saving}
+                className="
+                  text-slate-400
+                  hover:text-white
+                "
+              >
+                <X size={24} />
+              </button>
+
+            </div>
+
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4"
+            >
+
+              <input
+                name="name"
+                value={adminData.name}
+                onChange={handleChange}
+                placeholder="Admin Name"
+                required
+                disabled={saving}
+                className="
+                  w-full
+                  bg-[#07131f]
+                  border
+                  border-slate-700
+                  rounded-xl
+                  px-4
+                  py-3
+                  outline-none
+                  focus:border-teal-400
+                  disabled:opacity-50
+                "
+              />
+
+              <input
+                name="email"
+                type="email"
+                value={adminData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                required
+                disabled={saving}
+                className="
+                  w-full
+                  bg-[#07131f]
+                  border
+                  border-slate-700
+                  rounded-xl
+                  px-4
+                  py-3
+                  outline-none
+                  focus:border-teal-400
+                  disabled:opacity-50
+                "
+              />
+
+              <input
+                name="phone"
+                value={adminData.phone}
+                onChange={handleChange}
+                placeholder="Phone"
+                required
+                disabled={saving}
+                className="
+                  w-full
+                  bg-[#07131f]
+                  border
+                  border-slate-700
+                  rounded-xl
+                  px-4
+                  py-3
+                  outline-none
+                  focus:border-teal-400
+                  disabled:opacity-50
+                "
+              />
+
+              {/* PASSWORD ONLY FOR CREATE */}
+
+              {!editMode && (
+                <input
+                  name="password"
+                  type="password"
+                  value={adminData.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  required
+                  disabled={saving}
+                  className="
+                    w-full
+                    bg-[#07131f]
+                    border
+                    border-slate-700
+                    rounded-xl
+                    px-4
+                    py-3
+                    outline-none
+                    focus:border-teal-400
+                    disabled:opacity-50
+                  "
+                />
+              )}
+
+              {/* BRANCH */}
+
+              <select
+                name="branch_id"
+                value={adminData.branch_id}
+                onChange={handleChange}
+                required
+                disabled={saving}
+                className="
+                  w-full
+                  bg-[#07131f]
+                  border
+                  border-slate-700
+                  rounded-xl
+                  px-4
+                  py-3
+                  outline-none
+                  focus:border-teal-400
+                "
+              >
+
+                <option value="">
+                  Select Branch
+                </option>
+
+                {branches.map((branch) => (
+
+                  <option
+                    key={branch.id}
+                    value={branch.id}
+                  >
+                    {branch.branch_name}
+                  </option>
+
+                ))}
+
+              </select>
+
+              <button
+                type="submit"
+                disabled={saving}
+                className="
+                  w-full
+                  bg-teal-500
+                  hover:bg-teal-600
+                  py-3
+                  rounded-xl
+                  font-bold
+                  mt-5
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                "
+              >
+
+                {saving
+                  ? "Saving..."
+                  : editMode
+                  ? "Update Admin"
+                  : "Save Admin"}
+
+              </button>
+
+            </form>
+
+          </motion.div>
+
+        </div>
+
+      )}
+
+    </div>
+  );
+}

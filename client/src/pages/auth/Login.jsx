@@ -15,7 +15,9 @@ import AuthCard from "../../components/auth/AuthCard";
 import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
+
 export default function Login() {
+
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -25,121 +27,216 @@ export default function Login() {
 
   const [loading, setLoading] = useState(false);
 
+
   const handleLogin = async (e) => {
+
     e.preventDefault();
 
+
     if (!email || !password) {
-      toast.error("Please enter email and password.");
+
+      toast.error(
+        "Please enter email and password."
+      );
+
       return;
+
     }
 
+
     try {
+
       setLoading(true);
+
 
       const response = await fetch(
         "http://localhost:5001/api/auth/login",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
-            email: email,
-            password: password,
+            email,
+            password,
           }),
         }
       );
 
-      const data = await response.json();
 
-      console.log("LOGIN RESPONSE:", data);
+      const data =
+        await response.json();
+
+
+      console.log(
+        "LOGIN RESPONSE:",
+        data
+      );
+
 
       if (!response.ok) {
-        toast.error(data.message || "Login failed");
+
+        toast.error(
+          data.message ||
+          "Login failed"
+        );
+
         return;
+
       }
 
-      // Make sure token exists
+
       if (!data.token) {
-        toast.error("Login successful but token was not received.");
+
+        toast.error(
+          "Login successful but token was not received."
+        );
+
         return;
+
       }
 
-      // Store JWT token
+
+      // ==============================
+      // STORE JWT TOKEN
+      // ==============================
+
       localStorage.setItem(
         "token",
         data.token
       );
 
-      // Store login state
+
+      // ==============================
+      // LOGIN STATE
+      // ==============================
+
       localStorage.setItem(
         "isLoggedIn",
         "true"
       );
 
-      // Store user role
+
+      // ==============================
+      // USER ROLE
+      // ==============================
+
       localStorage.setItem(
         "userRole",
         String(data.user.role_id)
       );
 
-      // Store user ID
+
+      // ==============================
+      // USER ID
+      // ==============================
+
       localStorage.setItem(
         "userId",
         String(data.user.id)
       );
 
-      // Store student name
+
+      // ==============================
+      // USER NAME
+      // ==============================
+
       localStorage.setItem(
         "studentName",
         data.user.name
       );
 
-      // Store user object
+
+      // ==============================
+      // USER OBJECT
+      // ==============================
+
       localStorage.setItem(
         "user",
         JSON.stringify(data.user)
       );
 
+
       toast.success(
         `Welcome ${data.user.name}! Login successful!`
       );
 
+
       setTimeout(() => {
 
-        // Super Admin
-        if (Number(data.user.role_id) === 1) {
-          navigate("/super-admin/dashboard");
+        // SUPER ADMIN
+
+        if (
+          Number(data.user.role_id) === 1
+        ) {
+
+          navigate(
+            "/super-admin/dashboard"
+          );
+
         }
-        // Branch Admin
-        else if (Number(data.user.role_id) === 2) {
-          navigate("/admin/dashboard");
+
+        // BRANCH ADMIN
+
+        else if (
+          Number(data.user.role_id) === 2
+        ) {
+
+          navigate(
+            "/admin/dashboard"
+          );
+
         }
-        // Student
-        else if (Number(data.user.role_id) === 3) {
-          navigate("/student/dashboard");
+
+        // STUDENT
+
+        else if (
+          Number(data.user.role_id) === 3
+        ) {
+
+          navigate(
+            "/student/dashboard"
+          );
+
         }
-        // Unknown role
+
+        // UNKNOWN ROLE
+
         else {
+
           navigate("/");
+
         }
 
       }, 1000);
 
+
     } catch (error) {
 
-      console.error("LOGIN ERROR:", error);
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
+
 
       toast.error(
         "Unable to connect to server. Please check backend."
       );
 
+
     } finally {
+
       setLoading(false);
+
     }
+
   };
 
+
   return (
+
     <div
       className="
         min-h-screen
@@ -153,7 +250,7 @@ export default function Login() {
       "
     >
 
-      {/* Glow */}
+      {/* BACKGROUND GLOW */}
 
       <div
         className="
@@ -168,6 +265,7 @@ export default function Login() {
         "
       />
 
+
       <div
         className="
           absolute
@@ -180,6 +278,7 @@ export default function Login() {
           right-0
         "
       />
+
 
       <div
         className="
@@ -194,21 +293,28 @@ export default function Login() {
         "
       >
 
-        {/* LEFT SIDE */}
+        {/* LEFT SECTION */}
 
         <motion.div
+
           initial={{
             opacity: 0,
             x: -60,
           }}
+
           animate={{
             opacity: 1,
             x: 0,
           }}
+
           transition={{
             duration: 0.8,
           }}
-          className="hidden lg:block"
+
+          className="
+            hidden
+            lg:block
+          "
         >
 
           <h1
@@ -219,6 +325,7 @@ export default function Login() {
               leading-tight
             "
           >
+
             Welcome to
 
             <span
@@ -227,9 +334,11 @@ export default function Login() {
                 text-teal-400
               "
             >
-              Skating Academy
+              SAMS Academy
             </span>
+
           </h1>
+
 
           <p
             className="
@@ -239,10 +348,13 @@ export default function Login() {
               leading-8
             "
           >
+
             Manage students, coaches, attendance,
             fees and competitions through one
             modern management system.
+
           </p>
+
 
           <div
             className="
@@ -287,6 +399,7 @@ export default function Login() {
 
         </motion.div>
 
+
         {/* LOGIN CARD */}
 
         <AuthCard>
@@ -303,14 +416,17 @@ export default function Login() {
           >
 
             <motion.h2
+
               initial={{
                 opacity: 0,
                 y: -15,
               }}
+
               animate={{
                 opacity: 1,
                 y: 0,
               }}
+
               className="
                 text-3xl
                 font-bold
@@ -318,8 +434,11 @@ export default function Login() {
                 text-white
               "
             >
+
               Welcome Back
+
             </motion.h2>
+
 
             <p
               className="
@@ -329,8 +448,11 @@ export default function Login() {
                 mb-8
               "
             >
+
               Sign in to continue
+
             </p>
+
 
             <form
               onSubmit={handleLogin}
@@ -340,38 +462,57 @@ export default function Login() {
               {/* EMAIL */}
 
               <AuthInput
+
                 icon={Mail}
+
                 type="email"
+
                 placeholder="Enter Email"
+
                 value={email}
+
                 onChange={(e) =>
                   setEmail(e.target.value)
                 }
+
               />
+
 
               {/* PASSWORD */}
 
               <div className="relative">
 
                 <AuthInput
+
                   icon={Lock}
+
                   type={
                     showPassword
                       ? "text"
                       : "password"
                   }
+
                   placeholder="Enter Password"
+
                   value={password}
+
                   onChange={(e) =>
                     setPassword(e.target.value)
                   }
+
                 />
 
+
                 <button
+
                   type="button"
+
                   onClick={() =>
-                    setShowPassword(!showPassword)
+                    setShowPassword(
+                      !showPassword
+                    )
                   }
+
                   className="
                     absolute
                     right-4
@@ -383,14 +524,23 @@ export default function Login() {
                 >
 
                   {showPassword ? (
-                    <EyeOff size={20} />
+
+                    <EyeOff
+                      size={20}
+                    />
+
                   ) : (
-                    <Eye size={20} />
+
+                    <Eye
+                      size={20}
+                    />
+
                   )}
 
                 </button>
 
               </div>
+
 
               {/* OPTIONS */}
 
@@ -414,35 +564,51 @@ export default function Login() {
 
                   <input
                     type="checkbox"
-                    className="accent-teal-500"
+                    className="
+                      accent-teal-500
+                    "
                   />
 
                   Remember Me
 
                 </label>
 
+
                 <Link
+
                   to="/forgot-password"
+
                   className="
                     text-teal-400
                     hover:text-teal-300
                   "
                 >
+
                   Forgot Password?
+
                 </Link>
 
               </div>
 
+
               {/* LOGIN BUTTON */}
 
               <AuthButton
+
                 type="submit"
+
                 disabled={loading}
+
               >
+
                 {loading
                   ? "Logging in..."
                   : "Login"}
+
               </AuthButton>
+
+
+              {/* REGISTER */}
 
               <p
                 className="
@@ -450,17 +616,22 @@ export default function Login() {
                   text-slate-400
                 "
               >
+
                 Don't have an account?{" "}
 
                 <Link
+
                   to="/register"
+
                   className="
                     text-teal-400
                     font-semibold
                     hover:text-teal-300
                   "
                 >
+
                   Register
+
                 </Link>
 
               </p>
@@ -474,5 +645,7 @@ export default function Login() {
       </div>
 
     </div>
+
   );
+
 }
