@@ -7,1145 +7,1167 @@ import {
   Eye,
   MapPin,
   Download,
-  Users
+  Users,
 } from "lucide-react";
-
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
+import api from "../../services/api";
 import generateReceipt from "../../utils/generateReceipt";
 
 
+export default function Admissions() {
 
-export default function Admissions(){
+  const navigate = useNavigate();
 
+  // =====================================================
+  // STATES
+  // =====================================================
 
-const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
+  const [status, setStatus] = useState("All");
 
+  const [branch, setBranch] = useState("All");
 
-const [search,setSearch] = useState("");
+  const [applications, setApplications] = useState([]);
 
-const [status,setStatus] = useState("All");
+  const [loading, setLoading] = useState(true);
 
-const [branch,setBranch] = useState("All");
+  const [actionLoading, setActionLoading] = useState(null);
 
-const [applications,setApplications] = useState([]);
 
+  // =====================================================
+  // FETCH ADMISSIONS
+  // =====================================================
 
+  const fetchAdmissions = async () => {
 
+    try {
 
+      setLoading(true);
 
-// LOAD APPLICATIONS
+      const response = await api.get("/admin/admissions");
 
-useEffect(()=>{
+      console.log(
+        "ADMISSIONS RESPONSE:",
+        response.data
+      );
 
+      if (response.data.success) {
 
-const data = JSON.parse(
+        setApplications(
+          response.data.data || []
+        );
 
-localStorage.getItem("admissionApplications")
-||
-"[]"
+      } else {
 
-);
+        toast.error(
+          response.data.message ||
+          "Failed to load admissions"
+        );
 
+      }
 
-setApplications(data);
+    } catch (error) {
 
+      console.error(
+        "FETCH ADMISSIONS ERROR:",
+        error
+      );
 
-},[]);
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to load admissions"
+      );
 
+    } finally {
 
+      setLoading(false);
 
+    }
 
+  };
 
 
+  // =====================================================
+  // LOAD ON PAGE OPEN
+  // =====================================================
 
+  useEffect(() => {
 
+    fetchAdmissions();
 
-// UPDATE STATUS
+  }, []);
 
-const updateStatus=(id,newStatus)=>{
 
+  // =====================================================
+  // APPROVE ADMISSION
+  // =====================================================
 
-const updatedApplications = applications.map((item)=>{
+  const approveApplication = async (id) => {
 
+    try {
 
-if(item.id===id){
+      setActionLoading(id);
 
-return{
+      const response = await api.put(
+        `/admin/admissions/${id}/approve`
+      );
 
-...item,
 
-status:newStatus
+      if (response.data.success) {
 
-};
+        toast.success(
+          "Admission approved successfully"
+        );
 
-}
+        // Reload data from MySQL
+        await fetchAdmissions();
 
+      } else {
 
-return item;
+        toast.error(
+          response.data.message ||
+          "Failed to approve admission"
+        );
 
+      }
 
-});
+    } catch (error) {
 
+      console.error(
+        "APPROVE ADMISSION ERROR:",
+        error
+      );
 
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to approve admission"
+      );
 
-setApplications(updatedApplications);
+    } finally {
 
+      setActionLoading(null);
 
+    }
 
-localStorage.setItem(
+  };
 
-"admissionApplications",
 
-JSON.stringify(updatedApplications)
+  // =====================================================
+  // REJECT ADMISSION
+  // =====================================================
 
-);
+  const rejectApplication = async (id) => {
 
+    try {
 
+      setActionLoading(id);
 
-};
+      const response = await api.put(
+        `/admin/admissions/${id}/reject`,
+        {
+          remarks: "Rejected by Super Admin",
+        }
+      );
 
 
+      if (response.data.success) {
 
+        toast.success(
+          "Admission rejected successfully"
+        );
 
+        // Reload data from MySQL
+        await fetchAdmissions();
 
+      } else {
 
+        toast.error(
+          response.data.message ||
+          "Failed to reject admission"
+        );
 
+      }
 
-const approveApplication=(id)=>{
+    } catch (error) {
 
-updateStatus(id,"Approved");
+      console.error(
+        "REJECT ADMISSION ERROR:",
+        error
+      );
 
-};
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to reject admission"
+      );
 
+    } finally {
 
+      setActionLoading(null);
 
-const rejectApplication=(id)=>{
+    }
 
-updateStatus(id,"Rejected");
+  };
 
-};
 
+  // =====================================================
+  // STATUS STYLE
+  // =====================================================
 
+  const statusStyle = (value) => {
 
+    if (value === "APPROVED") {
 
+      return "bg-green-500/20 text-green-400";
 
+    }
 
+    if (value === "REJECTED") {
 
+      return "bg-red-500/20 text-red-400";
 
+    }
 
-const filteredApplications = applications.filter((item)=>{
+    return "bg-yellow-500/20 text-yellow-400";
 
+  };
 
-const searchMatch =
 
-item.name
-?.toLowerCase()
-.includes(
+  // =====================================================
+  // STATUS DISPLAY
+  // =====================================================
 
-search.toLowerCase()
+  const displayStatus = (value) => {
 
-);
+    if (value === "PENDING") {
 
+      return "Pending";
 
+    }
 
-const statusMatch =
+    if (value === "APPROVED") {
 
-status==="All"
-||
-item.status===status;
+      return "Approved";
 
+    }
 
+    if (value === "REJECTED") {
 
-const branchMatch =
+      return "Rejected";
 
-branch==="All"
-||
-item.branch===branch;
+    }
 
+    return value || "Unknown";
 
+  };
 
-return(
 
-searchMatch &&
-statusMatch &&
-branchMatch
+  // =====================================================
+  // UNIQUE BRANCHES
+  // =====================================================
 
-);
+  const branches = [
+    ...new Set(
+      applications
+        .map((item) => item.branch_name)
+        .filter(Boolean)
+    ),
+  ];
 
 
-});
+  // =====================================================
+  // FILTER APPLICATIONS
+  // =====================================================
 
+  const filteredApplications =
+    applications.filter((item) => {
 
+      const searchText =
+        search.toLowerCase().trim();
 
 
+      const studentName =
+        item.student_name
+          ?.toLowerCase() || "";
 
 
+      const studentEmail =
+        item.email
+          ?.toLowerCase() || "";
 
 
+      const studentCode =
+        item.student_code
+          ?.toLowerCase() || "";
 
-const statusStyle=(value)=>{
 
+      const searchMatch =
+        studentName.includes(searchText) ||
+        studentEmail.includes(searchText) ||
+        studentCode.includes(searchText);
 
-if(value==="Approved")
 
-return "bg-green-500/20 text-green-400";
+      const statusMatch =
+        status === "All" ||
+        item.status === status;
 
 
-if(value==="Rejected")
+      const branchMatch =
+        branch === "All" ||
+        item.branch_name === branch;
 
-return "bg-red-500/20 text-red-400";
 
+      return (
+        searchMatch &&
+        statusMatch &&
+        branchMatch
+      );
 
-return "bg-yellow-500/20 text-yellow-400";
+    });
 
 
-};
+  // =====================================================
+  // STATISTICS
+  // =====================================================
 
+  const stats = [
 
+    {
+      title: "Total Applications",
+      value: applications.length,
+      icon: Users,
+    },
 
+    {
+      title: "Pending",
+      value:
+        applications.filter(
+          (item) =>
+            item.status === "PENDING"
+        ).length,
+      icon: Clock,
+    },
 
+    {
+      title: "Approved",
+      value:
+        applications.filter(
+          (item) =>
+            item.status === "APPROVED"
+        ).length,
+      icon: CheckCircle,
+    },
 
+    {
+      title: "Rejected",
+      value:
+        applications.filter(
+          (item) =>
+            item.status === "REJECTED"
+        ).length,
+      icon: XCircle,
+    },
 
+  ];
 
 
+  // =====================================================
+  // VIEW DETAILS
+  // =====================================================
 
-const stats=[
+  const viewAdmissionDetails = (item) => {
 
+    navigate(
+      "/super-admin/admission-details",
+      {
+        state: {
+          student: item,
+        },
+      }
+    );
 
-{
-title:"Total Applications",
-value:applications.length,
-icon:Users
-},
+  };
 
 
-{
-title:"Pending",
-value:
+  // =====================================================
+  // RENDER
+  // =====================================================
 
-applications.filter(
+  return (
 
-x=>
+    <div
+      className="
+        min-h-screen
+        bg-[#07131f]
+        text-white
+        p-4
+        sm:p-6
+        lg:p-10
+      "
+    >
 
-x.status==="Pending Approval"
+      {/* =================================================
+          HEADER
+      ================================================= */}
 
-).length,
+      <div>
 
-icon:Clock
+        <h1
+          className="
+            text-3xl
+            sm:text-4xl
+            lg:text-5xl
+            font-black
+          "
+        >
+          Admissions Management
+        </h1>
 
-},
+        <p
+          className="
+            text-slate-400
+            mt-2
+          "
+        >
+          Review, approve and manage student
+          admission requests.
+        </p>
 
+      </div>
 
 
-{
-title:"Approved",
-value:
+      {/* =================================================
+          STAT CARDS
+      ================================================= */}
 
-applications.filter(
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-4
+          gap-5
+          mt-8
+        "
+      >
 
-x=>
+        {stats.map((item, index) => {
 
-x.status==="Approved"
+          const Icon = item.icon;
 
-).length,
+          return (
 
-icon:CheckCircle
+            <motion.div
+              key={index}
+              whileHover={{
+                y: -5,
+              }}
+              className="
+                bg-[#102235]
+                border
+                border-slate-700
+                rounded-3xl
+                p-5
+              "
+            >
 
-},
+              <div
+                className="
+                  flex
+                  justify-between
+                  items-center
+                "
+              >
 
+                <div>
 
+                  <p
+                    className="
+                      text-slate-400
+                      text-sm
+                    "
+                  >
+                    {item.title}
+                  </p>
 
-{
-title:"Rejected",
-value:
+                  <h2
+                    className="
+                      text-3xl
+                      font-black
+                      mt-2
+                    "
+                  >
+                    {item.value}
+                  </h2>
 
-applications.filter(
+                </div>
 
-x=>
 
-x.status==="Rejected"
+                <div
+                  className="
+                    bg-teal-500/20
+                    p-3
+                    rounded-xl
+                  "
+                >
 
-).length,
+                  <Icon
+                    size={25}
+                    className="text-teal-400"
+                  />
 
-icon:XCircle
+                </div>
 
-}
+              </div>
 
+            </motion.div>
 
-];
+          );
 
+        })}
 
+      </div>
 
 
+      {/* =================================================
+          FILTER SECTION
+      ================================================= */}
 
+      <div
+        className="
+          mt-8
+          bg-[#102235]
+          border
+          border-slate-700
+          rounded-3xl
+          p-4
+          sm:p-6
+          grid
+          grid-cols-1
+          md:grid-cols-3
+          gap-4
+        "
+      >
 
+        {/* SEARCH */}
 
+        <div
+          className="
+            flex
+            items-center
+            gap-3
+            bg-[#07131f]
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+          "
+        >
 
+          <Search
+            size={20}
+            className="text-slate-400"
+          />
 
-return(
+          <input
+            placeholder="Search student..."
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
+            className="
+              w-full
+              bg-transparent
+              outline-none
+              py-3
+            "
+          />
 
+        </div>
 
-<div
 
-className="
-min-h-screen
-bg-[#07131f]
-text-white
-p-4
-sm:p-6
-lg:p-10
-"
+        {/* STATUS */}
 
->
+        <select
+          value={status}
+          onChange={(e) =>
+            setStatus(e.target.value)
+          }
+          className="
+            bg-[#07131f]
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            outline-none
+          "
+        >
 
+          <option value="All">
+            All Status
+          </option>
 
+          <option value="PENDING">
+            Pending
+          </option>
 
+          <option value="APPROVED">
+            Approved
+          </option>
 
+          <option value="REJECTED">
+            Rejected
+          </option>
 
-{/* HEADER */}
+        </select>
 
 
-<div>
+        {/* BRANCH */}
 
+        <select
+          value={branch}
+          onChange={(e) =>
+            setBranch(e.target.value)
+          }
+          className="
+            bg-[#07131f]
+            border
+            border-slate-700
+            rounded-xl
+            px-4
+            py-3
+            outline-none
+          "
+        >
 
-<h1
+          <option value="All">
+            All Branches
+          </option>
 
-className="
-text-3xl
-sm:text-4xl
-lg:text-5xl
-font-black
-"
+          {branches.map((branchName) => (
 
->
+            <option
+              key={branchName}
+              value={branchName}
+            >
+              {branchName}
+            </option>
 
-Admissions Management
+          ))}
 
-</h1>
+        </select>
 
+      </div>
 
-<p
 
-className="
-text-slate-400
-mt-2
-"
+      {/* =================================================
+          LOADING
+      ================================================= */}
 
->
+      {loading && (
 
-Review, approve and manage student admission requests.
+        <div
+          className="
+            mt-8
+            bg-[#102235]
+            border
+            border-slate-700
+            rounded-3xl
+            p-10
+            text-center
+          "
+        >
 
-</p>
+          <div
+            className="
+              animate-spin
+              w-10
+              h-10
+              border-4
+              border-slate-600
+              border-t-teal-400
+              rounded-full
+              mx-auto
+            "
+          />
 
+          <p
+            className="
+              text-slate-400
+              mt-4
+            "
+          >
+            Loading admissions...
+          </p>
 
-</div>
+        </div>
 
+      )}
 
 
+      {/* =================================================
+          NO APPLICATIONS
+      ================================================= */}
 
+      {!loading &&
+        filteredApplications.length === 0 && (
 
+          <div
+            className="
+              mt-8
+              bg-[#102235]
+              border
+              border-slate-700
+              rounded-3xl
+              p-10
+              text-center
+              text-slate-400
+            "
+          >
 
+            <FileText
+              size={45}
+              className="
+                mx-auto
+                mb-4
+                text-slate-600
+              "
+            />
 
+            <p className="text-lg">
+              No admission applications found.
+            </p>
+
+            {applications.length === 0 && (
+
+              <p
+                className="
+                  text-sm
+                  mt-2
+                  text-slate-500
+                "
+              >
+                There are currently no admission
+                records in the database.
+              </p>
+
+            )}
+
+          </div>
+
+        )}
 
 
-{/* STATS */}
+      {/* =================================================
+          APPLICATION CARDS
+      ================================================= */}
 
+      {!loading &&
+        filteredApplications.length > 0 && (
+
+          <div
+            className="
+              mt-8
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              xl:grid-cols-3
+              gap-6
+            "
+          >
+
+            {filteredApplications.map((item) => (
 
+              <motion.div
+                key={item.id}
+                whileHover={{
+                  y: -6,
+                }}
+                className="
+                  bg-[#102235]
+                  border
+                  border-slate-700
+                  rounded-3xl
+                  p-5
+                  flex
+                  flex-col
+                  justify-between
+                "
+              >
+
+                <div>
 
-<div
+                  {/* TOP */}
 
-className="
-grid
-grid-cols-1
-sm:grid-cols-2
-lg:grid-cols-4
-gap-5
-mt-8
-"
+                  <div
+                    className="
+                      flex
+                      justify-between
+                      items-start
+                    "
+                  >
 
->
+                    <div
+                      className="
+                        bg-teal-500/20
+                        p-4
+                        rounded-2xl
+                      "
+                    >
+
+                      <FileText
+                        size={28}
+                        className="
+                          text-teal-400
+                        "
+                      />
 
+                    </div>
 
-{
 
-stats.map((item,index)=>{
+                    <span
+                      className={`
+                        px-4
+                        py-2
+                        rounded-full
+                        text-sm
+                        font-semibold
+                        ${statusStyle(item.status)}
+                      `}
+                    >
+                      {displayStatus(item.status)}
+                    </span>
 
+                  </div>
 
-const Icon=item.icon;
 
+                  {/* STUDENT NAME */}
 
-return(
+                  <h2
+                    className="
+                      text-2xl
+                      font-bold
+                      mt-6
+                    "
+                  >
+                    {item.student_name ||
+                      "Unknown Student"}
+                  </h2>
 
 
-<motion.div
+                  {/* EMAIL */}
 
-key={index}
+                  <p
+                    className="
+                      text-slate-400
+                      break-all
+                    "
+                  >
+                    {item.email || "N/A"}
+                  </p>
 
-whileHover={{
-y:-5
-}}
 
-className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-5
-"
+                  {/* DETAILS */}
 
->
+                  <div
+                    className="
+                      mt-6
+                      space-y-4
+                    "
+                  >
 
+                    {/* STUDENT CODE */}
 
-<div
+                    <p>
 
-className="
-flex
-justify-between
-items-center
-"
+                      <span
+                        className="
+                          text-slate-400
+                        "
+                      >
+                        Student Code:
+                      </span>
 
->
+                      <span className="ml-2">
+                        {item.student_code ||
+                          "N/A"}
+                      </span>
 
+                    </p>
 
-<div>
 
+                    {/* BRANCH */}
 
-<p
+                    <p
+                      className="
+                        flex
+                        gap-3
+                        items-center
+                      "
+                    >
 
-className="
-text-slate-400
-text-sm
-"
+                      <MapPin
+                        size={18}
+                        className="
+                          text-teal-400
+                        "
+                      />
 
->
+                      {item.branch_name ||
+                        "Not Assigned"}
 
-{item.title}
+                    </p>
 
-</p>
 
+                    {/* STATUS */}
 
+                    <p>
 
-<h2
+                      <span
+                        className="
+                          text-slate-400
+                        "
+                      >
+                        Status:
+                      </span>
 
-className="
-text-3xl
-font-black
-mt-2
-"
+                      <span className="ml-2">
+                        {displayStatus(
+                          item.status
+                        )}
+                      </span>
 
->
+                    </p>
 
-{item.value}
 
-</h2>
+                    {/* APPROVED DATE */}
 
+                    {item.approved_date && (
 
-</div>
+                      <p>
 
+                        <span
+                          className="
+                            text-slate-400
+                          "
+                        >
+                          Updated:
+                        </span>
 
+                        <span className="ml-2">
 
+                          {new Date(
+                            item.approved_date
+                          ).toLocaleDateString()}
 
-<div
+                        </span>
 
-className="
-bg-teal-500/20
-p-3
-rounded-xl
-"
+                      </p>
 
->
+                    )}
 
+                  </div>
 
-<Icon
+                </div>
 
-size={25}
 
-className="
-text-teal-400
-"
+                {/* =================================================
+                    ACTION BUTTONS
+                ================================================= */}
 
-/>
+                <div
+                  className="
+                    mt-8
+                    flex
+                    gap-3
+                    flex-wrap
+                  "
+                >
 
+                  {/* VIEW */}
 
-</div>
+                  <button
+                    onClick={() =>
+                      viewAdmissionDetails(item)
+                    }
+                    className="
+                      flex-1
+                      min-w-[100px]
+                      h-12
+                      rounded-xl
+                      border
+                      border-slate-600
+                      flex
+                      items-center
+                      justify-center
+                      gap-2
+                      hover:bg-slate-800
+                      transition
+                    "
+                  >
 
+                    <Eye size={18} />
+
+                    View
 
+                  </button>
 
-</div>
 
+                  {/* PENDING ACTIONS */}
 
-</motion.div>
+                  {item.status === "PENDING" && (
 
+                    <>
 
-)
+                      {/* APPROVE */}
 
-})
+                      <button
+                        disabled={
+                          actionLoading === item.id
+                        }
+                        onClick={() =>
+                          approveApplication(
+                            item.id
+                          )
+                        }
+                        className="
+                          flex-1
+                          min-w-[100px]
+                          h-12
+                          rounded-xl
+                          bg-green-500
+                          hover:bg-green-600
+                          flex
+                          items-center
+                          justify-center
+                          gap-2
+                          font-semibold
+                          disabled:opacity-50
+                        "
+                      >
 
-}
+                        {actionLoading ===
+                        item.id ? (
 
+                          "Processing..."
 
-</div>
+                        ) : (
 
+                          <>
+                            <CheckCircle
+                              size={18}
+                            />
 
+                            Approve
+                          </>
 
+                        )}
 
+                      </button>
 
 
+                      {/* REJECT */}
 
+                      <button
+                        disabled={
+                          actionLoading === item.id
+                        }
+                        onClick={() =>
+                          rejectApplication(
+                            item.id
+                          )
+                        }
+                        className="
+                          flex-1
+                          min-w-[100px]
+                          h-12
+                          rounded-xl
+                          bg-red-500
+                          hover:bg-red-600
+                          flex
+                          items-center
+                          justify-center
+                          gap-2
+                          font-semibold
+                          disabled:opacity-50
+                        "
+                      >
 
+                        {actionLoading ===
+                        item.id ? (
 
-{/* FILTER */}
+                          "Processing..."
 
+                        ) : (
 
+                          <>
+                            <XCircle
+                              size={18}
+                            />
 
-<div
+                            Reject
+                          </>
 
-className="
-mt-8
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-4
-sm:p-6
-grid
-grid-cols-1
-md:grid-cols-3
-gap-4
-"
+                        )}
 
->
+                      </button>
 
+                    </>
 
+                  )}
 
-<div
 
-className="
-flex
-items-center
-gap-3
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-px-4
-"
+                  {/* APPROVED → RECEIPT */}
 
->
+                  {item.status === "APPROVED" && (
 
+                    <button
+                      onClick={() =>
+                        generateReceipt(item)
+                      }
+                      className="
+                        flex-1
+                        min-w-[100px]
+                        h-12
+                        rounded-xl
+                        bg-teal-500
+                        hover:bg-teal-600
+                        flex
+                        items-center
+                        justify-center
+                        gap-2
+                        font-semibold
+                      "
+                    >
 
-<Search
+                      <Download
+                        size={18}
+                      />
 
-size={20}
+                      Receipt
 
-className="text-slate-400"
+                    </button>
 
-/>
+                  )}
 
+                </div>
 
+              </motion.div>
 
-<input
+            ))}
 
-placeholder="Search student..."
+          </div>
 
-value={search}
+        )}
 
-onChange={(e)=>
-setSearch(e.target.value)
-}
+    </div>
 
-
-className="
-w-full
-bg-transparent
-outline-none
-py-3
-"
-
- />
-
-
-</div>
-
-
-
-
-
-
-
-<select
-
-value={status}
-
-onChange={(e)=>setStatus(e.target.value)}
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-px-4
-py-3
-"
-
->
-
-
-<option value="All">
-All Status
-</option>
-
-<option value="Pending Approval">
-Pending
-</option>
-
-<option value="Approved">
-Approved
-</option>
-
-<option value="Rejected">
-Rejected
-</option>
-
-
-</select>
-
-
-
-
-
-
-
-
-<select
-
-value={branch}
-
-onChange={(e)=>setBranch(e.target.value)}
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-px-4
-py-3
-"
-
->
-
-
-<option value="All">
-All Branches
-</option>
-
-
-<option>
-Pune Camp
-</option>
-
-
-<option>
-Mumbai Central
-</option>
-
-
-<option>
-Nashik Road
-</option>
-
-
-</select>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* CARDS */}
-
-
-
-<div
-
-className="
-mt-8
-grid
-grid-cols-1
-sm:grid-cols-2
-xl:grid-cols-3
-gap-6
-"
-
->
-
-
-{
-
-filteredApplications.length===0 &&
-
-<div
-
-className="
-col-span-full
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-10
-text-center
-text-slate-400
-"
-
->
-
-No admission applications found.
-
-</div>
-
-
-}
-
-
-
-
-
-
-{
-
-filteredApplications.map((item)=>(
-
-
-<motion.div
-
-
-key={item.id}
-
-
-whileHover={{
-y:-6
-}}
-
-
-className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-5
-flex
-flex-col
-justify-between
-"
-
-
->
-
-
-<div>
-
-
-<div
-
-className="
-flex
-justify-between
-items-start
-"
-
->
-
-
-<div
-
-className="
-bg-teal-500/20
-p-4
-rounded-2xl
-"
-
->
-
-
-<FileText
-
-size={28}
-
-className="
-text-teal-400
-"
-
-/>
-
-
-</div>
-
-
-
-
-
-
-<span
-
-className={`
-px-4
-py-2
-rounded-full
-text-sm
-font-semibold
-${statusStyle(item.status)}
-`}
-
->
-
-{item.status}
-
-</span>
-
-
-
-</div>
-
-
-
-
-
-
-
-<h2
-
-className="
-text-2xl
-font-bold
-mt-6
-"
-
->
-
-{item.name}
-
-</h2>
-
-
-
-<p
-
-className="
-text-slate-400
-break-all
-"
-
->
-
-{item.email}
-
-</p>
-
-
-
-
-
-
-
-<div
-
-className="
-mt-6
-space-y-4
-"
-
->
-
-
-<p className="
-flex
-gap-3
-items-center
-">
-
-<MapPin
-
-size={18}
-
-className="text-teal-400"
-
-/>
-
-
-{item.branch || "Not Assigned"}
-
-</p>
-
-
-
-
-
-<p>
-
-<span className="text-slate-400">
-
-Program:
-
-</span>
-
-
-<span className="ml-2">
-
-{item.program || "Not Assigned"}
-
-</span>
-
-</p>
-
-
-
-
-
-<p>
-
-<span className="text-slate-400">
-
-Applied:
-
-</span>
-
-
-<span className="ml-2">
-
-{item.submittedAt || "N/A"}
-
-</span>
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-className="
-mt-8
-flex
-gap-3
-flex-wrap
-"
-
->
-
-
-
-
-
-
-<button
-
-
-onClick={()=>navigate(
-
-"/super-admin/admission-details",
-
-{
-
-state:{
-student:item
-}
-
-}
-
-)}
-
-
-className="
-flex-1
-h-12
-rounded-xl
-border
-border-slate-600
-flex
-items-center
-justify-center
-gap-2
-hover:bg-slate-800
-"
-
->
-
-
-<Eye size={18}/>
-
-View
-
-
-</button>
-
-
-
-
-
-
-
-
-{
-
-item.status==="Pending Approval" &&
-
-<>
-
-
-<button
-
-onClick={()=>approveApplication(item.id)}
-
-className="
-flex-1
-h-12
-rounded-xl
-bg-green-500
-flex
-items-center
-justify-center
-gap-2
-font-semibold
-"
-
->
-
-<CheckCircle size={18}/>
-
-Approve
-
-</button>
-
-
-
-
-<button
-
-onClick={()=>rejectApplication(item.id)}
-
-className="
-flex-1
-h-12
-rounded-xl
-bg-red-500
-flex
-items-center
-justify-center
-gap-2
-font-semibold
-"
-
->
-
-
-<XCircle size={18}/>
-
-Reject
-
-
-</button>
-
-
-</>
-
-}
-
-
-
-
-
-
-
-{
-
-item.status==="Approved" &&
-
-
-<button
-
-
-onClick={()=>generateReceipt(item)}
-
-
-className="
-flex-1
-h-12
-rounded-xl
-bg-teal-500
-flex
-items-center
-justify-center
-gap-2
-font-semibold
-"
-
->
-
-
-<Download size={18}/>
-
-Receipt
-
-
-</button>
-
-
-}
-
-
-
-</div>
-
-
-
-
-
-</motion.div>
-
-
-))
-
-
-}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-</div>
-
-
-);
-
+  );
 
 }
