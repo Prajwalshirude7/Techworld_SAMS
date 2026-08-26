@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 import {
   Users,
   Building2,
@@ -26,8 +28,40 @@ export default function SuperAdminDashboard(){
 
 
 const navigate = useNavigate();
+const [dashboardData, setDashboardData] = useState(null);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
 
+useEffect(() => {
+  const fetchDashboard = async () => {
+    try {
+      setLoading(true);
 
+      const response = await api.get("/admin/dashboard");
+
+      console.log("Dashboard API Response:", response.data);
+
+      if (response.data.success) {
+        setDashboardData(response.data.data);
+      } else {
+        setError("Failed to load dashboard data");
+      }
+
+    } catch (err) {
+      console.error("Dashboard API Error:", err);
+
+      setError(
+        err.response?.data?.message ||
+        "Failed to load dashboard data"
+      );
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDashboard();
+}, []);
 
 const stats=[
 

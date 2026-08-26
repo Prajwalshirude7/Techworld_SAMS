@@ -18,678 +18,641 @@ import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
 
-export default function Register(){
+export default function Register() {
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
 
-const [showPassword,setShowPassword] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] =
+    useState("");
 
-const [showConfirmPassword,setShowConfirmPassword] =
-useState(false);
+  const [loading, setLoading] = useState(false);
 
 
-const [name,setName] = useState("");
-const [email,setEmail] = useState("");
-const [phone,setPhone] = useState("");
-const [password,setPassword] = useState("");
-const [confirmPassword,setConfirmPassword] = useState("");
+  // ================= REGISTER =================
 
+  const handleRegister = async (e) => {
 
+    e.preventDefault();
 
 
+    // ================= VALIDATION =================
 
-const handleRegister=(e)=>{
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !password ||
+      !confirmPassword
+    ) {
 
-e.preventDefault();
+      toast.error("Please fill all fields");
 
+      return;
+    }
 
 
-if(
-!name ||
-!email ||
-!phone ||
-!password ||
-!confirmPassword
-){
+    if (password !== confirmPassword) {
 
-toast.error(
-"Please fill all fields"
-);
+      toast.error("Passwords do not match");
 
-return;
+      return;
+    }
 
-}
 
+    if (phone.length !== 10) {
 
+      toast.error(
+        "Please enter a valid 10-digit mobile number"
+      );
 
-if(password !== confirmPassword){
+      return;
+    }
 
-toast.error(
-"Passwords do not match"
-);
 
-return;
+    try {
 
-}
+      setLoading(true);
 
 
+      // ================= API CALL =================
 
+      const response = await fetch(
+        "http://localhost:5001/api/auth/register",
+        {
+          method: "POST",
 
-const user={
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-name,
-email,
-phone,
-password,
-role_id:3
+          body: JSON.stringify({
 
-};
+            name: name,
 
+            email: email,
 
+            phone: phone,
 
-localStorage.setItem(
-"user",
-JSON.stringify(user)
-);
+            password: password,
 
-// Clear previous student's admission data
+            // 3 = STUDENT
+            role_id: 3,
 
-localStorage.removeItem("admissionStatus");
+            // Testing branch
+            branch_id: 1,
 
-localStorage.removeItem("admissionApplication");
+          }),
+        }
+      );
 
-localStorage.removeItem("admissionStudent");
 
+      const data = await response.json();
 
 
-localStorage.setItem(
-"studentName",
-name
-);
+      console.log(
+        "REGISTER RESPONSE:",
+        data
+      );
 
 
+      // ================= API ERROR =================
 
-toast.success(
-"User registered successfully!"
-);
+      if (!response.ok) {
 
+        toast.error(
+          data.message ||
+          "Registration failed"
+        );
 
+        return;
+      }
 
-setTimeout(()=>{
 
-navigate("/login");
+      // ================= SUCCESS =================
 
-},1000);
+      toast.success(
+        "Registration successful!"
+      );
 
 
+      // Store only non-sensitive information
+      localStorage.setItem(
+        "studentName",
+        name
+      );
 
-};
 
+      // Clear form
 
+      setName("");
+      setEmail("");
+      setPhone("");
+      setPassword("");
+      setConfirmPassword("");
 
 
+      // Go to login
 
+      setTimeout(() => {
 
-return(
+        navigate("/login");
 
-<div
+      }, 1000);
 
-className="
-min-h-screen
-bg-[#08131E]
-relative
-overflow-hidden
-flex
-items-center
-justify-center
-px-6
-"
 
->
+    } catch (error) {
 
+      console.error(
+        "REGISTER ERROR:",
+        error
+      );
 
 
-{/* Background Glow */}
+      toast.error(
+        "Unable to connect to server. Please check backend."
+      );
 
 
-<div
+    } finally {
 
-className="
-absolute
-w-96
-h-96
-bg-teal-500/20
-rounded-full
-blur-[150px]
--top-24
--left-24
-"
+      setLoading(false);
 
-/>
+    }
 
+  };
 
-<div
 
-className="
-absolute
-w-80
-h-80
-bg-cyan-500/20
-rounded-full
-blur-[150px]
-bottom-0
-right-0
-"
+  return (
 
-/>
+    <div
+      className="
+        min-h-screen
+        bg-[#08131E]
+        relative
+        overflow-hidden
+        flex
+        items-center
+        justify-center
+        px-6
+      "
+    >
 
+      {/* ================= BACKGROUND GLOW ================= */}
 
+      <div
+        className="
+          absolute
+          w-96
+          h-96
+          bg-teal-500/20
+          rounded-full
+          blur-[150px]
+          -top-24
+          -left-24
+        "
+      />
 
 
+      <div
+        className="
+          absolute
+          w-80
+          h-80
+          bg-cyan-500/20
+          rounded-full
+          blur-[150px]
+          bottom-0
+          right-0
+        "
+      />
 
-<div
 
-className="
-relative
-z-10
-w-full
-max-w-7xl
-grid
-lg:grid-cols-2
-gap-16
-items-center
-"
+      {/* ================= MAIN CONTAINER ================= */}
 
->
+      <div
+        className="
+          relative
+          z-10
+          w-full
+          max-w-7xl
+          grid
+          lg:grid-cols-2
+          gap-16
+          items-center
+        "
+      >
 
 
+        {/* ================= LEFT SECTION ================= */}
 
+        <motion.div
 
-{/* LEFT SECTION */}
+          initial={{
+            opacity: 0,
+            x: -60,
+          }}
 
+          animate={{
+            opacity: 1,
+            x: 0,
+          }}
 
+          transition={{
+            duration: 0.8,
+          }}
 
-<motion.div
+          className="
+            hidden
+            lg:block
+          "
+        >
 
-initial={{
-opacity:0,
-x:-60
-}}
+          <h1
+            className="
+              text-6xl
+              font-bold
+              text-white
+              leading-tight
+            "
+          >
 
-animate={{
-opacity:1,
-x:0
-}}
+            Join the
 
-transition={{
-duration:0.8
-}}
+            <span
+              className="
+                block
+                text-teal-400
+              "
+            >
+              Skating Academy
+            </span>
 
-className="
-hidden
-lg:block
-"
+          </h1>
 
->
 
+          <p
+            className="
+              mt-6
+              text-slate-300
+              text-lg
+              leading-8
+            "
+          >
 
-<h1
+            Create your account and start your journey with
+            professional coaching and modern management.
 
-className="
-text-6xl
-font-bold
-text-white
-leading-tight
-"
+          </p>
 
->
 
-Join the
+          <div
+            className="
+              mt-10
+              space-y-4
+            "
+          >
 
-<span
+            {[
+              "Professional Coaching",
+              "Competition Training",
+              "Progress Tracking",
+            ].map((item) => (
 
-className="
-block
-text-teal-400
-"
+              <div
+                key={item}
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
 
->
+                <div
+                  className="
+                    w-3
+                    h-3
+                    rounded-full
+                    bg-teal-400
+                  "
+                />
 
-Skating Academy
+                <p className="text-white">
+                  {item}
+                </p>
 
-</span>
+              </div>
 
+            ))}
 
-</h1>
+          </div>
 
+        </motion.div>
 
 
-<p
+        {/* ================= REGISTER CARD ================= */}
 
-className="
-mt-6
-text-slate-300
-text-lg
-leading-8
-"
+        <AuthCard>
 
->
+          <div
+            className="
+              bg-[#102235]
+              border
+              border-teal-500/20
+              rounded-3xl
+              p-10
+              shadow-2xl
+            "
+          >
 
-Create your account and start your journey with
-professional coaching and modern management.
+            <motion.h2
 
-</p>
+              initial={{
+                opacity: 0,
+                y: -15,
+              }}
 
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
 
+              className="
+                text-3xl
+                font-bold
+                text-center
+                text-white
+              "
+            >
 
+              Create Account
 
-<div
+            </motion.h2>
 
-className="
-mt-10
-space-y-4
-"
 
->
+            <p
+              className="
+                text-center
+                text-slate-400
+                mt-2
+                mb-8
+              "
+            >
 
+              Register to continue
 
-{
+            </p>
 
-[
-"Professional Coaching",
-"Competition Training",
-"Progress Tracking"
 
-].map((item)=>(
+            <form
+              onSubmit={handleRegister}
+              className="space-y-5"
+            >
 
 
-<div
+              {/* ================= NAME ================= */}
 
-key={item}
+              <AuthInput
 
-className="
-flex
-items-center
-gap-3
-"
+                icon={User}
 
->
+                type="text"
 
+                placeholder="Full Name"
 
-<div
+                value={name}
 
-className="
-w-3
-h-3
-rounded-full
-bg-teal-400
-"
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
 
-/>
+              />
 
 
-<p className="text-white">
+              {/* ================= EMAIL ================= */}
 
-{item}
+              <AuthInput
 
-</p>
+                icon={Mail}
 
+                type="email"
 
-</div>
+                placeholder="Email Address"
 
+                value={email}
 
-))
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
 
+              />
 
-}
 
+              {/* ================= PHONE ================= */}
 
+              <AuthInput
 
-</div>
+                icon={Phone}
 
+                type="tel"
 
-</motion.div>
+                placeholder="Mobile Number"
 
+                value={phone}
 
+                onChange={(e) =>
+                  setPhone(e.target.value)
+                }
 
+              />
 
 
+              {/* ================= PASSWORD ================= */}
 
+              <div className="relative">
 
+                <AuthInput
 
+                  icon={Lock}
 
-{/* REGISTER CARD */}
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
 
+                  placeholder="Password"
 
+                  value={password}
 
-<AuthCard>
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
 
+                />
 
-<div
 
-className="
-bg-[#102235]
-border
-border-teal-500/20
-rounded-3xl
-p-10
-shadow-2xl
-"
+                <button
 
->
+                  type="button"
 
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
 
+                  className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-slate-400
+                    hover:text-teal-400
+                  "
+                >
 
-<motion.h2
+                  {showPassword ? (
 
-initial={{
-opacity:0,
-y:-15
-}}
+                    <EyeOff size={20} />
 
-animate={{
-opacity:1,
-y:0
-}}
+                  ) : (
 
-className="
-text-3xl
-font-bold
-text-center
-text-white
-"
+                    <Eye size={20} />
 
->
+                  )}
 
-Create Account
+                </button>
 
-</motion.h2>
+              </div>
 
 
+              {/* ================= CONFIRM PASSWORD ================= */}
 
-<p
+              <div className="relative">
 
-className="
-text-center
-text-slate-400
-mt-2
-mb-8
-"
+                <AuthInput
 
->
+                  icon={Lock}
 
-Register to continue
+                  type={
+                    showConfirmPassword
+                      ? "text"
+                      : "password"
+                  }
 
-</p>
+                  placeholder="Confirm Password"
 
+                  value={confirmPassword}
 
+                  onChange={(e) =>
+                    setConfirmPassword(
+                      e.target.value
+                    )
+                  }
 
+                />
 
 
+                <button
 
-<form
+                  type="button"
 
-onSubmit={handleRegister}
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
+                  }
 
-className="
-space-y-5
-"
+                  className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-slate-400
+                    hover:text-teal-400
+                  "
+                >
 
->
+                  {showConfirmPassword ? (
 
+                    <EyeOff size={20} />
 
+                  ) : (
 
+                    <Eye size={20} />
 
+                  )}
 
-<AuthInput
+                </button>
 
-icon={User}
+              </div>
 
-type="text"
 
-placeholder="Full Name"
+              {/* ================= REGISTER BUTTON ================= */}
 
-value={name}
+              <AuthButton
 
-onChange={(e)=>setName(e.target.value)}
+                type="submit"
 
-/>
+                disabled={loading}
 
+              >
 
+                {loading
+                  ? "Creating Account..."
+                  : "Create Account"}
 
+              </AuthButton>
 
 
-<AuthInput
+              {/* ================= LOGIN LINK ================= */}
 
-icon={Mail}
+              <p
+                className="
+                  text-center
+                  text-slate-400
+                "
+              >
 
-type="email"
+                Already have an account?{" "}
 
-placeholder="Email Address"
+                <Link
 
-value={email}
+                  to="/login"
 
-onChange={(e)=>setEmail(e.target.value)}
+                  className="
+                    text-teal-400
+                    font-semibold
+                    hover:text-teal-300
+                  "
+                >
 
-/>
+                  Login
 
+                </Link>
 
+              </p>
 
 
+            </form>
 
-<AuthInput
+          </div>
 
-icon={Phone}
+        </AuthCard>
 
-type="tel"
 
-placeholder="Mobile Number"
+      </div>
 
-value={phone}
+    </div>
 
-onChange={(e)=>setPhone(e.target.value)}
-
-/>
-
-
-
-
-
-
-
-<div className="relative">
-
-
-<AuthInput
-
-icon={Lock}
-
-type={
-showPassword
-?
-"text"
-:
-"password"
-}
-
-placeholder="Password"
-
-value={password}
-
-onChange={(e)=>setPassword(e.target.value)}
-
-/>
-
-
-<button
-
-type="button"
-
-onClick={()=>setShowPassword(!showPassword)}
-
-className="
-absolute
-right-4
-top-1/2
--translate-y-1/2
-text-slate-400
-hover:text-teal-400
-"
-
->
-
-
-{
-showPassword
-?
-<EyeOff size={20}/>
-:
-<Eye size={20}/>
-}
-
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="relative">
-
-
-<AuthInput
-
-icon={Lock}
-
-type={
-showConfirmPassword
-?
-"text"
-:
-"password"
-}
-
-placeholder="Confirm Password"
-
-value={confirmPassword}
-
-onChange={(e)=>setConfirmPassword(e.target.value)}
-
-/>
-
-
-
-<button
-
-type="button"
-
-onClick={()=>setShowConfirmPassword(!showConfirmPassword)}
-
-className="
-absolute
-right-4
-top-1/2
--translate-y-1/2
-text-slate-400
-hover:text-teal-400
-"
-
->
-
-
-{
-showConfirmPassword
-?
-<EyeOff size={20}/>
-:
-<Eye size={20}/>
-}
-
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-
-<AuthButton type="submit">
-
-Create Account
-
-</AuthButton>
-
-
-
-
-
-
-<p
-
-className="
-text-center
-text-slate-400
-"
-
->
-
-Already have an account?{" "}
-
-
-<Link
-
-to="/login"
-
-className="
-text-teal-400
-font-semibold
-"
-
->
-
-Login
-
-</Link>
-
-
-</p>
-
-
-
-
-
-</form>
-
-
-
-</div>
-
-
-
-</AuthCard>
-
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-);
-
+  );
 
 }

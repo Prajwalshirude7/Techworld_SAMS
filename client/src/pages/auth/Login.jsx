@@ -16,767 +16,636 @@ import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
 
-export default function Login(){
+export default function Login() {
 
+  const navigate = useNavigate();
 
-const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-const [showPassword,setShowPassword]=useState(false);
+  const [loading, setLoading] = useState(false);
 
-const [email,setEmail]=useState("");
-const [password,setPassword]=useState("");
 
+  const handleLogin = async (e) => {
 
+    e.preventDefault();
 
 
+    if (!email || !password) {
 
-const handleLogin=(e)=>{
+      toast.error(
+        "Please enter email and password."
+      );
 
-e.preventDefault();
+      return;
 
+    }
 
-if(!email || !password){
 
-toast.error(
-"Please enter email and password."
-);
+    try {
 
-return;
+      setLoading(true);
 
-}
 
+      const response = await fetch(
+        "http://localhost:5001/api/auth/login",
+        {
+          method: "POST",
 
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-const savedUser = JSON.parse(
-localStorage.getItem("user")
-);
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+        }
+      );
 
 
+      const data =
+        await response.json();
 
-if(
 
-savedUser &&
+      console.log(
+        "LOGIN RESPONSE:",
+        data
+      );
 
-savedUser.email === email &&
 
-savedUser.password === password
+      if (!response.ok) {
 
-){
+        toast.error(
+          data.message ||
+          "Login failed"
+        );
 
+        return;
 
-localStorage.setItem(
-"isLoggedIn",
-"true"
-);
+      }
 
 
-localStorage.setItem(
-"userRole",
-String(savedUser.role_id)
-);
+      if (!data.token) {
 
+        toast.error(
+          "Login successful but token was not received."
+        );
 
-localStorage.setItem(
-"studentName",
-savedUser.name
-);
+        return;
 
+      }
 
 
-toast.success(
-`Welcome ${savedUser.name}!`
-);
+      // ==============================
+      // STORE JWT TOKEN
+      // ==============================
 
+      localStorage.setItem(
+        "token",
+        data.token
+      );
 
 
-setTimeout(()=>{
+      // ==============================
+      // LOGIN STATE
+      // ==============================
 
-navigate("/student/dashboard");
+      localStorage.setItem(
+        "isLoggedIn",
+        "true"
+      );
 
-},800);
 
+      // ==============================
+      // USER ROLE
+      // ==============================
 
+      localStorage.setItem(
+        "userRole",
+        String(data.user.role_id)
+      );
 
-}
 
-else{
+      // ==============================
+      // USER ID
+      // ==============================
 
+      localStorage.setItem(
+        "userId",
+        String(data.user.id)
+      );
 
-toast.error(
-"Invalid email or password"
-);
 
+      // ==============================
+      // USER NAME
+      // ==============================
 
-}
+      localStorage.setItem(
+        "studentName",
+        data.user.name
+      );
 
 
-};
+      // ==============================
+      // USER OBJECT
+      // ==============================
 
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
 
 
+      toast.success(
+        `Welcome ${data.user.name}! Login successful!`
+      );
 
 
+      setTimeout(() => {
 
+        // SUPER ADMIN
 
-return(
+        if (
+          Number(data.user.role_id) === 1
+        ) {
 
+          navigate(
+            "/super-admin/dashboard"
+          );
 
+        }
 
-<div
+        // BRANCH ADMIN
 
-className="
-min-h-screen
-bg-[#08131E]
-relative
-overflow-hidden
-flex
-items-center
-justify-center
-px-4
-py-8
-"
+        else if (
+          Number(data.user.role_id) === 2
+        ) {
 
->
+          navigate(
+            "/admin/dashboard"
+          );
 
+        }
 
+        // STUDENT
 
-{/* BACKGROUND GLOW */}
+        else if (
+          Number(data.user.role_id) === 3
+        ) {
 
+          navigate(
+            "/student/dashboard"
+          );
 
+        }
 
-<div
+        // UNKNOWN ROLE
 
-className="
-absolute
-w-72
-h-72
-sm:w-96
-sm:h-96
-bg-teal-500/20
-rounded-full
-blur-[120px]
-top-0
-left-0
-"
+        else {
 
-/>
+          navigate("/");
 
+        }
 
+      }, 1000);
 
-<div
 
-className="
-absolute
-w-72
-h-72
-sm:w-80
-sm:h-80
-bg-cyan-500/20
-rounded-full
-blur-[120px]
-bottom-0
-right-0
-"
+    } catch (error) {
 
-/>
+      console.error(
+        "LOGIN ERROR:",
+        error
+      );
 
 
+      toast.error(
+        "Unable to connect to server. Please check backend."
+      );
 
 
+    } finally {
 
+      setLoading(false);
 
+    }
 
+  };
 
 
+  return (
 
-<div
+    <div
+      className="
+        min-h-screen
+        bg-[#08131E]
+        relative
+        overflow-hidden
+        flex
+        items-center
+        justify-center
+        px-6
+      "
+    >
 
-className="
-relative
-z-10
-w-full
-max-w-6xl
-grid
-lg:grid-cols-2
-gap-10
-items-center
-"
+      {/* BACKGROUND GLOW */}
 
->
+      <div
+        className="
+          absolute
+          w-96
+          h-96
+          bg-teal-500/20
+          rounded-full
+          blur-[150px]
+          -top-24
+          -left-24
+        "
+      />
 
 
+      <div
+        className="
+          absolute
+          w-80
+          h-80
+          bg-cyan-500/20
+          rounded-full
+          blur-[150px]
+          bottom-0
+          right-0
+        "
+      />
 
 
+      <div
+        className="
+          relative
+          z-10
+          w-full
+          max-w-7xl
+          grid
+          lg:grid-cols-2
+          gap-16
+          items-center
+        "
+      >
 
+        {/* LEFT SECTION */}
 
+        <motion.div
 
+          initial={{
+            opacity: 0,
+            x: -60,
+          }}
 
+          animate={{
+            opacity: 1,
+            x: 0,
+          }}
 
-{/* LEFT CONTENT */}
+          transition={{
+            duration: 0.8,
+          }}
 
+          className="
+            hidden
+            lg:block
+          "
+        >
 
+          <h1
+            className="
+              text-6xl
+              font-bold
+              text-white
+              leading-tight
+            "
+          >
 
-<motion.div
+            Welcome to
 
+            <span
+              className="
+                block
+                text-teal-400
+              "
+            >
+              SAMS Academy
+            </span>
 
-initial={{
-opacity:0,
-x:-40
-}}
+          </h1>
 
 
-animate={{
-opacity:1,
-x:0
-}}
+          <p
+            className="
+              mt-6
+              text-slate-300
+              text-lg
+              leading-8
+            "
+          >
 
+            Manage students, coaches, attendance,
+            fees and competitions through one
+            modern management system.
 
-transition={{
-duration:0.7
-}}
+          </p>
 
 
-className="
-hidden
-lg:block
-"
+          <div
+            className="
+              mt-10
+              space-y-4
+            "
+          >
 
->
+            {[
+              "Professional Coaches",
+              "Smart Student Management",
+              "Attendance & Fee Tracking",
+            ].map((item) => (
 
+              <div
+                key={item}
+                className="
+                  flex
+                  items-center
+                  gap-3
+                "
+              >
 
+                <div
+                  className="
+                    w-3
+                    h-3
+                    rounded-full
+                    bg-teal-400
+                  "
+                />
 
-<h1
+                <p className="text-white">
+                  {item}
+                </p>
 
-className="
-text-5xl
-xl:text-6xl
-font-black
-text-white
-leading-tight
-"
+              </div>
 
->
+            ))}
 
-Welcome to
+          </div>
 
-<span
+        </motion.div>
 
-className="
-block
-text-teal-400
-"
 
->
+        {/* LOGIN CARD */}
 
-SAMS Academy
+        <AuthCard>
 
-</span>
+          <div
+            className="
+              bg-[#102235]
+              border
+              border-teal-500/20
+              rounded-3xl
+              p-10
+              shadow-2xl
+            "
+          >
 
+            <motion.h2
 
-</h1>
+              initial={{
+                opacity: 0,
+                y: -15,
+              }}
 
+              animate={{
+                opacity: 1,
+                y: 0,
+              }}
 
+              className="
+                text-3xl
+                font-bold
+                text-center
+                text-white
+              "
+            >
 
+              Welcome Back
 
+            </motion.h2>
 
-<p
 
-className="
-mt-6
-text-slate-300
-text-lg
-max-w-lg
-leading-8
-"
+            <p
+              className="
+                text-center
+                text-slate-400
+                mt-2
+                mb-8
+              "
+            >
 
->
+              Sign in to continue
 
-Manage students, coaches, attendance,
-fees and competitions through one
-modern management system.
+            </p>
 
-</p>
 
+            <form
+              onSubmit={handleLogin}
+              className="space-y-5"
+            >
 
+              {/* EMAIL */}
 
+              <AuthInput
 
+                icon={Mail}
 
-<div
+                type="email"
 
-className="
-mt-8
-space-y-4
-"
+                placeholder="Enter Email"
 
->
+                value={email}
 
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
 
-{
+              />
 
-[
-"Professional Coaches",
-"Smart Student Management",
-"Attendance & Fee Tracking"
 
-].map((item)=>(
+              {/* PASSWORD */}
 
+              <div className="relative">
 
-<div
+                <AuthInput
 
-key={item}
+                  icon={Lock}
 
-className="
-flex
-items-center
-gap-3
-"
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
 
->
+                  placeholder="Enter Password"
 
+                  value={password}
 
-<div
+                  onChange={(e) =>
+                    setPassword(e.target.value)
+                  }
 
-className="
-w-3
-h-3
-rounded-full
-bg-teal-400
-"
+                />
 
-/>
 
+                <button
 
-<p
+                  type="button"
 
-className="
-text-white
-"
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
 
->
+                  className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-slate-400
+                    hover:text-teal-400
+                  "
+                >
 
-{item}
+                  {showPassword ? (
 
-</p>
+                    <EyeOff
+                      size={20}
+                    />
 
+                  ) : (
 
-</div>
+                    <Eye
+                      size={20}
+                    />
 
+                  )}
 
-))
+                </button>
 
+              </div>
 
-}
 
+              {/* OPTIONS */}
 
+              <div
+                className="
+                  flex
+                  justify-between
+                  items-center
+                  text-sm
+                "
+              >
 
-</div>
+                <label
+                  className="
+                    flex
+                    items-center
+                    gap-2
+                    text-slate-300
+                  "
+                >
 
+                  <input
+                    type="checkbox"
+                    className="
+                      accent-teal-500
+                    "
+                  />
 
+                  Remember Me
 
+                </label>
 
 
-</motion.div>
+                <Link
 
+                  to="/forgot-password"
 
+                  className="
+                    text-teal-400
+                    hover:text-teal-300
+                  "
+                >
 
+                  Forgot Password?
 
+                </Link>
 
+              </div>
 
 
+              {/* LOGIN BUTTON */}
 
+              <AuthButton
 
+                type="submit"
 
+                disabled={loading}
 
+              >
 
+                {loading
+                  ? "Logging in..."
+                  : "Login"}
 
+              </AuthButton>
 
-{/* LOGIN CARD */}
 
+              {/* REGISTER */}
 
+              <p
+                className="
+                  text-center
+                  text-slate-400
+                "
+              >
 
+                Don't have an account?{" "}
 
+                <Link
 
-<AuthCard>
+                  to="/register"
 
+                  className="
+                    text-teal-400
+                    font-semibold
+                    hover:text-teal-300
+                  "
+                >
 
+                  Register
 
-<motion.div
+                </Link>
 
+              </p>
 
-initial={{
-opacity:0,
-y:30
-}}
+            </form>
 
+          </div>
 
-animate={{
-opacity:1,
-y:0
-}}
+        </AuthCard>
 
+      </div>
 
+    </div>
 
-className="
-w-full
-max-w-md
-mx-auto
-bg-[#102235]
-border
-border-teal-500/20
-rounded-3xl
-p-6
-sm:p-8
-shadow-2xl
-"
-
->
-
-
-
-
-
-<h2
-
-className="
-text-3xl
-sm:text-4xl
-font-black
-text-center
-text-white
-"
-
->
-
-Welcome Back
-
-</h2>
-
-
-
-
-
-<p
-
-className="
-text-center
-text-slate-400
-mt-3
-mb-7
-text-base
-"
-
->
-
-Sign in to continue
-
-</p>
-
-
-
-
-
-
-
-<form
-
-onSubmit={handleLogin}
-
-className="
-space-y-5
-"
-
->
-
-
-
-
-
-
-
-
-<AuthInput
-
-
-icon={Mail}
-
-
-type="email"
-
-
-placeholder="Enter Email"
-
-
-value={email}
-
-
-onChange={(e)=>
-setEmail(e.target.value)
-}
-
-
-/>
-
-
-
-
-
-
-
-
-
-<div
-
-className="
-relative
-"
-
->
-
-
-
-<AuthInput
-
-
-icon={Lock}
-
-
-type={
-showPassword
-?
-"text"
-:
-"password"
-}
-
-
-placeholder="Enter Password"
-
-
-value={password}
-
-
-onChange={(e)=>
-setPassword(e.target.value)
-}
-
-
-/>
-
-
-
-
-<button
-
-
-type="button"
-
-
-onClick={()=>setShowPassword(!showPassword)}
-
-
-className="
-absolute
-right-4
-top-1/2
--translate-y-1/2
-text-slate-400
-hover:text-teal-400
-"
-
->
-
-
-{
-
-showPassword
-
-?
-
-<EyeOff size={20}/>
-
-:
-
-<Eye size={20}/>
-
-}
-
-
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-className="
-flex
-items-center
-justify-between
-text-sm
-"
-
->
-
-
-
-<label
-
-className="
-flex
-items-center
-gap-2
-text-slate-300
-"
-
->
-
-
-<input
-
-type="checkbox"
-
-className="
-accent-teal-500
-"
-
-/>
-
-
-Remember me
-
-
-</label>
-
-
-
-
-
-
-
-
-<Link
-
-to="/forgot-password"
-
-className="
-text-teal-400
-hover:text-teal-300
-"
-
->
-
-Forgot Password?
-
-</Link>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<AuthButton type="submit">
-
-Login
-
-</AuthButton>
-
-
-
-
-
-
-
-
-
-<p
-
-className="
-text-center
-text-slate-400
-text-sm
-"
-
->
-
-Don't have an account?
-
-{" "}
-
-
-<Link
-
-to="/register"
-
-className="
-text-teal-400
-font-bold
-"
-
->
-
-Register
-
-</Link>
-
-
-</p>
-
-
-
-
-
-</form>
-
-
-
-
-
-
-</motion.div>
-
-
-
-
-</AuthCard>
-
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-);
-
+  );
 
 }
