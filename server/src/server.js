@@ -21,6 +21,10 @@ const orderRoutes = require("./routes/order.routes");
 const galleryRoutes = require("./routes/gallery.routes");
 const achievementRoutes = require("./routes/achievement.routes");
 const announcementRoutes = require("./routes/announcement.routes");
+const cmsRoutes = require("./routes/cms.routes");
+const reportRoutes = require("./routes/report.routes");
+const settingsRoutes = require("./routes/settings.routes");
+const activityLogRoutes = require("./routes/activityLog.routes");
 const app = express();
 
 app.use(express.json());
@@ -43,6 +47,13 @@ app.use("/api/admin/orders", orderRoutes);
 app.use("/api/admin/gallery", galleryRoutes);
 app.use("/api/admin/achievements", achievementRoutes);
 app.use("/api/admin/announcements", announcementRoutes);
+app.use("/api/cms", cmsRoutes);
+
+app.use("/api/admin/reports", reportRoutes);
+
+app.use("/api/admin/settings", settingsRoutes);
+
+app.use("/api/admin/activity-logs", activityLogRoutes);
 app.get("/", (req, res) => {
     res.send("SAMS Backend Running");
 });
