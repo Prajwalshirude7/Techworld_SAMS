@@ -1,17 +1,24 @@
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  X,
-  IndianRupee,
-  Clock,
-  CheckCircle,
-  CircleOff,
-  Trophy
+Plus,
+Pencil,
+Trash2,
+X,
+IndianRupee,
+Clock,
+Trophy,
+Search
 } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
+
+import {motion} from "framer-motion";
+
+
+import {
+useState,
+useEffect
+} from "react";
+
+
 
 
 
@@ -19,94 +26,7 @@ export default function Programs(){
 
 
 
-const defaultPrograms=[
-
-{
-id:1,
-name:"Beginner Skating Batch",
-category:"Beginner",
-duration:"1 Month",
-fees:"1500",
-description:
-"Basic skating training for beginners including balance, control and skating fundamentals.",
-status:"Active"
-},
-
-
-{
-id:2,
-name:"Quad Skating Program",
-category:"Intermediate",
-duration:"1 Month",
-fees:"1200",
-description:
-"Quad skating training with advanced techniques and road skating practice.",
-status:"Active"
-},
-
-
-{
-id:3,
-name:"Inline Skating Program",
-category:"Advanced",
-duration:"1 Month",
-fees:"1200",
-description:
-"Inline skating training focused on speed, skills and performance improvement.",
-status:"Active"
-},
-
-
-{
-id:4,
-name:"Professional Inline Training",
-category:"Professional",
-duration:"1 Month",
-fees:"1200",
-description:
-"Professional level skating training for competitions and advanced athletes.",
-status:"Inactive"
-}
-
-];
-
-
-
-
-
-const [programs,setPrograms]=useState(()=>{
-
-
-const saved =
-localStorage.getItem("academyPrograms");
-
-
-return saved
-?
-JSON.parse(saved)
-:
-defaultPrograms;
-
-
-});
-
-
-
-
-
-const [showModal,setShowModal]=useState(false);
-
-
-const [editMode,setEditMode]=useState(false);
-
-
-const [selectedProgram,setSelectedProgram]=useState(null);
-
-
-
-
-
-const [programData,setProgramData]=useState({
+const emptyForm={
 
 name:"",
 category:"",
@@ -115,7 +35,80 @@ fees:"",
 description:"",
 status:"Active"
 
-});
+};
+
+
+
+
+const [programs,setPrograms]=useState([]);
+
+const [showModal,setShowModal]=useState(false);
+
+const [editId,setEditId]=useState(null);
+
+const [search,setSearch]=useState("");
+
+
+
+const [form,setForm]=useState(emptyForm);
+
+
+
+
+
+
+
+
+// LOAD
+
+
+useEffect(()=>{
+
+
+const data=JSON.parse(
+
+localStorage.getItem("academyPrograms")
+
+||
+
+"[]"
+
+);
+
+
+setPrograms(data);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+const savePrograms=(data)=>{
+
+
+setPrograms(data);
+
+
+localStorage.setItem(
+
+"academyPrograms",
+
+JSON.stringify(data)
+
+);
+
+
+
+};
+
+
 
 
 
@@ -126,9 +119,9 @@ status:"Active"
 const handleChange=(e)=>{
 
 
-setProgramData({
+setForm({
 
-...programData,
+...form,
 
 [e.target.name]:e.target.value
 
@@ -144,25 +137,116 @@ setProgramData({
 
 
 
-const openAddModal=()=>{
+
+const submitProgram=()=>{
 
 
-setEditMode(false);
+if(
+
+!form.name ||
+
+!form.duration ||
+
+!form.fees
+
+){
 
 
-setProgramData({
-
-name:"",
-category:"",
-duration:"",
-fees:"",
-description:"",
-status:"Active"
-
-});
+alert(
+"Please fill required details"
+);
 
 
-setShowModal(true);
+return;
+
+
+}
+
+
+
+
+
+
+if(editId){
+
+
+
+const updated=
+
+programs.map(item=>
+
+item.id===editId
+
+?
+
+{
+
+...item,
+
+...form
+
+}
+
+:
+
+item
+
+);
+
+
+
+savePrograms(updated);
+
+
+
+}
+
+else{
+
+
+
+const newProgram={
+
+
+id:Date.now(),
+
+...form,
+
+
+createdAt:
+
+new Date().toLocaleDateString()
+
+
+};
+
+
+
+
+
+savePrograms([
+
+...programs,
+
+newProgram
+
+]);
+
+
+
+}
+
+
+
+
+
+
+setForm(emptyForm);
+
+setEditId(null);
+
+setShowModal(false);
+
 
 
 };
@@ -178,120 +262,11 @@ setShowModal(true);
 const editProgram=(program)=>{
 
 
-setEditMode(true);
+setForm(program);
 
-
-setSelectedProgram(program);
-
-
-setProgramData(program);
-
+setEditId(program.id);
 
 setShowModal(true);
-
-
-};
-
-
-
-
-
-
-
-
-
-const closeModal=()=>{
-
-
-setShowModal(false);
-
-
-setEditMode(false);
-
-
-setSelectedProgram(null);
-
-
-};
-
-
-
-
-
-
-
-
-
-const saveProgram=()=>{
-
-
-
-let updated;
-
-
-
-if(editMode){
-
-
-updated=programs.map((item)=>
-
-item.id===selectedProgram.id
-
-?
-
-{
-...item,
-...programData
-}
-
-:
-
-item
-
-);
-
-
-}
-
-else{
-
-
-updated=[
-
-...programs,
-
-{
-
-id:Date.now(),
-
-...programData
-
-}
-
-];
-
-
-}
-
-
-
-
-
-setPrograms(updated);
-
-
-
-localStorage.setItem(
-
-"academyPrograms",
-
-JSON.stringify(updated)
-
-);
-
-
-
-closeModal();
 
 
 
@@ -312,26 +287,41 @@ const updated=
 
 programs.filter(
 
-(item)=>item.id!==id
+item=>
+
+item.id!==id
 
 );
 
 
+savePrograms(updated);
 
-setPrograms(updated);
-
-
-
-localStorage.setItem(
-
-"academyPrograms",
-
-JSON.stringify(updated)
-
-);
 
 
 };
+
+
+
+
+
+
+
+
+const filteredPrograms=
+
+programs.filter(item=>
+
+item.name
+
+.toLowerCase()
+
+.includes(
+
+search.toLowerCase()
+
+)
+
+);
 
 
 
@@ -349,10 +339,10 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-5
+text-white
+p-4
 sm:p-6
 lg:p-10
-text-white
 "
 
 >
@@ -363,8 +353,9 @@ text-white
 
 
 
-{/* HEADER */}
 
+
+{/* HEADER */}
 
 
 <div
@@ -387,7 +378,7 @@ gap-5
 
 className="
 text-3xl
-sm:text-4xl
+sm:text-5xl
 font-black
 "
 
@@ -396,6 +387,7 @@ font-black
 Programs Management
 
 </h1>
+
 
 
 <p
@@ -407,9 +399,10 @@ mt-2
 
 >
 
-Manage skating courses, fees and training programs.
+Programs created here will appear on student website.
 
 </p>
+
 
 
 </div>
@@ -422,30 +415,214 @@ Manage skating courses, fees and training programs.
 <button
 
 
-onClick={openAddModal}
+onClick={()=>setShowModal(true)}
 
 
 className="
 bg-teal-500
-px-6
+hover:bg-teal-600
+px-5
 py-3
 rounded-xl
 font-bold
 flex
 items-center
-justify-center
 gap-2
 "
 
 >
 
-<Plus size={20}/>
+
+<Plus/>
 
 Add Program
+
 
 </button>
 
 
+</div>
+
+
+
+
+
+
+
+
+
+{/* STATS */}
+
+
+<div
+
+className="
+grid
+grid-cols-1
+sm:grid-cols-3
+gap-5
+mt-8
+"
+
+>
+
+
+{
+
+[
+
+[
+"Total Programs",
+programs.length
+],
+
+[
+"Active",
+programs.filter(
+p=>p.status==="Active"
+).length
+],
+
+[
+"Inactive",
+programs.filter(
+p=>p.status==="Inactive"
+).length
+]
+
+
+].map((item,index)=>(
+
+
+
+<motion.div
+
+key={index}
+
+whileHover={{
+y:-5
+}}
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-6
+"
+
+>
+
+
+<p className="
+text-slate-400
+">
+
+{item[0]}
+
+</p>
+
+
+<h2 className="
+text-4xl
+font-black
+mt-2
+">
+
+{item[1]}
+
+</h2>
+
+
+
+</motion.div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* SEARCH */}
+
+
+<div
+
+className="
+mt-8
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+<div
+
+className="
+flex
+items-center
+gap-3
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+"
+
+>
+
+
+<Search
+
+className="
+text-slate-400
+"
+
+/>
+
+
+<input
+
+
+placeholder="Search programs..."
+
+
+value={search}
+
+
+onChange={(e)=>
+setSearch(e.target.value)
+}
+
+
+className="
+bg-transparent
+outline-none
+w-full
+py-3
+"
+
+
+/>
+
+
+</div>
 
 
 </div>
@@ -459,7 +636,6 @@ Add Program
 
 
 {/* PROGRAM CARDS */}
-
 
 
 <div
@@ -476,16 +652,68 @@ mt-8
 >
 
 
+
+
+
 {
 
-programs.map((program)=>(
+filteredPrograms.length===0 &&
 
+
+<div
+
+className="
+col-span-full
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-10
+text-center
+text-slate-400
+"
+
+>
+
+No programs created.
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+{
+
+filteredPrograms.map((program,index)=>(
 
 
 <motion.div
 
 
 key={program.id}
+
+
+initial={{
+opacity:0,
+y:20
+}}
+
+
+animate={{
+opacity:1,
+y:0
+}}
+
+
+transition={{
+delay:index*0.05
+}}
 
 
 whileHover={{
@@ -506,12 +734,12 @@ p-6
 
 
 
+
 <div
 
 className="
 flex
 justify-between
-items-start
 "
 
 >
@@ -522,7 +750,7 @@ items-start
 className="
 bg-teal-500/20
 p-4
-rounded-2xl
+rounded-xl
 "
 
 >
@@ -534,8 +762,6 @@ className="
 text-teal-400
 "
 
-size={30}
-
 />
 
 
@@ -545,15 +771,14 @@ size={30}
 
 
 
-
 <span
 
 className={`
-px-4
-py-2
+
+px-3
+py-1
 rounded-full
 text-sm
-font-semibold
 
 ${
 program.status==="Active"
@@ -572,15 +797,13 @@ program.status==="Active"
 
 >
 
-
 {program.status}
 
 </span>
 
 
+
 </div>
-
-
 
 
 
@@ -593,7 +816,7 @@ program.status==="Active"
 className="
 text-xl
 font-bold
-mt-6
+mt-5
 "
 
 >
@@ -601,6 +824,7 @@ mt-6
 {program.name}
 
 </h2>
+
 
 
 
@@ -624,28 +848,21 @@ mt-2
 
 
 
-
 <div
 
 className="
-mt-6
-space-y-4
-text-slate-300
+mt-5
+space-y-3
 "
 
 >
 
 
-
-<p
-
-className="
+<p className="
 flex
+gap-2
 items-center
-gap-3
-"
-
->
+">
 
 <Clock
 
@@ -666,15 +883,11 @@ text-teal-400
 
 
 
-<p
-
-className="
+<p className="
 flex
+gap-2
 items-center
-gap-3
-"
-
->
+">
 
 <IndianRupee
 
@@ -687,7 +900,7 @@ text-teal-400
 />
 
 
-₹{program.fees}/month
+{program.fees}
 
 </p>
 
@@ -699,19 +912,15 @@ text-teal-400
 Category:
 
 <span className="
-text-white
+text-teal-400
 ml-2
-"
-
->
+">
 
 {program.category}
 
 </span>
 
-
 </p>
-
 
 
 </div>
@@ -729,7 +938,7 @@ ml-2
 className="
 flex
 gap-3
-mt-8
+mt-6
 "
 
 >
@@ -749,21 +958,14 @@ rounded-xl
 py-3
 flex
 justify-center
-items-center
-gap-2
-hover:bg-slate-800
 "
 
 >
 
 
-<Pencil size={18}/>
-
-Edit
-
+<Pencil/>
 
 </button>
-
 
 
 
@@ -781,28 +983,18 @@ flex-1
 bg-red-500/20
 text-red-400
 rounded-xl
-py-3
-flex
-justify-center
-items-center
-gap-2
 "
 
 >
 
 
-<Trash2 size={18}/>
-
-Delete
-
+<Trash2/>
 
 </button>
 
 
 
 </div>
-
-
 
 
 
@@ -831,7 +1023,6 @@ Delete
 {/* MODAL */}
 
 
-
 {
 
 showModal &&
@@ -842,19 +1033,31 @@ showModal &&
 className="
 fixed
 inset-0
-bg-black/60
+bg-black/70
 flex
 items-center
 justify-center
-p-5
+p-4
 z-50
 "
 
 >
 
 
+<motion.div
 
-<div
+
+initial={{
+scale:.8,
+opacity:0
+}}
+
+
+animate={{
+scale:1,
+opacity:1
+}}
+
 
 className="
 bg-[#102235]
@@ -869,30 +1072,23 @@ max-w-xl
 >
 
 
-
 <div
 
 className="
 flex
 justify-between
-items-center
-mb-6
 "
 
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-2xl
-font-bold
-"
-
->
+font-black
+">
 
 {
-editMode
+editId
 ?
 "Edit Program"
 :
@@ -902,11 +1098,9 @@ editMode
 </h2>
 
 
-
-
 <button
 
-onClick={closeModal}
+onClick={()=>setShowModal(false)}
 
 >
 
@@ -923,46 +1117,39 @@ onClick={closeModal}
 
 
 
-
 {
 
 [
-
 ["name","Program Name"],
-
 ["category","Category"],
-
 ["duration","Duration"],
+["fees","Fees"]
 
-["fees","Monthly Fees"]
-
-]
-
-.map(([key,placeholder])=>(
+].map(([key,label])=>(
 
 
 <input
+
 
 key={key}
 
 name={key}
 
-value={programData[key]}
+placeholder={label}
+
+value={form[key]}
 
 onChange={handleChange}
 
-placeholder={placeholder}
 
 className="
 w-full
-mb-4
+mt-4
 bg-[#07131f]
 border
 border-slate-700
 rounded-xl
-px-4
-py-3
-outline-none
+p-3
 "
 
 />
@@ -970,8 +1157,8 @@ outline-none
 
 ))
 
-}
 
+}
 
 
 
@@ -982,71 +1169,24 @@ outline-none
 
 name="description"
 
-value={programData.description}
+placeholder="Description"
+
+value={form.description}
 
 onChange={handleChange}
-
-placeholder="Program Description"
 
 
 className="
 w-full
-mb-4
+mt-4
 bg-[#07131f]
 border
 border-slate-700
 rounded-xl
-px-4
-py-3
-outline-none
+p-3
 "
-
-rows="4"
 
 />
-
-
-
-
-
-
-
-<select
-
-
-name="status"
-
-value={programData.status}
-
-onChange={handleChange}
-
-
-className="
-w-full
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-px-4
-py-3
-"
-
->
-
-
-<option>
-Active
-</option>
-
-
-<option>
-Inactive
-</option>
-
-
-</select>
-
-
 
 
 
@@ -1055,7 +1195,7 @@ Inactive
 <button
 
 
-onClick={saveProgram}
+onClick={submitProgram}
 
 
 className="
@@ -1069,29 +1209,18 @@ font-bold
 
 >
 
-{
 
-editMode
-?
-"Update Program"
-:
-"Save Program"
+Save Program
 
-}
 
 </button>
 
 
 
-
-
-
-</div>
-
+</motion.div>
 
 
 </div>
-
 
 
 }

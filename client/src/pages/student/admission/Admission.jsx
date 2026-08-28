@@ -1,6 +1,21 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
+import {
+useState,
+useEffect
+} from "react";
+
+
+import {
+motion
+} from "framer-motion";
+
+
 import toast from "react-hot-toast";
+
+
+import {
+useNavigate
+} from "react-router-dom";
+
 
 
 import PersonalInfo from "./PersonalInfo";
@@ -13,11 +28,21 @@ import Payment from "./Payment";
 
 
 
+
+
+
+
 export default function Admission(){
 
 
 
-const steps = [
+const navigate = useNavigate();
+
+
+
+
+
+const steps=[
 
 "Personal",
 "Address",
@@ -33,7 +58,88 @@ const steps = [
 
 
 
+
+
 const [currentStep,setCurrentStep]=useState(0);
+
+
+
+const [programs,setPrograms]=useState([]);
+
+const [branches,setBranches]=useState([]);
+
+
+
+
+
+
+
+
+// LOAD SUPER ADMIN DATA
+
+
+useEffect(()=>{
+
+
+const savedPrograms = JSON.parse(
+
+localStorage.getItem("academyPrograms")
+
+||
+
+"[]"
+
+);
+
+
+
+setPrograms(
+
+savedPrograms.filter(
+
+item=>
+
+item.status==="Active"
+
+)
+
+);
+
+
+
+
+
+
+const savedBranches = JSON.parse(
+
+localStorage.getItem("academyBranches")
+
+||
+
+"[]"
+
+);
+
+
+
+setBranches(
+
+savedBranches.filter(
+
+item=>
+
+item.status==="Active"
+
+)
+
+);
+
+
+
+
+},[]);
+
+
 
 
 
@@ -46,15 +152,31 @@ const [formData,setFormData]=useState({
 
 
 name:
-localStorage.getItem("studentName") || "",
+
+localStorage.getItem("studentName")
+
+|| "",
+
+
 
 
 email:
-localStorage.getItem("studentEmail") || "",
+
+localStorage.getItem("studentEmail")
+
+|| "",
+
+
 
 
 phone:
-localStorage.getItem("studentPhone") || "",
+
+localStorage.getItem("studentPhone")
+
+|| "",
+
+
+
 
 
 
@@ -63,6 +185,9 @@ dob:"",
 gender:"",
 
 emergency:"",
+
+
+
 
 
 
@@ -76,11 +201,38 @@ pincode:"",
 
 
 
+
+
+
 experience:"",
+
+
+
+
 
 program:"",
 
-branch:"",
+
+
+
+programFees:"",
+
+
+
+
+
+// IMPORTANT
+
+// Branch selected during registration
+
+branch:
+
+localStorage.getItem("studentBranch")
+
+|| "",
+
+
+
 
 
 
@@ -88,11 +240,22 @@ document:null,
 
 
 
+
+
 termsAccepted:false,
 
 
 
-paymentMethod:""
+
+
+paymentMethod:"",
+
+
+
+
+
+paymentStatus:"",
+
 
 
 
@@ -142,13 +305,11 @@ setFormData(prev=>({
 const validateStep=()=>{
 
 
-
 switch(currentStep){
 
 
 
 case 0:
-
 
 
 if(
@@ -169,7 +330,9 @@ if(
 
 
 toast.error(
+
 "Please complete personal information"
+
 );
 
 
@@ -187,8 +350,8 @@ break;
 
 
 
-case 1:
 
+case 1:
 
 
 if(
@@ -205,7 +368,9 @@ if(
 
 
 toast.error(
+
 "Please complete address information"
+
 );
 
 
@@ -216,6 +381,8 @@ return false;
 
 
 break;
+
+
 
 
 
@@ -226,18 +393,21 @@ break;
 case 2:
 
 
-
 if(
 
-!formData.experience ||
+!formData.program ||
 
-!formData.program
+!formData.branch ||
+
+!formData.experience
 
 ){
 
 
 toast.error(
-"Please select skating details"
+
+"Please select program and experience"
+
 );
 
 
@@ -248,6 +418,7 @@ return false;
 
 
 break;
+
 
 
 
@@ -258,12 +429,13 @@ break;
 case 3:
 
 
-
 if(!formData.document){
 
 
 toast.error(
+
 "Please upload document"
+
 );
 
 
@@ -274,6 +446,7 @@ return false;
 
 
 break;
+
 
 
 
@@ -284,12 +457,13 @@ break;
 case 4:
 
 
-
 if(!formData.termsAccepted){
 
 
 toast.error(
+
 "Please accept Terms & Conditions"
+
 );
 
 
@@ -305,10 +479,10 @@ break;
 
 
 
+
 default:
 
 return true;
-
 
 
 }
@@ -319,6 +493,173 @@ return true;
 
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+// SAVE APPLICATION
+
+
+const submitApplication=()=>{
+
+
+
+const application={
+
+
+
+id:Date.now(),
+
+
+
+
+...formData,
+
+
+
+
+
+status:"Pending Approval",
+
+
+
+
+
+submittedAt:
+
+new Date()
+
+.toLocaleDateString()
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+// SAVE CURRENT APPLICATION
+
+
+localStorage.setItem(
+
+"admissionApplication",
+
+JSON.stringify(application)
+
+);
+
+
+
+
+
+
+
+
+
+// SAVE STATUS
+
+
+localStorage.setItem(
+
+"admissionStatus",
+
+"Pending Approval"
+
+);
+
+
+
+
+
+
+
+
+
+// SAVE FOR SUPER ADMIN
+
+
+const oldApplications = JSON.parse(
+
+localStorage.getItem("admissionApplications")
+
+||
+
+"[]"
+
+);
+
+
+
+
+
+
+
+
+
+localStorage.setItem(
+
+"admissionApplications",
+
+JSON.stringify(
+
+[
+
+...oldApplications,
+
+application
+
+]
+
+)
+
+);
+
+
+
+
+
+
+
+
+
+toast.success(
+
+"Admission submitted successfully"
+
+);
+
+
+
+
+
+
+setTimeout(()=>{
+
+
+navigate("/student/dashboard");
+
+
+},1000);
+
+
+
+};
+
 
 
 
@@ -342,10 +683,15 @@ return;
 
 
 
+
 if(currentStep < steps.length-1){
 
 
-setCurrentStep(prev=>prev+1);
+setCurrentStep(
+
+prev=>prev+1
+
+);
 
 
 }
@@ -362,19 +708,21 @@ setCurrentStep(prev=>prev+1);
 
 
 
-// BACK
-
-
 const previousPage=()=>{
 
 
 if(currentStep>0){
 
 
-setCurrentStep(prev=>prev-1);
+setCurrentStep(
+
+prev=>prev-1
+
+);
 
 
 }
+
 
 
 };
@@ -402,7 +750,6 @@ switch(currentStep){
 
 case 0:
 
-
 return(
 
 <PersonalInfo
@@ -420,8 +767,8 @@ updateData={updateData}
 
 
 
-case 1:
 
+case 1:
 
 return(
 
@@ -443,7 +790,6 @@ updateData={updateData}
 
 case 2:
 
-
 return(
 
 <SkatingInfo
@@ -451,6 +797,10 @@ return(
 formData={formData}
 
 updateData={updateData}
+
+programs={programs}
+
+branches={branches}
 
 />
 
@@ -462,9 +812,7 @@ updateData={updateData}
 
 
 
-
 case 3:
-
 
 return(
 
@@ -484,9 +832,7 @@ updateData={updateData}
 
 
 
-
 case 4:
-
 
 return(
 
@@ -506,9 +852,7 @@ updateData={updateData}
 
 
 
-
 case 5:
-
 
 return(
 
@@ -526,9 +870,7 @@ formData={formData}
 
 
 
-
 case 6:
-
 
 return(
 
@@ -537,6 +879,8 @@ return(
 formData={formData}
 
 updateData={updateData}
+
+submitApplication={submitApplication}
 
 />
 
@@ -547,12 +891,9 @@ updateData={updateData}
 
 
 
-
-
 default:
 
 return null;
-
 
 
 }
@@ -569,11 +910,7 @@ return null;
 
 
 
-
-
-
 return(
-
 
 
 <motion.div
@@ -613,8 +950,6 @@ py-6
 
 "
 
-
-
 >
 
 
@@ -644,8 +979,6 @@ lg:p-10
 
 "
 
-
-
 >
 
 
@@ -654,14 +987,13 @@ lg:p-10
 
 <h1
 
-
 className="
 
 text-3xl
 
 sm:text-5xl
 
-font-bold
+font-black
 
 text-white
 
@@ -669,11 +1001,11 @@ mb-10
 
 "
 
-
-
 >
 
+
 Apply For Admission
+
 
 </h1>
 
@@ -691,7 +1023,6 @@ Apply For Admission
 
 <div
 
-
 className="
 
 overflow-x-auto
@@ -700,13 +1031,10 @@ pb-5
 
 "
 
-
-
 >
 
 
 <div
-
 
 className="
 
@@ -718,8 +1046,6 @@ min-w-max
 
 "
 
-
-
 >
 
 
@@ -728,12 +1054,9 @@ min-w-max
 steps.map((step,index)=>(
 
 
-
 <div
 
-
 key={step}
-
 
 className="
 
@@ -747,13 +1070,10 @@ items-center
 
 "
 
-
-
 >
 
 
 <div
-
 
 className={`
 
@@ -773,7 +1093,6 @@ font-bold
 
 
 ${
-
 index<=currentStep
 
 ?
@@ -782,34 +1101,26 @@ index<=currentStep
 
 :
 
-"bg-[#1B2D44] text-slate-300"
+"bg-[#1B2D44] text-slate-400"
 
 }
 
 `}
 
-
-
 >
 
 {index+1}
-
 
 </div>
 
 
 
 
-
-
 <p
-
 
 className="
 
 text-xs
-
-sm:text-sm
 
 text-slate-300
 
@@ -819,11 +1130,11 @@ text-center
 
 "
 
-
-
 >
 
+
 {step}
+
 
 </p>
 
@@ -841,6 +1152,7 @@ text-center
 
 
 </div>
+
 
 
 </div>
@@ -871,7 +1183,6 @@ text-center
 
 <div
 
-
 className="
 
 flex
@@ -888,10 +1199,7 @@ mt-10
 
 "
 
-
-
 >
-
 
 
 
@@ -905,7 +1213,6 @@ disabled={currentStep===0}
 
 
 onClick={previousPage}
-
 
 
 className="
@@ -922,17 +1229,15 @@ rounded-xl
 
 bg-[#1B2D44]
 
-text-white
-
 disabled:opacity-40
 
 "
 
-
-
 >
 
+
 Back
+
 
 </button>
 
@@ -955,7 +1260,6 @@ currentStep < steps.length-1 &&
 onClick={nextPage}
 
 
-
 className="
 
 w-full
@@ -972,25 +1276,20 @@ bg-teal-500
 
 hover:bg-teal-600
 
-text-white
-
 font-bold
 
 "
 
-
-
 >
 
+
 Next
+
 
 </button>
 
 
-
 }
-
-
 
 
 
@@ -1011,9 +1310,7 @@ Next
 </motion.div>
 
 
-
 );
-
 
 
 }

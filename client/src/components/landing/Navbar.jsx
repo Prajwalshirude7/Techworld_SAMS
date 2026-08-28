@@ -15,15 +15,80 @@ const [open,setOpen]=useState(false);
 
 const menuItems=[
 
-"About",
-"Features",
-"Programs",
-"Accessories",
-"Branches",
-"Achievements",
-"Contact"
+{
+name:"About",
+id:"about"
+},
+
+{
+name:"Programs",
+id:"programs"
+},
+
+{
+name:"Branches",
+id:"branches"
+},
+
+{
+name:"Gallery",
+id:"gallery"
+},
+
+{
+name:"Achievements",
+id:"achievements"
+},
+
+{
+name:"Accessories",
+id:"accessories"
+},
+
+{
+name:"Contact",
+id:"contact"
+}
 
 ];
+
+
+
+
+
+
+const handleScroll=(id)=>{
+
+
+const section=document.getElementById(id);
+
+
+if(section){
+
+const navbarHeight = 80;
+
+const position =
+section.offsetTop - navbarHeight;
+
+
+window.scrollTo({
+
+top:position,
+
+behavior:"smooth"
+
+});
+
+}
+
+
+setOpen(false);
+
+};
+
+
+
+
 
 
 
@@ -38,7 +103,8 @@ top-0
 left-0
 z-50
 w-full
-bg-[#06111b]/90
+h-[72px]
+bg-[#06111b]/95
 backdrop-blur-xl
 border-b
 border-white/10
@@ -47,25 +113,27 @@ border-white/10
 >
 
 
+
 <div
 
 className="
 max-w-7xl
 mx-auto
-h-20
+h-full
 flex
 items-center
 justify-between
-px-5
-sm:px-8
+px-4
+sm:px-6
 "
 
 >
 
 
 
-{/* BRAND */}
 
+
+{/* LOGO */}
 
 
 <Link
@@ -75,36 +143,24 @@ to="/"
 className="
 flex
 items-center
-gap-3
+gap-2
 "
 
 >
 
 
-
 <motion.div
-
 
 whileHover={{
 scale:1.08
 }}
 
-
-transition={{
-duration:0.3
-}}
-
-
 className="
-w-12
-h-12
+w-11
+h-11
 rounded-full
 overflow-hidden
-bg-black
-flex
-items-center
-justify-center
-shadow-[0_0_30px_rgba(20,184,166,.6)]
+shadow-[0_0_25px_rgba(20,184,166,.5)]
 "
 
 >
@@ -131,26 +187,38 @@ object-cover
 
 
 
+
 <div>
 
 
-<h2
+<motion.h2
+
+animate={{
+textShadow:[
+"0 0 0px rgba(20,184,166,0)",
+"0 0 20px rgba(20,184,166,0.8)",
+"0 0 0px rgba(20,184,166,0)"
+]
+}}
+
+transition={{
+duration:2.5,
+repeat:Infinity
+}}
 
 className="
 text-white
 font-black
-text-lg
-sm:text-xl
-tracking-wide
+text-base
+sm:text-lg
 leading-tight
-whitespace-nowrap
 "
 
 >
 
 Rushikesh Tarde
 
-</h2>
+</motion.h2>
 
 
 
@@ -159,9 +227,8 @@ Rushikesh Tarde
 className="
 text-teal-400
 font-bold
-tracking-[4px]
-text-[10px]
-sm:text-xs
+tracking-[3px]
+text-[9px]
 "
 
 >
@@ -169,7 +236,6 @@ sm:text-xs
 SKATES ARENA
 
 </p>
-
 
 
 </div>
@@ -183,7 +249,8 @@ SKATES ARENA
 
 
 
-{/* DESKTOP NAV */}
+
+{/* DESKTOP MENU */}
 
 
 
@@ -193,9 +260,10 @@ className="
 hidden
 lg:flex
 items-center
-gap-6
-font-semibold
+gap-5
 text-slate-300
+font-semibold
+text-sm
 "
 
 >
@@ -203,14 +271,14 @@ text-slate-300
 
 {
 
-menuItems.map((item)=>(
+menuItems.map(item=>(
 
 
-<a
+<button
 
-key={item}
+key={item.id}
 
-href={`#${item.toLowerCase()}`}
+onClick={()=>handleScroll(item.id)}
 
 className="
 hover:text-teal-400
@@ -220,18 +288,21 @@ duration-300
 
 >
 
-{item}
+{item.name}
 
-</a>
+</button>
 
 
 ))
+
 
 }
 
 
 
 </nav>
+
+
 
 
 
@@ -249,11 +320,10 @@ className="
 hidden
 md:flex
 items-center
-gap-4
+gap-3
 "
 
 >
-
 
 
 <Link
@@ -261,15 +331,15 @@ gap-4
 to="/login"
 
 className="
-px-7
-py-2.5
+px-5
+py-2
 rounded-xl
 bg-teal-500
 text-white
 font-bold
+text-sm
 hover:bg-teal-600
 transition
-shadow-[0_0_20px_rgba(20,184,166,.3)]
 "
 
 >
@@ -282,20 +352,22 @@ Login
 
 
 
+
+
 <Link
 
 to="/register"
 
 className="
-px-7
-py-2.5
+px-5
+py-2
 rounded-xl
 bg-teal-500
 text-white
 font-bold
+text-sm
 hover:bg-teal-600
 transition
-shadow-[0_0_20px_rgba(20,184,166,.3)]
 "
 
 >
@@ -315,15 +387,13 @@ Register
 
 
 
-{/* MOBILE BUTTON */}
+{/* MOBILE ICON */}
 
 
 
 <button
 
-
 onClick={()=>setOpen(!open)}
-
 
 className="
 lg:hidden
@@ -335,15 +405,11 @@ text-white
 
 {
 
-open
+open ?
 
-?
+<X size={28}/> :
 
-<X size={30}/>
-
-:
-
-<Menu size={30}/>
+<Menu size={28}/>
 
 }
 
@@ -352,7 +418,10 @@ open
 
 
 
+
+
 </div>
+
 
 
 
@@ -370,10 +439,24 @@ open
 open &&
 
 
-<div
+<motion.div
+
+initial={{
+opacity:0,
+y:-20
+}}
+
+animate={{
+opacity:1,
+y:0
+}}
 
 className="
 lg:hidden
+absolute
+top-[72px]
+left-0
+w-full
 bg-[#06111b]
 border-t
 border-white/10
@@ -384,43 +467,42 @@ py-6
 >
 
 
+
 <div
 
 className="
 flex
 flex-col
 gap-5
-text-white
-font-semibold
 "
 
 >
+
 
 
 {
 
+menuItems.map(item=>(
 
-menuItems.map((item)=>(
 
+<button
 
-<a
+key={item.id}
 
-key={item}
-
-href={`#${item.toLowerCase()}`}
-
-onClick={()=>setOpen(false)}
+onClick={()=>handleScroll(item.id)}
 
 className="
+text-left
+text-white
+font-semibold
 hover:text-teal-400
-transition
 "
 
 >
 
-{item}
+{item.name}
 
-</a>
+</button>
 
 
 ))
@@ -442,6 +524,7 @@ text-center
 py-3
 rounded-xl
 font-bold
+text-white
 "
 
 >
@@ -449,6 +532,8 @@ font-bold
 Login
 
 </Link>
+
+
 
 
 
@@ -464,6 +549,7 @@ text-center
 py-3
 rounded-xl
 font-bold
+text-white
 "
 
 >
@@ -474,12 +560,12 @@ Register
 
 
 
-</div>
-
-
 
 </div>
 
+
+
+</motion.div>
 
 
 }
@@ -489,7 +575,7 @@ Register
 </header>
 
 
-)
+);
 
 
 }

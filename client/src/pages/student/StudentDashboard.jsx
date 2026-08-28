@@ -1,22 +1,36 @@
 import {
-  User,
-  CreditCard,
   MapPin,
-  Calendar,
-  ShoppingBag,
-  Clock,
-  CheckCircle,
-  Download,
+  CalendarDays,
+  Users,
   Trophy,
-  Bell
+  ShieldCheck,
+  Clock,
+  Award,
+  Heart,
+  Bell,
+  Download
 } from "lucide-react";
 
 
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import {
+  motion
+} from "framer-motion";
+
+
+import {
+  useEffect,
+  useState
+} from "react";
+
+
+import {
+  useNavigate
+} from "react-router-dom";
+
 
 import generateReceipt from "../../utils/generateReceipt";
+
+
 
 
 
@@ -26,19 +40,11 @@ export default function StudentDashboard(){
 const navigate = useNavigate();
 
 
+const [student,setStudent]=useState(null);
 
-const studentName =
-localStorage.getItem("studentName") || "Student";
+const [status,setStatus]=useState("Not Applied");
 
-
-
-const [admissionStatus,setAdmissionStatus] =
-useState("Not Applied");
-
-
-const [approvedStudent,setApprovedStudent] =
-useState(null);
-
+const [announcements,setAnnouncements]=useState([]);
 
 
 
@@ -48,35 +54,48 @@ useState(null);
 useEffect(()=>{
 
 
-const admissionData =
-JSON.parse(
-localStorage.getItem("admissionApplication") || "null"
+const application = JSON.parse(
+
+localStorage.getItem("admissionApplication")
+
+|| 
+
+"null"
+
 );
 
 
 
-const status =
-localStorage.getItem("admissionStatus")
+if(application){
+
+setStudent(application);
+
+setStatus(application.status);
+
+}
+
+
+
+
+
+if(application?.status==="Approved"){
+
+
+const data = JSON.parse(
+
+localStorage.getItem("academyAnnouncements")
+
 ||
-admissionData?.status
-||
-"Not Applied";
 
+"[]"
 
-
-setAdmissionStatus(status);
-
-
-
-const student =
-JSON.parse(
-localStorage.getItem("admissionStudent") || "null"
 );
 
 
+setAnnouncements(data);
 
-setApprovedStudent(student);
 
+}
 
 
 },[]);
@@ -85,66 +104,9 @@ setApprovedStudent(student);
 
 
 
+const isPending=status==="Pending Approval";
 
-
-const normalizedStatus =
-admissionStatus?.trim();
-
-
-
-const isApproved =
-normalizedStatus === "Approved";
-
-
-
-const isPending =
-normalizedStatus === "Pending"
-||
-normalizedStatus === "Pending Approval";
-
-
-
-const hasApplied =
-isApproved || isPending;
-
-
-
-
-
-
-
-
-
-const cards=[
-
-{
-title:"Subscription Plans",
-desc:"Choose the best membership plan",
-icon:CreditCard
-},
-
-{
-title:"Our Branches",
-desc:"Find nearby academy branches",
-icon:MapPin
-},
-
-{
-title:"Programs",
-desc:"View available training programs",
-icon:Calendar
-},
-
-{
-title:"Products",
-desc:"Buy skating equipment",
-icon:ShoppingBag
-}
-
-];
-
-
-
+const isApproved=status==="Approved";
 
 
 
@@ -157,7 +119,9 @@ return(
 
 className="
 min-h-screen
+overflow-x-hidden
 bg-[#07131f]
+text-white
 p-4
 sm:p-6
 lg:p-10
@@ -173,6 +137,7 @@ space-y-8
 {/* HEADER */}
 
 
+
 <motion.div
 
 initial={{
@@ -186,48 +151,141 @@ y:0
 }}
 
 className="
-rounded-3xl
 bg-gradient-to-r
 from-[#102235]
 to-[#163b57]
 border
 border-slate-700
-p-6
+rounded-3xl
+p-5
 sm:p-8
 "
 
 >
 
 
+
 <h1
 
 className="
 text-3xl
-sm:text-4xl
-font-bold
-text-white
+sm:text-5xl
+lg:text-6xl
+font-black
+leading-tight
+break-words
 "
 
 >
 
-Welcome, {studentName}! 👋
+Welcome,
+
+<span
+
+className="
+text-teal-400
+ml-2
+"
+
+>
+
+{student?.name || "Student"}
+
+</span>
+
+👋
+
 
 </h1>
+
 
 
 
 <p
 
 className="
+mt-4
+text-base
+sm:text-lg
 text-slate-300
-mt-3
 "
 
 >
 
-Your skating journey starts here.
+Your SAMS skating journey dashboard.
 
 </p>
+
+
+
+
+
+{/* FEATURES */}
+
+
+
+<div
+
+className="
+mt-8
+grid
+grid-cols-1
+sm:grid-cols-2
+gap-5
+"
+
+>
+
+
+<InfoCard
+
+icon={<Award/>}
+
+title="Expert Coaches"
+
+text="Learn from the best"
+
+/>
+
+
+
+<InfoCard
+
+icon={<Trophy/>}
+
+title="Achievements"
+
+text="Build your legacy"
+
+/>
+
+
+
+<InfoCard
+
+icon={<Users/>}
+
+title="Community"
+
+text="Grow together"
+
+/>
+
+
+
+<InfoCard
+
+icon={<ShieldCheck/>}
+
+title="Professional"
+
+text="Safe training"
+
+/>
+
+
+
+</div>
 
 
 
@@ -241,113 +299,52 @@ Your skating journey starts here.
 
 
 
-{/* ADMISSION STATUS */}
+{/* BEFORE APPLY */}
 
-
-
-<div
-
-className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-6
-"
-
->
-
-
-<div
-
-className="
-flex
-items-center
-gap-5
-"
-
->
-
-
-<div
-
-className={`
-
-w-16
-h-16
-rounded-2xl
-flex
-items-center
-justify-center
-
-${
-isApproved
-?
-"bg-green-500/20"
-:
-"bg-yellow-500/20"
-}
-
-`}
-
->
 
 
 {
 
-isApproved
-
-?
-
-<CheckCircle
-
-size={35}
-
-className="text-green-400"
-
-/>
-
-:
-
-<Clock
-
-size={35}
-
-className="text-yellow-400"
-
-/>
-
-}
+!student &&
 
 
+<motion.div
 
-</div>
+initial={{
+opacity:0,
+y:20
+}}
 
+animate={{
+opacity:1,
+y:0
+}}
 
+className="
+bg-[#102235]
+border
+border-teal-500/40
+rounded-3xl
+p-6
+sm:p-8
+"
 
-
-<div>
-
-
-<p className="text-slate-400">
-
-Admission Status
-
-</p>
-
+>
 
 
 <h2
 
 className="
 text-2xl
-font-bold
-text-white
+sm:text-4xl
+font-black
+leading-tight
 "
 
 >
 
-{admissionStatus}
+Start your skating journey ⛸️
+
 
 </h2>
 
@@ -356,307 +353,17 @@ text-white
 
 <p
 
-className={`
-
-mt-2
-
-${
-isApproved
-?
-"text-green-400"
-:
-"text-yellow-400"
-}
-
-`}
-
->
-
-
-{
-
-isApproved
-
-?
-
-"🎉 Your admission has been approved."
-
-:
-
-isPending
-
-?
-
-"Your admission application has been submitted. Waiting for admin approval."
-
-:
-
-"Start your admission process."
-
-}
-
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* ACCOUNT SECTION */}
-
-
-
-<div
-
 className="
-grid
-grid-cols-1
-md:grid-cols-2
-gap-6
-"
-
->
-
-
-
-
-
-<div
-
-className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-6
-flex
-items-center
-gap-5
-"
-
->
-
-
-<div
-
-className="
-bg-teal-500/20
-p-4
-rounded-2xl
-"
-
->
-
-<User
-
-className="text-teal-400"
-
-/>
-
-</div>
-
-
-
-<div>
-
-
-<p className="text-slate-400">
-
-Account Status
-
-</p>
-
-
-<h2 className="
-text-xl
-font-bold
-text-white
-">
-
-Registered User
-
-</h2>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-
-className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-6
-flex
-items-center
-gap-5
-"
-
->
-
-
-<div
-
-className="
-bg-cyan-500/20
-p-4
-rounded-2xl
-"
-
->
-
-<CreditCard
-
-className="text-cyan-400"
-
-/>
-
-</div>
-
-
-
-
-<div>
-
-
-<p className="text-slate-400">
-
-Academy Membership
-
-</p>
-
-
-<h2 className="
-text-xl
-font-bold
-text-white
-">
-
-{
-
-isApproved
-?
-"Active Member"
-:
-"Not Enrolled"
-
-}
-
-</h2>
-
-
-
-<p className="
-text-slate-400
-text-sm
-mt-1
-">
-
-{
-
-isApproved
-?
-"Membership activated."
-:
-"Complete admission process."
-
-}
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* APPLY BUTTON */}
-
-
-{
-
-!hasApplied && (
-
-<motion.div
-
-className="
-rounded-3xl
-bg-gradient-to-r
-from-[#12344d]
-to-[#102235]
-border
-border-teal-500/40
-p-6
-"
-
->
-
-
-<h2
-
-className="
-text-xl
-font-bold
-text-white
-"
-
->
-
-Ready to start skating? ⛸️
-
-</h2>
-
-
-
-<p
-
-className="
+mt-4
 text-slate-300
-mt-2
+text-base
+sm:text-lg
 "
 
 >
 
-Apply for admission and join SAMS.
+Join RSTA Academy and begin your journey towards confidence,
+fitness and championship level skating.
 
 </p>
 
@@ -668,10 +375,9 @@ Apply for admission and join SAMS.
 onClick={()=>navigate("/admission")}
 
 className="
-mt-5
+mt-6
 bg-teal-500
-hover:bg-teal-600
-px-8
+px-6
 py-3
 rounded-xl
 font-bold
@@ -681,13 +387,13 @@ font-bold
 
 Apply For Admission
 
+
 </button>
 
 
 
 </motion.div>
 
-)
 
 }
 
@@ -699,168 +405,183 @@ Apply For Admission
 
 
 
-{/* APPROVED SECTION */}
+{/* PENDING */}
 
 
 
 {
 
-isApproved && (
+isPending &&
 
 
-<motion.div
+<div
 
 className="
-rounded-3xl
-bg-gradient-to-r
-from-green-900/40
-to-[#102235]
+bg-[#102235]
 border
-border-green-500/40
+border-yellow-500/30
+rounded-3xl
 p-6
+sm:p-8
 "
 
 >
 
 
-<h2 className="
-text-2xl
-font-bold
-text-white
-">
+<h2
 
-🎉 Welcome to SAMS Academy
+className="
+text-2xl
+sm:text-3xl
+font-black
+"
+
+>
+
+Application Submitted Successfully 🎉
 
 </h2>
 
 
+<p
 
-<p className="
-text-green-400
-mt-2
-">
+className="
+mt-3
+text-slate-300
+"
 
-Your training journey begins now.
+>
+
+Your admission form has been submitted to Super Admin.
+Waiting for approval.
+
+</p>
+
+
+
+<div
+
+className="
+mt-5
+flex
+items-center
+gap-3
+text-yellow-400
+font-bold
+"
+
+>
+
+
+<Clock/>
+
+Pending Approval
+
+
+</div>
+
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+{/* APPROVED */}
+
+
+
+{
+
+isApproved &&
+
+
+<div
+
+className="
+bg-green-900/20
+border
+border-green-500/30
+rounded-3xl
+p-6
+sm:p-8
+"
+
+>
+
+
+<h2
+
+className="
+text-2xl
+sm:text-3xl
+font-black
+"
+
+>
+
+🎉 Welcome To RSTA Family
+
+</h2>
+
+
+<p
+
+className="
+mt-3
+text-slate-300
+"
+
+>
+
+Your admission has been approved.
+Start your training journey.
 
 </p>
 
 
 
 
-
-<div
-
-className="
-grid
-grid-cols-1
-sm:grid-cols-3
-gap-5
-mt-6
-"
-
->
-
-
 <button
 
-onClick={()=>generateReceipt(approvedStudent)}
+onClick={()=>generateReceipt(student)}
 
 className="
-bg-[#07131f]
-border
-border-slate-700
+mt-5
+bg-teal-500
+px-6
+py-3
 rounded-xl
-p-5
 font-bold
 "
 
 >
+
 
 <Download
 
-className="
-mx-auto
-mb-2
-text-teal-400
-"
+size={18}
+
+className="inline mr-2"
 
 />
+
 
 Download Receipt
 
-</button>
-
-
-
-
-
-<button
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-5
-font-bold
-"
-
->
-
-<Trophy
-
-className="
-mx-auto
-mb-2
-text-teal-400
-"
-
-/>
-
-My Programs
 
 </button>
-
-
-
-
-
-<button
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-5
-font-bold
-"
-
->
-
-<Bell
-
-className="
-mx-auto
-mb-2
-text-teal-400
-"
-
-/>
-
-Announcements
-
-</button>
-
 
 
 </div>
 
-
-
-</motion.div>
-
-)
 
 }
 
@@ -872,24 +593,7 @@ Announcements
 
 
 
-{/* EXPLORE MORE */}
-
-
-
-<div>
-
-
-<h2 className="
-text-3xl
-font-bold
-mb-6
-text-white
-">
-
-Explore More
-
-</h2>
-
+{/* RSTA INFORMATION */}
 
 
 
@@ -898,31 +602,14 @@ Explore More
 className="
 grid
 grid-cols-1
-sm:grid-cols-2
-lg:grid-cols-4
+lg:grid-cols-2
 gap-6
 "
 
 >
 
 
-{
-
-cards.map((item,index)=>{
-
-
-const Icon=item.icon;
-
-
-return(
-
-<motion.div
-
-key={index}
-
-whileHover={{
-y:-8
-}}
+<div
 
 className="
 bg-[#102235]
@@ -930,6 +617,278 @@ border
 border-slate-700
 rounded-3xl
 p-6
+sm:p-8
+"
+
+>
+
+
+<h2
+
+className="
+text-2xl
+sm:text-3xl
+font-black
+"
+
+>
+
+Every Champion Starts Somewhere
+
+
+</h2>
+
+
+
+<p
+
+className="
+mt-4
+text-slate-300
+leading-relaxed
+"
+
+>
+
+Skating builds confidence, discipline and determination.
+RSTA Academy helps students improve skills and achieve
+their goals with professional training.
+
+</p>
+
+
+
+
+<p
+
+className="
+mt-5
+text-teal-400
+font-bold
+"
+
+>
+
+Your journey begins with one step 🛼
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-6
+sm:p-8
+"
+
+>
+
+
+<h2
+
+className="
+text-2xl
+sm:text-3xl
+font-black
+"
+
+>
+
+RSTA Academy
+
+
+</h2>
+
+
+
+
+<div
+
+className="
+mt-6
+space-y-5
+"
+
+>
+
+
+<Stat icon={<MapPin/>} text="Pune Maharashtra"/>
+
+<Stat icon={<CalendarDays/>} text="Professional Training Programs"/>
+
+<Stat icon={<Users/>} text="5000+ Students"/>
+
+<Stat icon={<Trophy/>} text="Championship Preparation"/>
+
+<Stat icon={<Heart/>} text="Building Future Champions"/>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ANNOUNCEMENTS */}
+
+
+
+{
+
+isApproved &&
+
+
+<div>
+
+
+<h2
+
+className="
+text-2xl
+sm:text-3xl
+font-black
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<Bell className="text-teal-400"/>
+
+Announcements
+
+
+</h2>
+
+
+
+
+<div className="mt-5">
+
+
+{
+
+announcements.map(item=>(
+
+
+<div
+
+key={item.id}
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-2xl
+p-5
+mb-4
+"
+
+>
+
+
+<h3 className="font-bold">
+
+{item.title}
+
+</h3>
+
+
+<p className="text-slate-400 mt-2">
+
+{item.message}
+
+</p>
+
+
+</div>
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+</div>
+
+
+}
+
+
+
+</div>
+
+
+)
+
+}
+
+
+
+
+
+
+
+
+function InfoCard({
+
+icon,
+
+title,
+
+text
+
+}){
+
+
+return(
+
+
+<motion.div
+
+whileHover={{
+y:-5
+}}
+
+className="
+flex
+items-center
+gap-4
+bg-[#0f2940]
+rounded-2xl
+p-4
+min-w-0
 "
 
 >
@@ -939,76 +898,107 @@ p-6
 
 className="
 bg-teal-500/20
-p-4
-rounded-2xl
-w-fit
-mb-5
+p-3
+rounded-xl
+text-teal-400
+shrink-0
 "
 
 >
 
-
-<Icon
-
-size={28}
-
-className="text-teal-400"
-
-/>
-
+{icon}
 
 </div>
 
 
 
-<h3 className="
-text-white
-font-bold
-text-lg
-">
 
-{item.title}
+<div className="min-w-0">
+
+
+<h3
+
+className="
+font-bold
+text-base
+sm:text-lg
+"
+
+>
+
+{title}
 
 </h3>
 
 
 
-<p className="
-text-slate-400
-mt-2
-">
+<p
 
-{item.desc}
+className="
+text-sm
+text-slate-400
+"
+
+>
+
+{text}
 
 </p>
 
 
+</div>
+
 
 </motion.div>
 
+
 )
-
-
-})
 
 }
 
 
 
+
+
+
+
+function Stat({
+
+icon,
+
+text
+
+}){
+
+
+return(
+
+<div
+
+className="
+flex
+items-center
+gap-4
+text-slate-300
+"
+
+>
+
+
+<div className="
+text-teal-400
+">
+
+{icon}
+
 </div>
 
 
-</div>
-
-
-
-
+<p>{text}</p>
 
 
 </div>
 
-
-);
-
+)
 
 }

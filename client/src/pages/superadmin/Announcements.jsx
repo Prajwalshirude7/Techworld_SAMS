@@ -1,50 +1,238 @@
 import {
-Megaphone,
 Plus,
-Edit,
 Trash2,
-Calendar,
-CheckCircle,
-XCircle
+Megaphone,
+X,
+Calendar
 } from "lucide-react";
 
-import {motion} from "framer-motion";
 
-import {useState} from "react";
+import {
+motion
+} from "framer-motion";
+
+
+import {
+useEffect,
+useState
+} from "react";
+
+
+
 
 
 export default function Announcements(){
 
 
-const [announcements,setAnnouncements]=useState([
 
-{
-title:"New Skating Batch Started",
-description:"Admissions are open for the new beginner skating batch.",
-date:"24 August 2026",
-category:"Admission",
-status:"Published"
-},
+const emptyForm={
 
+title:"",
+message:"",
+date:""
 
-{
-title:"District Competition Registration",
-description:"Students can register for upcoming district level competition.",
-date:"30 August 2026",
-category:"Competition",
-status:"Published"
-},
+};
 
 
-{
-title:"Academy Holiday Notice",
-description:"Academy will remain closed on Sunday.",
-date:"05 September 2026",
-category:"Notice",
-status:"Draft"
+
+
+
+const [announcements,setAnnouncements]=useState([]);
+
+
+const [showModal,setShowModal]=useState(false);
+
+
+const [form,setForm]=useState(emptyForm);
+
+
+
+
+
+
+
+
+
+// LOAD DATA
+
+
+useEffect(()=>{
+
+
+const saved = JSON.parse(
+
+localStorage.getItem("academyAnnouncements")
+
+||
+
+"[]"
+
+);
+
+
+setAnnouncements(saved);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+const saveAnnouncements=(data)=>{
+
+
+setAnnouncements(data);
+
+
+localStorage.setItem(
+
+"academyAnnouncements",
+
+JSON.stringify(data)
+
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+const handleChange=(e)=>{
+
+
+setForm({
+
+...form,
+
+[e.target.name]:e.target.value
+
+});
+
+
+};
+
+
+
+
+
+
+
+
+
+const addAnnouncement=()=>{
+
+
+if(
+
+!form.title ||
+
+!form.message
+
+){
+
+
+alert(
+"Please fill announcement details"
+);
+
+
+return;
+
+
 }
 
+
+
+
+
+
+const newAnnouncement={
+
+
+id:Date.now(),
+
+
+...form,
+
+
+date:
+
+new Date().toLocaleDateString()
+
+
+
+};
+
+
+
+
+
+
+saveAnnouncements([
+
+...announcements,
+
+newAnnouncement
+
 ]);
+
+
+
+
+
+setForm(emptyForm);
+
+
+setShowModal(false);
+
+
+
+};
+
+
+
+
+
+
+
+
+
+const deleteAnnouncement=(id)=>{
+
+
+const updated = announcements.filter(
+
+item=>
+
+item.id!==id
+
+);
+
+
+
+saveAnnouncements(updated);
+
+
+
+};
+
+
+
+
+
+
 
 
 
@@ -56,30 +244,27 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-5
-sm:p-8
-lg:p-10
 text-white
+p-4
+sm:p-6
+lg:p-10
 "
 
 >
+
+
+
+
+
+
+
 
 
 {/* HEADER */}
 
 
 
-<motion.div
-
-initial={{
-opacity:0,
-y:-20
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
+<div
 
 className="
 flex
@@ -92,6 +277,7 @@ gap-5
 >
 
 
+
 <div>
 
 
@@ -99,15 +285,17 @@ gap-5
 
 className="
 text-3xl
-sm:text-4xl
+sm:text-5xl
 font-black
 "
 
 >
 
-Announcement Management
+Announcements
 
 </h1>
+
+
 
 
 <p
@@ -119,9 +307,10 @@ mt-2
 
 >
 
-Create and manage academy announcements.
+Share important academy updates.
 
 </p>
+
 
 
 </div>
@@ -130,12 +319,18 @@ Create and manage academy announcements.
 
 
 
+
+
 <button
+
+
+onClick={()=>setShowModal(true)}
+
 
 className="
 bg-teal-500
 hover:bg-teal-600
-px-6
+px-5
 py-3
 rounded-xl
 font-bold
@@ -149,120 +344,13 @@ gap-2
 
 <Plus size={20}/>
 
+
 Create Announcement
 
 
 </button>
 
 
-</motion.div>
-
-
-
-
-
-
-
-
-
-{/* CREATE BOX */}
-
-
-
-
-<motion.div
-
-whileHover={{
-scale:1.01
-}}
-
-className="
-mt-10
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-6
-"
-
->
-
-
-<h2
-
-className="
-text-xl
-font-bold
-"
-
->
-
-Create New Announcement
-
-</h2>
-
-
-
-<div
-
-className="
-grid
-grid-cols-1
-md:grid-cols-2
-gap-5
-mt-6
-"
-
->
-
-
-<input
-
-placeholder="Announcement Title"
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-3
-outline-none
-"
-
-/>
-
-
-
-<select
-
-className="
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-3
-outline-none
-"
-
->
-
-<option>
-Admission
-</option>
-
-<option>
-Competition
-</option>
-
-<option>
-Notice
-</option>
-
-<option>
-Event
-</option>
-
-</select>
 
 
 </div>
@@ -271,73 +359,67 @@ Event
 
 
 
-<textarea
-
-placeholder="Write announcement description..."
-
-className="
-mt-5
-w-full
-h-32
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-4
-outline-none
-"
-
-/>
 
 
 
 
-
-<button
-
-className="
-mt-5
-bg-teal-500
-px-6
-py-3
-rounded-xl
-font-bold
-"
-
->
-
-Publish Announcement
-
-</button>
-
-
-
-
-</motion.div>
-
-
-
-
-
-
-
-
-
-{/* ANNOUNCEMENT LIST */}
+{/* LIST */}
 
 
 
 <div
 
 className="
+mt-8
 grid
 grid-cols-1
-lg:grid-cols-2
+md:grid-cols-2
+xl:grid-cols-3
 gap-6
-mt-10
 "
 
 >
+
+
+
+
+
+
+
+
+{
+
+announcements.length===0 &&
+
+
+<div
+
+className="
+col-span-full
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-10
+text-center
+text-slate-400
+"
+
+>
+
+
+No announcements available.
+
+</div>
+
+
+}
+
+
+
+
+
+
 
 
 
@@ -348,11 +430,46 @@ announcements.map((item,index)=>(
 
 <motion.div
 
-key={index}
+
+key={item.id}
+
+
+
+initial={{
+
+opacity:0,
+
+y:20
+
+}}
+
+
+
+animate={{
+
+opacity:1,
+
+y:0
+
+}}
+
+
+
+transition={{
+
+delay:index*0.05
+
+}}
+
+
 
 whileHover={{
-y:-8
+
+y:-5
+
 }}
+
+
 
 className="
 bg-[#102235]
@@ -366,26 +483,21 @@ p-6
 
 
 
-<div
 
-className="
-flex
-justify-between
-items-start
-"
 
->
 
 
 <div
 
 className="
 bg-teal-500/20
+w-fit
 p-4
 rounded-2xl
 "
 
 >
+
 
 <Megaphone
 
@@ -394,57 +506,6 @@ text-teal-400
 "
 
 />
-
-</div>
-
-
-
-
-
-<div
-
-className="
-flex
-gap-2
-"
-
->
-
-
-<button
-
-className="
-bg-blue-500/20
-text-blue-400
-p-2
-rounded-lg
-"
-
->
-
-<Edit size={18}/>
-
-</button>
-
-
-
-<button
-
-className="
-bg-red-500/20
-text-red-400
-p-2
-rounded-lg
-"
-
->
-
-<Trash2 size={18}/>
-
-</button>
-
-
-</div>
 
 
 </div>
@@ -472,16 +533,21 @@ mt-5
 
 
 
+
+
+
+
 <p
 
 className="
 text-slate-400
 mt-3
+leading-relaxed
 "
 
 >
 
-{item.description}
+{item.message}
 
 </p>
 
@@ -495,103 +561,70 @@ mt-3
 
 className="
 flex
-flex-wrap
-gap-4
-mt-5
-text-sm
+items-center
+justify-between
+mt-6
 "
 
 >
 
 
-<div
+<p
 
 className="
+text-sm
+text-slate-400
 flex
 items-center
 gap-2
-text-slate-300
 "
 
 >
+
 
 <Calendar size={16}/>
 
+
 {item.date}
 
-</div>
+
+</p>
 
 
 
 
 
-<div
+
+
+<button
+
+
+onClick={()=>deleteAnnouncement(item.id)}
+
 
 className="
-flex
-items-center
-gap-2
+bg-red-500/20
+text-red-400
+p-3
+rounded-xl
 "
 
 >
 
 
-{
-
-item.status==="Published"
-
-?
-
-<CheckCircle
-
-size={16}
-
-className="text-green-400"
-
-/>
-
-:
-
-<XCircle
-
-size={16}
-
-className="text-yellow-400"
-
-/>
-
-}
+<Trash2 size={18}/>
 
 
+</button>
 
-<span
 
-className={
-
-item.status==="Published"
-
-?
-
-"text-green-400"
-
-:
-
-"text-yellow-400"
-
-}
-
->
-
-{item.status}
-
-</span>
 
 
 </div>
 
 
 
-</div>
+
 
 
 
@@ -613,9 +646,239 @@ item.status==="Published"
 
 
 
+
+
+{/* MODAL */}
+
+
+
+
+{
+
+showModal &&
+
+
+<div
+
+className="
+fixed
+inset-0
+bg-black/70
+flex
+items-center
+justify-center
+p-4
+z-50
+"
+
+>
+
+
+
+<motion.div
+
+
+initial={{
+
+scale:.8,
+
+opacity:0
+
+}}
+
+
+animate={{
+
+scale:1,
+
+opacity:1
+
+}}
+
+
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-6
+w-full
+max-w-xl
+"
+
+>
+
+
+
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
+"
+
+>
+
+
+<h2
+
+className="
+text-2xl
+font-black
+"
+
+>
+
+New Announcement
+
+</h2>
+
+
+
+
+<button
+
+
+onClick={()=>setShowModal(false)}
+
+>
+
+<X/>
+
+</button>
+
+
+
 </div>
 
 
-)
+
+
+
+
+
+
+
+<input
+
+
+name="title"
+
+
+placeholder="Announcement Title"
+
+
+value={form.title}
+
+
+onChange={handleChange}
+
+
+className="
+w-full
+mt-5
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+"
+
+ />
+
+
+
+
+
+
+
+
+
+<textarea
+
+
+name="message"
+
+
+placeholder="Announcement Message"
+
+
+value={form.message}
+
+
+onChange={handleChange}
+
+
+rows="5"
+
+
+className="
+w-full
+mt-4
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+"
+
+ />
+
+
+
+
+
+
+
+<button
+
+
+onClick={addAnnouncement}
+
+
+className="
+mt-5
+w-full
+bg-teal-500
+py-3
+rounded-xl
+font-bold
+"
+
+>
+
+
+Publish Announcement
+
+
+</button>
+
+
+
+
+
+
+
+</motion.div>
+
+
+</div>
+
+
+}
+
+
+
+
+
+</div>
+
+
+);
+
 
 }

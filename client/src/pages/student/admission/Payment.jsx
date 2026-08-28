@@ -1,8 +1,29 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+useState
+} from "react";
+
+
+import {
+useNavigate
+} from "react-router-dom";
+
+
 import toast from "react-hot-toast";
 
+
+import {
+CreditCard,
+Banknote,
+CheckCircle
+} from "lucide-react";
+
+
 import scanner from "../../../assets/images/scanner.png";
+
+
+
+
+
 
 
 
@@ -10,13 +31,17 @@ export default function Payment({
 
 formData,
 
-updateData
+updateData,
 
-}) {
+submitApplication
+
+}){
 
 
 
 const navigate = useNavigate();
+
+
 
 
 
@@ -25,6 +50,8 @@ const [paymentMethod,setPaymentMethod]=useState(
 formData?.paymentMethod || ""
 
 );
+
+
 
 
 
@@ -55,7 +82,7 @@ paymentMethod:method
 
 
 
-const submitApplication=()=>{
+const handleSubmit=()=>{
 
 
 
@@ -63,7 +90,9 @@ if(!paymentMethod){
 
 
 toast.error(
+
 "Please select payment method"
+
 );
 
 
@@ -76,25 +105,98 @@ return;
 
 
 
-const applicationData={
+
+
+
+const paymentStatus =
+
+paymentMethod==="Online Payment"
+
+?
+
+"Paid"
+
+:
+
+"Pending";
+
+
+
+
+
+
+
+
+
+// PAYMENT RECORD
+
+
+const payment={
+
 
 
 id:Date.now(),
 
 
-...formData,
+
+studentName:
+
+formData.name,
+
+
+
+email:
+
+formData.email,
+
+
+
+branch:
+
+formData.branch,
+
+
+
+program:
+
+formData.program,
+
+
+
+amount:
+
+Number(formData.programFees || 0),
+
 
 
 paymentMethod,
 
 
-status:"Pending Approval",
+
+paymentStatus,
 
 
 
-submittedAt:
+status:
 
-new Date().toLocaleDateString()
+paymentStatus==="Paid"
+
+?
+
+"Completed"
+
+:
+
+"Pending",
+
+
+
+date:
+
+new Date()
+
+.toLocaleDateString()
+
 
 
 };
@@ -105,32 +207,14 @@ new Date().toLocaleDateString()
 
 
 
-// Save current student's application
-
-localStorage.setItem(
-
-"admissionApplication",
-
-JSON.stringify(applicationData)
-
-);
 
 
+const oldPayments = JSON.parse(
 
+localStorage.getItem("payments")
 
-
-
-
-
-// Save for Super Admin list
-
-
-const oldApplications =
-
-JSON.parse(
-
-localStorage.getItem("admissionApplications")
 ||
+
 "[]"
 
 );
@@ -139,26 +223,24 @@ localStorage.getItem("admissionApplications")
 
 
 
-const updatedApplications=[
-
-
-...oldApplications,
-
-
-applicationData
-
-
-];
-
-
 
 
 
 localStorage.setItem(
 
-"admissionApplications",
+"payments",
 
-JSON.stringify(updatedApplications)
+JSON.stringify(
+
+[
+
+...oldPayments,
+
+payment
+
+]
+
+)
 
 );
 
@@ -170,16 +252,30 @@ JSON.stringify(updatedApplications)
 
 
 
-// Dashboard status
+// UPDATE FORM DATA
 
 
-localStorage.setItem(
+updateData({
 
-"admissionStatus",
+paymentMethod,
 
-"Pending Approval"
+paymentStatus
 
-);
+});
+
+
+
+
+
+
+
+
+
+// SUBMIT APPLICATION FROM PARENT
+
+
+submitApplication();
+
 
 
 
@@ -189,9 +285,11 @@ localStorage.setItem(
 
 toast.success(
 
-"Application submitted successfully!"
+"Admission submitted successfully"
 
 );
+
+
 
 
 
@@ -218,6 +316,10 @@ navigate("/student/dashboard");
 
 
 
+
+
+
+
 return(
 
 
@@ -232,11 +334,12 @@ space-y-6
 
 
 
+
 <h2
 
 className="
 text-3xl
-font-bold
+font-black
 text-white
 "
 
@@ -245,6 +348,7 @@ text-white
 Payment
 
 </h2>
+
 
 
 
@@ -266,6 +370,83 @@ space-y-6
 "
 
 >
+
+
+
+
+
+
+
+
+{/* AMOUNT */}
+
+
+
+<div
+
+className="
+bg-[#102235]
+rounded-2xl
+p-5
+border
+border-slate-700
+"
+
+>
+
+
+<p
+
+className="
+text-slate-400
+"
+
+>
+
+Program Fee
+
+</p>
+
+
+
+<h3
+
+className="
+text-3xl
+font-black
+text-teal-400
+mt-2
+"
+
+>
+
+
+₹{formData.programFees || 0}
+
+
+</h3>
+
+
+
+<p
+
+className="
+text-slate-300
+mt-2
+"
+
+>
+
+{formData.program}
+
+</p>
+
+
+
+</div>
+
+
+
 
 
 
@@ -298,12 +479,13 @@ Choose Payment Method
 
 
 
-
 <div
 
 
 onClick={()=>selectPayment(
+
 "Online Payment"
+
 )}
 
 
@@ -311,9 +493,13 @@ onClick={()=>selectPayment(
 className={`
 
 cursor-pointer
+
 rounded-2xl
+
 border
+
 p-5
+
 transition
 
 
@@ -326,7 +512,7 @@ paymentMethod==="Online Payment"
 
 :
 
-"border-slate-700"
+"border-slate-700 hover:border-teal-400"
 
 }
 
@@ -337,12 +523,32 @@ paymentMethod==="Online Payment"
 >
 
 
+<div
+
+className="
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<CreditCard
+
+className="
+text-teal-400
+"
+
+/>
+
+
+
 <h4
 
 className="
-text-white
-font-bold
 text-lg
+font-bold
 "
 
 >
@@ -352,19 +558,25 @@ Online Payment
 </h4>
 
 
+</div>
+
+
+
 
 <p
 
 className="
 text-slate-400
-mt-2
+mt-3
 "
 
 >
 
-Scan QR code and complete payment.
+Pay using QR code.
 
 </p>
+
+
 
 
 
@@ -377,13 +589,12 @@ Scan QR code and complete payment.
 paymentMethod==="Online Payment" &&
 
 
-
 <div
 
 className="
-mt-6
 flex
 justify-center
+mt-6
 "
 
 >
@@ -395,8 +606,7 @@ justify-center
 src={scanner}
 
 
-alt="Payment Scanner"
-
+alt="Payment QR"
 
 
 className="
@@ -409,12 +619,10 @@ rounded-xl
 />
 
 
-
 </div>
 
 
 }
-
 
 
 
@@ -437,18 +645,23 @@ rounded-xl
 
 
 onClick={()=>selectPayment(
-"Cash Payment"
-)}
 
+"Cash Payment"
+
+)}
 
 
 
 className={`
 
 cursor-pointer
+
 rounded-2xl
+
 border
+
 p-5
+
 transition
 
 
@@ -461,7 +674,7 @@ paymentMethod==="Cash Payment"
 
 :
 
-"border-slate-700"
+"border-slate-700 hover:border-teal-400"
 
 }
 
@@ -472,13 +685,32 @@ paymentMethod==="Cash Payment"
 >
 
 
+<div
+
+className="
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<Banknote
+
+className="
+text-teal-400
+"
+
+/>
+
+
 
 <h4
 
 className="
-text-white
-font-bold
 text-lg
+font-bold
 "
 
 >
@@ -488,21 +720,77 @@ Cash Payment
 </h4>
 
 
+</div>
+
+
+
 
 
 <p
 
 className="
 text-slate-400
-mt-2
+mt-3
 "
 
 >
 
-Pay directly at academy branch.
+Pay directly at selected branch.
 
 </p>
 
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* SUMMARY */}
+
+
+
+<div
+
+className="
+bg-teal-500/10
+border
+border-teal-500/30
+rounded-xl
+p-4
+flex
+gap-3
+items-center
+"
+
+>
+
+
+<CheckCircle
+
+className="
+text-teal-400
+"
+
+/>
+
+
+<p
+
+className="
+text-slate-300
+"
+
+>
+
+Your admission will be sent to admin after payment submission.
+
+</p>
 
 
 
@@ -519,8 +807,10 @@ Pay directly at academy branch.
 <button
 
 
-onClick={submitApplication}
+type="button"
 
+
+onClick={handleSubmit}
 
 
 className="
@@ -529,11 +819,11 @@ bg-teal-500
 hover:bg-teal-600
 py-4
 rounded-xl
-text-white
 font-bold
+text-white
 transition
+cursor-pointer
 "
-
 
 >
 
@@ -548,14 +838,17 @@ Submit Application
 
 
 
+
+
+
 </div>
 
 
 
 
 
-</div>
 
+</div>
 
 
 );

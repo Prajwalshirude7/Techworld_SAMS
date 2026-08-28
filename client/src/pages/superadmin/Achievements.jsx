@@ -1,9 +1,15 @@
 import {
 Plus,
 Trash2,
-Image as ImageIcon,
-X
+X,
+Trophy
 } from "lucide-react";
+
+
+import {
+useState,
+useEffect
+} from "react";
 
 
 import {
@@ -11,47 +17,30 @@ motion
 } from "framer-motion";
 
 
-import {
-useEffect,
-useState
-} from "react";
+
+
+export default function Achievements(){
 
 
 
+const [achievements,setAchievements]=useState([]);
 
-
-export default function Gallery(){
-
-
-
-const emptyForm={
-
-title:"",
-
-category:"",
-
-image:""
-
-};
-
-
-
-
-const [gallery,setGallery]=useState([]);
 
 const [showModal,setShowModal]=useState(false);
 
-const [form,setForm]=useState(emptyForm);
+
+
+const [form,setForm]=useState({
+
+title:"",
+description:"",
+year:""
+
+});
 
 
 
 
-
-
-
-
-
-// LOAD GALLERY
 
 
 useEffect(()=>{
@@ -59,7 +48,7 @@ useEffect(()=>{
 
 const data=JSON.parse(
 
-localStorage.getItem("academyGallery")
+localStorage.getItem("academyAchievements")
 
 ||
 
@@ -68,8 +57,7 @@ localStorage.getItem("academyGallery")
 );
 
 
-setGallery(data);
-
+setAchievements(data);
 
 
 },[]);
@@ -82,21 +70,19 @@ setGallery(data);
 
 
 
-const saveGallery=(data)=>{
+const saveData=(data)=>{
 
 
-setGallery(data);
-
+setAchievements(data);
 
 
 localStorage.setItem(
 
-"academyGallery",
+"academyAchievements",
 
 JSON.stringify(data)
 
 );
-
 
 
 };
@@ -130,75 +116,48 @@ setForm({
 
 
 
-
-const addImage=()=>{
-
-
-if(
-
-!form.title ||
-
-!form.image
-
-){
+const addAchievement=()=>{
 
 
-alert(
-"Please add image details"
-);
-
-
+if(!form.title)
 return;
 
 
-}
 
-
-
-
-
-
-const newImage={
+const newAchievement={
 
 
 id:Date.now(),
 
-
-...form,
-
-
-createdAt:
-
-new Date().toLocaleDateString()
+...form
 
 
 };
 
 
 
+saveData([
 
+...achievements,
 
-
-
-saveGallery([
-
-...gallery,
-
-newImage
+newAchievement
 
 ]);
 
 
 
+setForm({
 
+title:"",
+description:"",
+year:""
 
+});
 
-setForm(emptyForm);
 
 setShowModal(false);
 
 
-
 };
 
 
@@ -208,25 +167,22 @@ setShowModal(false);
 
 
 
+const deleteAchievement=(id)=>{
 
-const deleteImage=(id)=>{
 
+saveData(
 
-const updated = gallery.filter(
+achievements.filter(
 
-item=>
+item=>item.id!==id
 
-item.id!==id
+)
 
 );
 
 
-
-saveGallery(updated);
-
-
-
 };
+
 
 
 
@@ -245,8 +201,8 @@ className="
 min-h-screen
 bg-[#07131f]
 text-white
-p-4
-sm:p-6
+p-5
+sm:p-8
 lg:p-10
 "
 
@@ -256,22 +212,12 @@ lg:p-10
 
 
 
-
-
-
-
-{/* HEADER */}
-
-
-
 <div
 
 className="
 flex
-flex-col
-sm:flex-row
 justify-between
-gap-5
+items-center
 "
 
 >
@@ -283,17 +229,15 @@ gap-5
 <h1
 
 className="
-text-3xl
-sm:text-5xl
+text-4xl
 font-black
 "
 
 >
 
-Gallery Management
+Manage Achievements
 
 </h1>
-
 
 
 <p
@@ -305,10 +249,9 @@ mt-2
 
 >
 
-Manage academy images displayed on website.
+Achievements displayed on public website.
 
 </p>
-
 
 
 </div>
@@ -317,36 +260,25 @@ Manage academy images displayed on website.
 
 
 
-
-
-
-
 <button
-
 
 onClick={()=>setShowModal(true)}
 
-
 className="
 bg-teal-500
-hover:bg-teal-600
 px-5
 py-3
 rounded-xl
 font-bold
 flex
-items-center
 gap-2
 "
 
 >
 
+<Plus/>
 
-<Plus size={20}/>
-
-
-Add Image
-
+Add Achievement
 
 </button>
 
@@ -362,40 +294,29 @@ Add Image
 
 
 
-{/* GALLERY */}
-
-
-
 <div
 
 className="
-mt-8
 grid
 grid-cols-1
-sm:grid-cols-2
+md:grid-cols-2
 xl:grid-cols-3
 gap-6
+mt-10
 "
 
 >
 
 
-
-
-
-
 {
 
-gallery.length===0 &&
-
+achievements.length===0 &&
 
 <div
 
 className="
 col-span-full
 bg-[#102235]
-border
-border-slate-700
 rounded-3xl
 p-10
 text-center
@@ -404,12 +325,9 @@ text-slate-400
 
 >
 
-
-No images uploaded yet.
-
+No achievements added.
 
 </div>
-
 
 }
 
@@ -421,7 +339,7 @@ No images uploaded yet.
 
 {
 
-gallery.map((item,index)=>(
+achievements.map(item=>(
 
 
 <motion.div
@@ -430,41 +348,9 @@ gallery.map((item,index)=>(
 key={item.id}
 
 
-
-initial={{
-
-opacity:0,
-
-y:20
-
-}}
-
-
-
-animate={{
-
-opacity:1,
-
-y:0
-
-}}
-
-
-
-transition={{
-
-delay:index*0.05
-
-}}
-
-
-
 whileHover={{
-
 y:-5
-
 }}
-
 
 
 className="
@@ -472,52 +358,35 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-overflow-hidden
+p-6
 "
 
 >
-
-
-
-
-
-
-
-<img
-
-
-src={item.image}
-
-
-alt={item.title}
-
-
-className="
-w-full
-h-56
-object-cover
-"
-
-
-
-
-/>
-
-
-
-
-
-
-
 
 
 <div
 
 className="
-p-5
+bg-teal-500/20
+p-3
+rounded-xl
+w-fit
 "
 
 >
+
+
+<Trophy
+
+className="text-teal-400"
+
+/>
+
+
+</div>
+
+
+
 
 
 <h2
@@ -525,6 +394,7 @@ p-5
 className="
 text-xl
 font-bold
+mt-5
 "
 
 >
@@ -536,17 +406,31 @@ font-bold
 
 
 
-
 <p
 
 className="
 text-slate-400
-mt-2
+mt-3
 "
 
 >
 
-{item.category}
+{item.description}
+
+</p>
+
+
+
+<p
+
+className="
+text-teal-400
+mt-3
+"
+
+>
+
+{item.year}
 
 </p>
 
@@ -554,45 +438,24 @@ mt-2
 
 
 
-
-
 <button
 
-
-onClick={()=>deleteImage(item.id)}
-
+onClick={()=>deleteAchievement(item.id)}
 
 className="
 mt-5
-w-full
 bg-red-500/20
 text-red-400
-py-3
+px-4
+py-2
 rounded-xl
-flex
-justify-center
-items-center
-gap-2
 "
 
 >
 
-
 <Trash2 size={18}/>
 
-Delete
-
-
 </button>
-
-
-
-
-
-</div>
-
-
-
 
 
 
@@ -605,7 +468,6 @@ Delete
 }
 
 
-
 </div>
 
 
@@ -613,10 +475,6 @@ Delete
 
 
 
-
-
-
-{/* MODAL */}
 
 
 
@@ -630,11 +488,11 @@ showModal &&
 className="
 fixed
 inset-0
-bg-black/70
+bg-black/60
 flex
 items-center
 justify-center
-p-4
+p-5
 z-50
 "
 
@@ -656,31 +514,24 @@ max-w-xl
 >
 
 
-
 <div
 
 className="
 flex
 justify-between
-items-center
 "
 
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-2xl
-font-black
-"
+font-bold
+">
 
->
-
-Add Gallery Image
+Add Achievement
 
 </h2>
-
 
 
 <button
@@ -694,11 +545,7 @@ onClick={()=>setShowModal(false)}
 </button>
 
 
-
 </div>
-
-
-
 
 
 
@@ -708,33 +555,24 @@ onClick={()=>setShowModal(false)}
 
 [
 
-["title","Image Title"],
+["title","Achievement Title"],
 
-["category","Category"],
-
-["image","Image URL"]
+["year","Year"]
 
 ].map(([key,label])=>(
 
 
-
 <input
-
 
 key={key}
 
-
 name={key}
-
 
 placeholder={label}
 
-
 value={form[key]}
 
-
 onChange={handleChange}
-
 
 className="
 w-full
@@ -744,10 +582,7 @@ border
 border-slate-700
 rounded-xl
 p-3
-outline-none
 "
-
-
 
 />
 
@@ -761,11 +596,37 @@ outline-none
 
 
 
+<textarea
+
+name="description"
+
+placeholder="Description"
+
+value={form.description}
+
+onChange={handleChange}
+
+className="
+w-full
+mt-4
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+"
+
+/>
+
+
+
+
+
+
+
 <button
 
-
-onClick={addImage}
-
+onClick={addAchievement}
 
 className="
 mt-5
@@ -778,9 +639,7 @@ font-bold
 
 >
 
-
-Save Image
-
+Save Achievement
 
 </button>
 
@@ -793,6 +652,7 @@ Save Image
 
 
 }
+
 
 
 

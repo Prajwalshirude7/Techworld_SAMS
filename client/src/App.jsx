@@ -1,13 +1,19 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route
+} from "react-router-dom";
 
 
-// ================= PUBLIC PAGES =================
+
+// ================= PUBLIC =================
 
 import Home from "./pages/public/Home";
 import Programs from "./pages/public/Programs";
 
 
-// ================= AUTH PAGES =================
+
+// ================= AUTH =================
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
@@ -16,42 +22,87 @@ import VerifyOTP from "./pages/auth/VerifyOTP";
 import ResetPassword from "./pages/auth/ResetPassword";
 
 
-// ================= STUDENT PAGES =================
+
+// ================= STUDENT =================
 
 import StudentDashboard from "./pages/student/StudentDashboard";
 import Admission from "./pages/student/admission/Admission";
 
 
-// ================= SUPER ADMIN PAGES =================
 
-import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+// ================= SUPER ADMIN =================
 
-import Admissions from "./pages/superadmin/Admissions";
-import AdmissionDetails from "./pages/superadmin/AdmissionDetails";
-
-import Branches from "./pages/superadmin/Branches";
-import BranchAdmins from "./pages/superadmin/BranchAdmins";
-import Students from "./pages/superadmin/Students";
-
-import Gallery from "./pages/superadmin/Gallery";
-import Announcements from "./pages/superadmin/Announcements";
-
-import Payments from "./pages/superadmin/Payments";
-
-import Products from "./pages/superadmin/Products";
-
-import Reports from "./pages/superadmin/Reports";
-
-import Settings from "./pages/superadmin/Settings";
-
-import Subscriptions from "./pages/superadmin/Subscriptions";
-
-import ProgramsManagement from "./pages/superadmin/Programs";
+import SuperAdminDashboard 
+from "./pages/superadmin/SuperAdminDashboard";
 
 
-// ================= PROTECTED ROUTE =================
+import Admissions 
+from "./pages/superadmin/Admissions";
 
-import ProtectedRoute from "./routes/ProtectedRoute";
+
+import AdmissionDetails 
+from "./pages/superadmin/AdmissionDetails";
+
+
+import Branches 
+from "./pages/superadmin/Branches";
+
+
+import Students 
+from "./pages/superadmin/Students";
+
+
+import StudentDetails 
+from "./pages/superadmin/StudentDetails";
+
+
+import ProgramsManagement 
+from "./pages/superadmin/Programs";
+
+
+import Gallery 
+from "./pages/superadmin/Gallery";
+
+
+import Announcements 
+from "./pages/superadmin/Announcements";
+
+
+import Payments 
+from "./pages/superadmin/Payments";
+
+
+import Reports 
+from "./pages/superadmin/Reports";
+
+
+import Settings 
+from "./pages/superadmin/Settings";
+
+
+
+// NEW CMS MODULES
+
+import Achievements
+from "./pages/superadmin/Achievements";
+
+
+import Accessories
+from "./pages/superadmin/Accessories";
+
+
+import ContactManagement
+from "./pages/superadmin/Contact";
+
+
+
+
+// ================= PROTECTED =================
+
+import ProtectedRoute 
+from "./routes/ProtectedRoute";
+
+
 
 
 
@@ -69,6 +120,8 @@ return(
 
 
 
+
+
 {/* ================= PUBLIC ================= */}
 
 
@@ -76,7 +129,7 @@ return(
 
 path="/"
 
-element={<Home />}
+element={<Home/>}
 
 />
 
@@ -86,9 +139,10 @@ element={<Home />}
 
 path="/programs"
 
-element={<Programs />}
+element={<Programs/>}
 
 />
+
 
 
 
@@ -99,11 +153,12 @@ element={<Programs />}
 {/* ================= AUTH ================= */}
 
 
+
 <Route
 
 path="/login"
 
-element={<Login />}
+element={<Login/>}
 
 />
 
@@ -113,7 +168,7 @@ element={<Login />}
 
 path="/register"
 
-element={<Register />}
+element={<Register/>}
 
 />
 
@@ -123,7 +178,7 @@ element={<Register />}
 
 path="/forgot-password"
 
-element={<ForgotPassword />}
+element={<ForgotPassword/>}
 
 />
 
@@ -133,7 +188,7 @@ element={<ForgotPassword />}
 
 path="/verify-otp"
 
-element={<VerifyOTP />}
+element={<VerifyOTP/>}
 
 />
 
@@ -143,9 +198,11 @@ element={<VerifyOTP />}
 
 path="/reset-password"
 
-element={<ResetPassword />}
+element={<ResetPassword/>}
 
 />
+
+
 
 
 
@@ -165,7 +222,7 @@ element={
 
 <ProtectedRoute>
 
-<StudentDashboard />
+<StudentDashboard/>
 
 </ProtectedRoute>
 
@@ -185,7 +242,7 @@ element={
 
 <ProtectedRoute>
 
-<Admission />
+<Admission/>
 
 </ProtectedRoute>
 
@@ -201,8 +258,7 @@ element={
 
 
 
-
-{/* ================= SUPER ADMIN ================= */}
+{/* ================= SUPER ADMIN DASHBOARD ================= */}
 
 
 
@@ -210,12 +266,18 @@ element={
 
 path="/super-admin/dashboard"
 
-element={<SuperAdminDashboard />}
+element={<SuperAdminDashboard/>}
 
 />
 
 
 
+
+
+
+
+
+{/* ADMISSIONS */}
 
 
 
@@ -223,11 +285,9 @@ element={<SuperAdminDashboard />}
 
 path="/super-admin/admissions"
 
-element={<Admissions />}
+element={<Admissions/>}
 
 />
-
-
 
 
 
@@ -235,12 +295,18 @@ element={<Admissions />}
 
 path="/super-admin/admission-details"
 
-element={<AdmissionDetails />}
+element={<AdmissionDetails/>}
 
 />
 
 
 
+
+
+
+
+
+{/* BRANCHES */}
 
 
 
@@ -248,7 +314,7 @@ element={<AdmissionDetails />}
 
 path="/super-admin/branches"
 
-element={<Branches />}
+element={<Branches/>}
 
 />
 
@@ -256,15 +322,11 @@ element={<Branches />}
 
 
 
-<Route
-
-path="/super-admin/branch-admins"
-
-element={<BranchAdmins />}
-
-/>
 
 
+
+
+{/* STUDENTS */}
 
 
 
@@ -272,85 +334,17 @@ element={<BranchAdmins />}
 
 path="/super-admin/students"
 
-element={<Students />}
+element={<Students/>}
 
 />
-
-
-
 
 
 
 <Route
 
-path="/super-admin/gallery"
+path="/super-admin/student-details"
 
-element={<Gallery />}
-
-/>
-
-
-
-
-
-
-<Route
-
-path="/super-admin/announcements"
-
-element={<Announcements />}
-
-/>
-
-
-
-
-
-
-<Route
-
-path="/super-admin/payments"
-
-element={<Payments />}
-
-/>
-
-
-
-
-
-
-<Route
-
-path="/super-admin/products"
-
-element={<Products />}
-
-/>
-
-
-
-
-
-
-<Route
-
-path="/super-admin/reports"
-
-element={<Reports />}
-
-/>
-
-
-
-
-
-
-<Route
-
-path="/super-admin/settings"
-
-element={<Settings />}
+element={<StudentDetails/>}
 
 />
 
@@ -360,17 +354,9 @@ element={<Settings />}
 
 
 
-<Route
-
-path="/super-admin/subscriptions"
-
-element={<Subscriptions />}
-
-/>
 
 
-
-
+{/* PROGRAMS */}
 
 
 
@@ -378,9 +364,172 @@ element={<Subscriptions />}
 
 path="/super-admin/programs"
 
-element={<ProgramsManagement />}
+element={<ProgramsManagement/>}
 
 />
+
+
+
+
+
+
+
+
+
+{/* GALLERY */}
+
+
+
+<Route
+
+path="/super-admin/gallery"
+
+element={<Gallery/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* ACHIEVEMENTS */}
+
+
+
+<Route
+
+path="/super-admin/achievements"
+
+element={<Achievements/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* ACCESSORIES */}
+
+
+
+<Route
+
+path="/super-admin/accessories"
+
+element={<Accessories/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* CONTACT MANAGEMENT */}
+
+
+
+<Route
+
+path="/super-admin/contact"
+
+element={<ContactManagement/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* ANNOUNCEMENTS */}
+
+
+
+<Route
+
+path="/super-admin/announcements"
+
+element={<Announcements/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* PAYMENTS */}
+
+
+
+<Route
+
+path="/super-admin/payments"
+
+element={<Payments/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* REPORTS */}
+
+
+
+<Route
+
+path="/super-admin/reports"
+
+element={<Reports/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* SETTINGS */}
+
+
+
+<Route
+
+path="/super-admin/settings"
+
+element={<Settings/>}
+
+/>
+
+
+
 
 
 

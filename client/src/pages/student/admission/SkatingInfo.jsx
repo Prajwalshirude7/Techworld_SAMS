@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+
+
 export default function SkatingInfo({
 
 formData={},
@@ -7,10 +10,98 @@ updateData
 }){
 
 
+
+const [programs,setPrograms]=useState([]);
+
+const [branches,setBranches]=useState([]);
+
+
+
+
+
+
+
+// LOAD PROGRAMS AND BRANCHES
+
+useEffect(()=>{
+
+
+const savedPrograms = JSON.parse(
+
+localStorage.getItem("academyPrograms")
+
+||
+
+"[]"
+
+);
+
+
+
+const savedBranches = JSON.parse(
+
+localStorage.getItem("academyBranches")
+
+||
+
+"[]"
+
+);
+
+
+
+
+
+// ONLY ACTIVE DATA
+
+setPrograms(
+
+savedPrograms.filter(
+
+item=>item.status==="Active"
+
+)
+
+);
+
+
+
+
+setBranches(
+
+savedBranches.filter(
+
+item=>item.status==="Active"
+
+)
+
+);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+
 return(
 
 
-<div className="space-y-6">
+<div
+
+className="
+space-y-8
+"
+
+>
+
+
 
 
 
@@ -37,7 +128,11 @@ Skating Information
 
 
 
-{/* Experience */}
+
+
+
+{/* EXPERIENCE */}
+
 
 
 <div>
@@ -47,6 +142,7 @@ Skating Information
 
 className="
 text-slate-300
+font-medium
 "
 
 >
@@ -54,6 +150,7 @@ text-slate-300
 Previous Experience
 
 </label>
+
 
 
 
@@ -92,6 +189,7 @@ focus:border-teal-500
 >
 
 
+
 <option value="">
 
 Select Experience
@@ -108,6 +206,7 @@ No Experience
 
 
 
+
 <option value="Beginner">
 
 Beginner
@@ -116,11 +215,13 @@ Beginner
 
 
 
+
 <option value="Intermediate">
 
 Intermediate
 
 </option>
+
 
 
 
@@ -135,6 +236,7 @@ Professional
 </select>
 
 
+
 </div>
 
 
@@ -145,16 +247,15 @@ Professional
 
 
 
-{/* Program */}
-
+{/* PROGRAM */}
 
 <div>
-
 
 <label
 
 className="
 text-slate-300
+font-medium
 "
 
 >
@@ -165,18 +266,141 @@ Select Program
 
 
 
-
 <select
 
 
 value={formData.program || ""}
 
 
+onChange={(e)=>{
+
+
+const selectedProgram = programs.find(
+
+item=>
+
+item.name===e.target.value
+
+);
+
+
+
+updateData({
+
+program:selectedProgram.name,
+
+programFees:selectedProgram.fees
+
+
+});
+
+
+}}
+
+
+
+className="
+w-full
+mt-2
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-5
+py-4
+text-white
+outline-none
+focus:border-teal-500
+"
+
+>
+
+
+
+<option value="">
+
+Select Program
+
+</option>
+
+
+
+{
+
+programs.map(program=>(
+
+
+<option
+
+key={program.id}
+
+value={program.name}
+
+>
+
+{program.name}
+
+ - ₹{program.fees}
+
+</option>
+
+
+))
+
+
+}
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* BRANCH */}
+
+
+
+<div>
+
+
+<label
+
+className="
+text-slate-300
+font-medium
+"
+
+>
+
+Select Branch
+
+</label>
+
+
+
+
+
+
+<select
+
+
+value={formData.branch || ""}
+
+
 onChange={(e)=>
 
 updateData({
 
-program:e.target.value
+branch:e.target.value
 
 })
 
@@ -197,54 +421,76 @@ outline-none
 focus:border-teal-500
 "
 
-
 >
 
 
 
 <option value="">
 
-Select Program
+Select Branch
 
 </option>
 
 
 
-<option value="Basic Skating">
-
-Basic Skating
-
-</option>
 
 
 
-<option value="Advanced Skating">
+{
 
-Advanced Skating
-
-</option>
+branches.map(branch=>(
 
 
+<option
 
-<option value="Speed Skating">
+key={branch.id}
 
-Speed Skating
+value={branch.branchName}
 
-</option>
+>
 
+{branch.branchName}
 
-
-<option value="Competition Training">
-
-Competition Training
+- {branch.location}
 
 </option>
+
+
+))
+
+
+}
+
 
 
 
 </select>
 
 
+
+
+
+
+
+{
+
+branches.length===0 &&
+
+<p className="
+text-yellow-400
+text-sm
+mt-2
+">
+
+No branches available. Please contact academy.
+
+</p>
+
+
+}
+
+
+
 </div>
 
 
@@ -253,9 +499,11 @@ Competition Training
 
 
 
+
 </div>
 
 
-)
+);
+
 
 }

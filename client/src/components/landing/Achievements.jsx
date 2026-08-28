@@ -1,5 +1,11 @@
 import {
-MapPin
+useEffect,
+useState
+} from "react";
+
+
+import {
+Trophy
 } from "lucide-react";
 
 
@@ -8,18 +14,11 @@ motion
 } from "framer-motion";
 
 
-import {
-useEffect,
-useState
-} from "react";
+
+export default function Achievements(){
 
 
-
-
-export default function Branches(){
-
-
-const [branches,setBranches]=useState([]);
+const [achievements,setAchievements]=useState([]);
 
 
 
@@ -30,7 +29,7 @@ useEffect(()=>{
 
 const data = JSON.parse(
 
-localStorage.getItem("academyBranches")
+localStorage.getItem("academyAchievements")
 
 ||
 
@@ -39,17 +38,7 @@ localStorage.getItem("academyBranches")
 );
 
 
-
-// show only active branches
-
-const activeBranches=data.filter(
-
-item => item.status==="Active"
-
-);
-
-
-setBranches(activeBranches);
+setAchievements(data);
 
 
 
@@ -67,7 +56,7 @@ return(
 
 <section
 
-id="branches"
+id="achievements"
 
 className="
 bg-[#07131f]
@@ -86,6 +75,7 @@ scroll-mt-20
 
 
 {/* HEADING */}
+
 
 
 <motion.div
@@ -109,9 +99,9 @@ once:true
 }}
 
 className="
+text-center
 max-w-6xl
 mx-auto
-text-center
 "
 
 >
@@ -147,10 +137,9 @@ drop-shadow-[0_0_35px_rgba(20,184,166,.9)]
 
 >
 
-Branches
+Achievements
 
 </span>
-
 
 
 </h2>
@@ -170,7 +159,7 @@ text-slate-400
 
 >
 
-Choose your nearest RTSA training center.
+Celebrating milestones and achievements of RTSA skaters.
 
 </p>
 
@@ -186,19 +175,19 @@ Choose your nearest RTSA training center.
 
 
 
-{/* BRANCH CARDS */}
+{/* ACHIEVEMENT CARDS */}
 
 
 
 <div
 
 className="
-max-w-7xl
+max-w-6xl
 mx-auto
 grid
 grid-cols-1
-sm:grid-cols-2
-lg:grid-cols-4
+md:grid-cols-2
+lg:grid-cols-3
 gap-6
 mt-14
 "
@@ -209,38 +198,24 @@ mt-14
 
 
 
-
 {
 
-branches.length===0 &&
+achievements.length===0 &&
 
 
-<motion.div
-
-initial={{
-opacity:0
-}}
-
-animate={{
-opacity:1
-}}
+<p
 
 className="
-col-span-full
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-10
-text-center
 text-slate-400
+text-center
+col-span-full
 "
 
 >
 
-No branches available currently.
+No achievements available.
 
-</motion.div>
+</p>
 
 
 }
@@ -252,62 +227,44 @@ No branches available currently.
 
 
 
-
 {
 
-branches.map((branch,index)=>(
+achievements.map((item,index)=>(
+
 
 
 <motion.div
 
 
-key={branch.id}
+key={item.id}
 
 
 initial={{
-
 opacity:0,
-
 y:40
-
 }}
-
 
 
 whileInView={{
-
 opacity:1,
-
 y:0
-
 }}
-
 
 
 transition={{
-
-delay:index*0.1,
-
-duration:0.5
-
+delay:index*0.1
 }}
 
 
-
 viewport={{
-
 once:true
-
 }}
 
 
 
 whileHover={{
-
 y:-8,
-
 scale:1.03
-
 }}
 
 
@@ -318,16 +275,11 @@ border
 border-slate-700
 rounded-3xl
 p-6
-shadow-lg
 hover:border-teal-400/50
 transition
 "
 
 >
-
-
-
-
 
 
 <div
@@ -342,7 +294,7 @@ rounded-2xl
 >
 
 
-<MapPin
+<Trophy
 
 size={32}
 
@@ -359,8 +311,6 @@ text-teal-400
 
 
 
-
-
 <h3
 
 className="
@@ -371,11 +321,9 @@ mt-5
 
 >
 
-{branch.branchName}
+{item.title}
 
 </h3>
-
-
 
 
 
@@ -385,12 +333,12 @@ mt-5
 
 className="
 text-slate-400
-mt-2
+mt-3
 "
 
 >
 
-{branch.location}
+{item.description}
 
 </p>
 
@@ -398,18 +346,9 @@ mt-2
 
 
 
-
-
-
-{
-
-branch.phone &&
-
-
 <p
 
 className="
-text-sm
 text-teal-400
 mt-3
 font-semibold
@@ -417,20 +356,15 @@ font-semibold
 
 >
 
-{branch.phone}
+{item.year}
 
 </p>
-
-
-}
-
 
 
 
 
 
 </motion.div>
-
 
 
 ))
@@ -440,11 +374,7 @@ font-semibold
 
 
 
-
-
 </div>
-
-
 
 
 

@@ -1,73 +1,141 @@
 import {
-  Building2,
-  MapPin,
-  User,
-  Phone,
-  Pencil,
-  Trash2,
-  Search,
-  Plus,
-  X
+Plus,
+Search,
+Building2,
+Pencil,
+Trash2,
+X,
+UserCog
 } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { useState } from "react";
+
+import {
+motion
+} from "framer-motion";
+
+
+import {
+useEffect,
+useState
+} from "react";
+
+
+
+
+
 
 
 export default function Branches(){
 
 
-const [search,setSearch] = useState("");
 
-const [showModal,setShowModal] = useState(false);
-
-const [editMode,setEditMode] = useState(false);
-
-const [selectedBranch,setSelectedBranch] = useState(null);
+const [branches,setBranches]=useState([]);
 
 
-
-const [branches,setBranches] = useState([
-
-
-{
-id:1,
-name:"Pune Camp",
-code:"PUN001",
-location:"Pune",
-manager:"Amit Patil",
-phone:"8765432109",
-status:"Active"
-},
+const [search,setSearch]=useState("");
 
 
-{
-id:2,
-name:"Nashik Road",
-code:"NAS001",
-location:"Nashik",
-manager:"Sneha More",
-phone:"7654321098",
-status:"Inactive"
-}
+const [showModal,setShowModal]=useState(false);
 
 
-]);
+const [editId,setEditId]=useState(null);
 
 
 
 
 
-const [newBranch,setNewBranch]=useState({
 
-name:"",
-code:"",
+
+const initialForm={
+
+
+branchName:"",
+
 location:"",
-manager:"",
+
 phone:"",
+
+email:"",
+
+
+adminName:"",
+
+adminEmail:"",
+
+
 status:"Active"
 
-});
+
+};
+
+
+
+
+
+const [form,setForm]=useState(initialForm);
+
+
+
+
+
+
+
+
+
+// LOAD BRANCHES
+
+
+useEffect(()=>{
+
+
+const saved = JSON.parse(
+
+localStorage.getItem("academyBranches")
+
+||
+
+"[]"
+
+);
+
+
+
+setBranches(saved);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+const saveBranches=(data)=>{
+
+
+setBranches(data);
+
+
+
+localStorage.setItem(
+
+"academyBranches",
+
+JSON.stringify(data)
+
+);
+
+
+
+};
+
+
+
+
 
 
 
@@ -76,15 +144,16 @@ status:"Active"
 const handleChange=(e)=>{
 
 
-setNewBranch({
+setForm({
 
-...newBranch,
+...form,
 
 [e.target.name]:e.target.value
 
 });
 
 
+
 };
 
 
@@ -93,31 +162,115 @@ setNewBranch({
 
 
 
-const addBranch=()=>{
 
 
-const branch={
+const saveBranch=()=>{
+
+
+if(
+
+!form.branchName ||
+
+!form.location
+
+){
+
+
+return;
+
+
+}
+
+
+
+
+
+
+
+if(editId){
+
+
+
+const updated = branches.map(item=>{
+
+
+if(item.id===editId){
+
+
+return{
+
+...item,
+
+...form
+
+};
+
+
+}
+
+
+
+return item;
+
+
+
+});
+
+
+
+
+saveBranches(updated);
+
+
+
+}
+
+else{
+
+
+const newBranch={
+
 
 id:Date.now(),
 
-...newBranch
+...form
+
 
 };
 
 
-setBranches([
+
+saveBranches([
 
 ...branches,
 
-branch
+newBranch
 
 ]);
 
 
-closeModal();
+
+}
+
+
+
+
+
+
+
+setForm(initialForm);
+
+
+setEditId(null);
+
+
+setShowModal(false);
+
 
 
 };
+
+
 
 
 
@@ -128,72 +281,14 @@ closeModal();
 const editBranch=(branch)=>{
 
 
-setSelectedBranch(branch);
+setForm(branch);
 
 
-setNewBranch({
+setEditId(branch.id);
 
-name:branch.name,
-
-code:branch.code,
-
-location:branch.location,
-
-manager:branch.manager,
-
-phone:branch.phone,
-
-status:branch.status
-
-});
-
-
-setEditMode(true);
 
 setShowModal(true);
 
-
-};
-
-
-
-
-
-
-
-
-
-const updateBranch=()=>{
-
-
-const updatedBranches = branches.map((branch)=>{
-
-
-if(branch.id===selectedBranch.id)
-
-{
-
-return{
-
-...branch,
-
-...newBranch
-
-}
-
-}
-
-
-return branch;
-
-
-});
-
-
-setBranches(updatedBranches);
-
-
-closeModal();
 
 
 };
@@ -209,17 +304,20 @@ closeModal();
 const deleteBranch=(id)=>{
 
 
-setBranches(
+const updated = branches.filter(
 
-branches.filter(
+item=>
 
-(branch)=>branch.id!==id
-
-)
+item.id!==id
 
 );
 
 
+
+saveBranches(updated);
+
+
+
 };
 
 
@@ -230,30 +328,21 @@ branches.filter(
 
 
 
-
-const closeModal=()=>{
-
-
-setShowModal(false);
-
-setEditMode(false);
-
-setSelectedBranch(null);
+const filteredBranches = branches.filter(item=>
 
 
-setNewBranch({
+item.branchName
 
-name:"",
-code:"",
-location:"",
-manager:"",
-phone:"",
-status:"Active"
+.toLowerCase()
 
-});
+.includes(
+
+search.toLowerCase()
+
+)
 
 
-};
+);
 
 
 
@@ -271,16 +360,24 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-6
-lg:p-10
 text-white
+p-4
+sm:p-6
+lg:p-10
 "
 
 >
 
 
 
+
+
+
+
+
+
 {/* HEADER */}
+
 
 
 <div
@@ -302,7 +399,8 @@ gap-5
 <h1
 
 className="
-text-4xl
+text-3xl
+sm:text-4xl
 font-black
 "
 
@@ -311,6 +409,7 @@ font-black
 Branch Management
 
 </h1>
+
 
 
 <p
@@ -322,7 +421,7 @@ mt-2
 
 >
 
-Create and manage academy branches.
+Create branches and assign branch administrators.
 
 </p>
 
@@ -333,29 +432,40 @@ Create and manage academy branches.
 
 
 
+
+
+
+
 <button
 
+
 onClick={()=>setShowModal(true)}
+
 
 className="
 bg-teal-500
 hover:bg-teal-600
-px-6
+px-5
 py-3
 rounded-xl
 font-bold
 flex
 items-center
 gap-2
+w-fit
 "
 
 >
 
+
 <Plus size={20}/>
+
 
 Add Branch
 
+
 </button>
+
 
 
 
@@ -370,6 +480,7 @@ Add Branch
 
 
 {/* SEARCH */}
+
 
 
 <div
@@ -404,30 +515,39 @@ px-4
 
 <Search
 
-className="text-slate-400"
-
-/>
-
-
-<input
-
-placeholder="Search branches..."
-
-value={search}
-
-onChange={(e)=>setSearch(e.target.value)}
-
 className="
-bg-transparent
-outline-none
-w-full
-py-3
+text-slate-400
 "
 
 />
 
 
+
+<input
+
+
+placeholder="Search branch..."
+
+
+value={search}
+
+
+onChange={(e)=>setSearch(e.target.value)}
+
+
+className="
+bg-transparent
+outline-none
+py-3
+w-full
+"
+
+/>
+
+
+
 </div>
+
 
 
 </div>
@@ -451,7 +571,7 @@ grid
 grid-cols-1
 md:grid-cols-2
 xl:grid-cols-3
-gap-7
+gap-6
 mt-8
 "
 
@@ -459,19 +579,49 @@ mt-8
 
 
 
+
+
 {
 
-branches
+filteredBranches.length===0 &&
 
-.filter((branch)=>
 
-branch.name
-.toLowerCase()
-.includes(search.toLowerCase())
+<div
 
-)
+className="
+col-span-full
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-10
+text-center
+text-slate-400
+"
 
-.map((branch)=>(
+>
+
+
+No branches created yet.
+
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+filteredBranches.map((branch,index)=>(
+
 
 
 <motion.div
@@ -480,9 +630,41 @@ branch.name
 key={branch.id}
 
 
-whileHover={{
-y:-8
+
+initial={{
+
+opacity:0,
+
+y:20
+
 }}
+
+
+
+animate={{
+
+opacity:1,
+
+y:0
+
+}}
+
+
+
+transition={{
+
+delay:index*0.05
+
+}}
+
+
+
+whileHover={{
+
+y:-6
+
+}}
+
 
 
 className="
@@ -497,12 +679,14 @@ p-6
 
 
 
+
+
+
 <div
 
 className="
 flex
 justify-between
-items-start
 "
 
 >
@@ -518,11 +702,14 @@ rounded-2xl
 
 >
 
+
 <Building2
 
-size={32}
+className="
+text-teal-400
+"
 
-className="text-teal-400"
+size={30}
 
 />
 
@@ -533,32 +720,24 @@ className="text-teal-400"
 
 
 
+
+
 <span
 
-className={`
-px-4
-py-2
+className="
+bg-green-500/20
+text-green-400
+px-3
+py-1
 rounded-full
 text-sm
-
-${
-branch.status==="Active"
-
-?
-
-"bg-green-500/20 text-green-400"
-
-:
-
-"bg-red-500/20 text-red-400"
-
-}
-
-`}
+"
 
 >
 
+
 {branch.status}
+
 
 </span>
 
@@ -572,19 +751,24 @@ branch.status==="Active"
 
 
 
+
+
 <h2
 
 className="
-text-2xl
+text-xl
 font-bold
 mt-6
 "
 
 >
 
-{branch.name}
+
+{branch.branchName}
+
 
 </h2>
+
 
 
 
@@ -593,12 +777,14 @@ mt-6
 
 className="
 text-slate-400
-text-lg
+mt-2
 "
 
 >
 
-Code: {branch.code}
+
+{branch.location}
+
 
 </p>
 
@@ -613,59 +799,63 @@ Code: {branch.code}
 <div
 
 className="
-space-y-4
-mt-6
-text-slate-300
+mt-5
+bg-[#07131f]
+rounded-xl
+p-4
+space-y-2
 "
 
 >
 
 
-<p className="flex gap-3 items-center">
+<div
 
-<MapPin
+className="
+flex
+items-center
+gap-2
+"
 
-size={20}
+>
 
-className="text-teal-400"
+
+<UserCog
+
+size={18}
+
+className="
+text-teal-400
+"
 
 />
 
-{branch.location}
+
+
+<p>
+
+
+{branch.adminName || "No Admin Assigned"}
+
 
 </p>
 
 
-
-
-<p className="flex gap-3 items-center">
-
-<User
-
-size={20}
-
-className="text-teal-400"
-
-/>
-
-{branch.manager}
-
-</p>
+</div>
 
 
 
+<p className="
+text-sm
+text-slate-400
+"
 
-<p className="flex gap-3 items-center">
 
-<Phone
+>
 
-size={20}
 
-className="text-teal-400"
+{branch.adminEmail || "No admin email"}
 
-/>
-
-{branch.phone}
 
 </p>
 
@@ -685,11 +875,12 @@ className="text-teal-400"
 
 className="
 flex
-gap-4
-mt-8
+gap-3
+mt-6
 "
 
 >
+
 
 
 <button
@@ -697,12 +888,14 @@ mt-8
 
 onClick={()=>editBranch(branch)}
 
+
+
 className="
 flex-1
 border
 border-slate-600
-py-3
 rounded-xl
+py-3
 flex
 justify-center
 items-center
@@ -717,7 +910,12 @@ hover:bg-slate-800
 
 Edit
 
+
 </button>
+
+
+
+
 
 
 
@@ -728,17 +926,18 @@ Edit
 
 onClick={()=>deleteBranch(branch.id)}
 
+
+
 className="
 flex-1
 bg-red-500/20
 text-red-400
-py-3
 rounded-xl
+py-3
 flex
 justify-center
 items-center
 gap-2
-hover:bg-red-500/30
 "
 
 >
@@ -746,9 +945,13 @@ hover:bg-red-500/30
 
 <Trash2 size={18}/>
 
+
 Delete
 
+
 </button>
+
+
 
 
 
@@ -759,7 +962,10 @@ Delete
 
 
 
+
+
 </motion.div>
+
 
 
 ))
@@ -788,31 +994,52 @@ Delete
 showModal &&
 
 
+
 <div
 
 className="
 fixed
 inset-0
 bg-black/60
+z-50
 flex
 items-center
 justify-center
-z-50
-p-5
+p-4
 "
 
 >
 
 
 
-<div
+<motion.div
+
+
+initial={{
+
+scale:0.9,
+
+opacity:0
+
+}}
+
+
+animate={{
+
+scale:1,
+
+opacity:1
+
+}}
+
+
 
 className="
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-8
+p-6
 w-full
 max-w-xl
 "
@@ -820,12 +1047,15 @@ max-w-xl
 >
 
 
+
+
+
 <div
 
 className="
 flex
 justify-between
-mb-6
+items-center
 "
 
 >
@@ -835,32 +1065,47 @@ mb-6
 
 className="
 text-2xl
-font-bold
+font-black
 "
 
 >
 
+
 {
-editMode
+
+editId
+
 ?
+
 "Edit Branch"
+
 :
-"Add New Branch"
+
+"Create Branch"
+
 }
+
 
 </h2>
 
 
 
+
+
 <button
 
-onClick={closeModal}
+
+onClick={()=>setShowModal(false)}
+
 
 >
 
+
 <X/>
 
+
 </button>
+
 
 
 </div>
@@ -872,43 +1117,48 @@ onClick={closeModal}
 
 
 
-<div
-
-className="
-space-y-4
-"
-
->
-
 
 {
 
 [
-["name","Branch Name"],
-["code","Branch Code"],
+
+["branchName","Branch Name"],
+
 ["location","Location"],
-["manager","Manager Name"],
-["phone","Phone"]
 
-]
+["phone","Contact Number"],
 
-.map(([key,placeholder])=>(
+["email","Branch Email"],
+
+["adminName","Branch Admin Name"],
+
+["adminEmail","Admin Email"]
+
+].map(([key,label])=>(
+
 
 
 <input
 
+
 key={key}
+
 
 name={key}
 
-value={newBranch[key]}
+
+placeholder={label}
+
+
+value={form[key]}
+
 
 onChange={handleChange}
 
-placeholder={placeholder}
 
 className="
 w-full
+mt-4
 bg-[#07131f]
 border
 border-slate-700
@@ -918,7 +1168,10 @@ py-3
 outline-none
 "
 
+
+
 />
+
 
 
 ))
@@ -931,61 +1184,23 @@ outline-none
 
 
 
-<select
-
-name="status"
-
-value={newBranch.status}
-
-onChange={handleChange}
-
-className="
-w-full
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-px-4
-py-3
-"
-
->
-
-<option>
-Active
-</option>
-
-<option>
-Inactive
-</option>
-
-
-</select>
-
 
 
 
 <button
 
 
-onClick={
-
-editMode
-?
-updateBranch
-:
-addBranch
-
-}
+onClick={saveBranch}
 
 
 className="
+mt-6
 w-full
 bg-teal-500
+hover:bg-teal-600
 py-3
 rounded-xl
 font-bold
-mt-5
 "
 
 >
@@ -993,10 +1208,14 @@ mt-5
 
 {
 
-editMode
+editId
+
 ?
+
 "Update Branch"
+
 :
+
 "Save Branch"
 
 }
@@ -1006,23 +1225,33 @@ editMode
 
 
 
+
+
+
+
+</motion.div>
+
+
+
 </div>
 
-
-</div>
-
-
-</div>
 
 
 }
 
 
 
+
+
+
+
+
+
 </div>
 
 
-)
+);
+
 
 
 }
