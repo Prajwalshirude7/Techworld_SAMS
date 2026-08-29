@@ -5,76 +5,43 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  Download,
+  Download
 } from "lucide-react";
 
 import { motion } from "framer-motion";
 
-
 import {
   useNavigate,
-  useLocation,
+  useLocation
 } from "react-router-dom";
 
-
-import { useEffect, useState } from "react";
-
+import {
+  useEffect,
+  useState
+} from "react";
 
 import generateReceipt from "../../utils/generateReceipt";
 
 
-export default function AdmissionDetails() {
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const [student, setStudent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
+export default function AdmissionDetails(){
 
 
-  // =====================================================
-  // GET ADMISSION ID
-  // =====================================================
+const navigate = useNavigate();
 
-  const admissionId =
-    location.state?.student?.id ||
-    location.state?.admissionId;
+const location = useLocation();
 
 
-  // =====================================================
-  // GET TOKEN
-  // =====================================================
-
-  const getToken = () => {
-    return localStorage.getItem("token");
-  };
-
-
-
-// RECEIVED DATA FROM ADMISSIONS PAGE
 
 const receivedStudent = location.state?.student;
 
 
 
-
-
-
 const [student,setStudent] = useState(null);
 
-
 const [status,setStatus] = useState(
-
-receivedStudent?.status || "Pending Approval"
-
+  receivedStudent?.status || "Pending Approval"
 );
-
-
-
-
-
-
 
 
 
@@ -91,8 +58,7 @@ return;
 
 
 
-
-const formattedStudent={
+const formattedStudent = {
 
 
 ...receivedStudent,
@@ -106,63 +72,46 @@ dob:
 receivedStudent.dob || "N/A",
 
 
-        gender:
-          admission.gender ||
-          "N/A",
-
-        father_name:
-          admission.father_name ||
-          "N/A",
-
-        branch:
-          admission.branch_name ||
-          "Not Assigned",
-
-        branch_code:
-          admission.branch_code ||
-          "N/A",
-
-        document:
-          admission.document ||
-          "Not available",
-
-        address:
-          admission.address ||
-          "Not available",
-
-        city:
-          admission.city ||
-          "",
-
-        state:
-          admission.state ||
-          "",
-
-        pincode:
-          admission.pincode ||
-          "",
-
-        program:
-          admission.program ||
-          "Not available",
-
-experience:
-receivedStudent.experience || "N/A",
+gender:
+receivedStudent.gender || "N/A",
 
 
-program:
-receivedStudent.program || "Not Assigned",
+father_name:
+receivedStudent.father_name || "N/A",
 
 
 branch:
 receivedStudent.branch || "Not Assigned",
 
 
+program:
+receivedStudent.program || "Not Assigned",
+
+
+experience:
+receivedStudent.experience || "N/A",
+
+
+address:
+receivedStudent.address || "Not Available",
+
+
+city:
+receivedStudent.city || "",
+
+
+state:
+receivedStudent.state || "",
+
+
+pincode:
+receivedStudent.pincode || "",
+
 
 
 document:
 
-typeof receivedStudent.document==="object"
+typeof receivedStudent.document === "object"
 
 ?
 
@@ -174,9 +123,7 @@ receivedStudent.document || "No Document"
 
 
 
-
 };
-
 
 
 
@@ -184,18 +131,12 @@ setStudent(formattedStudent);
 
 
 setStatus(
-
-formattedStudent.status ||
-
-"Pending Approval"
-
+formattedStudent.status || "Pending Approval"
 );
 
 
 
 },[receivedStudent,navigate]);
-
-
 
 
 
@@ -211,35 +152,28 @@ return null;
 
 
 
-
-
-
-
 const isPending =
-
 status==="Pending Approval"
 ||
 status==="Pending";
 
 
 
-
-
 const isApproved =
-
 status==="Approved";
 
 
 
-
-
 const isRejected =
-
 status==="Rejected";
-// UPDATE ADMISSION STATUS
 
 
-const updateAdmissionStatus = (newStatus)=>{
+
+
+
+
+
+const updateAdmissionStatus=(newStatus)=>{
 
 
 const updatedStudent = {
@@ -252,7 +186,6 @@ status:newStatus
 
 
 
-
 setStudent(updatedStudent);
 
 setStatus(newStatus);
@@ -261,13 +194,7 @@ setStatus(newStatus);
 
 
 
-
-
-
-// =============================
-// UPDATE CURRENT STUDENT STATUS
-// =============================
-
+// CURRENT STUDENT DATA
 
 localStorage.setItem(
 
@@ -302,13 +229,7 @@ JSON.stringify(updatedStudent)
 
 
 
-
-
-
-// =============================
-// UPDATE ADMISSIONS LIST
-// =============================
-
+// UPDATE APPLICATION LIST
 
 const applications = JSON.parse(
 
@@ -323,17 +244,12 @@ localStorage.getItem("admissionApplications")
 
 
 
-
-
-
-const updatedApplications = applications.map((item)=>{
+const updatedApplications = applications.map(item=>{
 
 
 if(item.id===student.id){
 
-
 return updatedStudent;
-
 
 }
 
@@ -342,8 +258,6 @@ return item;
 
 
 });
-
-
 
 
 
@@ -363,15 +277,7 @@ JSON.stringify(updatedApplications)
 
 
 
-
-
-
-
-
-// =============================
-// ADD APPROVED STUDENT
-// =============================
-
+// ADD STUDENT AFTER APPROVAL
 
 if(newStatus==="Approved"){
 
@@ -391,13 +297,9 @@ localStorage.getItem("academyStudents")
 
 
 
+const exists = existingStudents.some(
 
-
-const alreadyExists = existingStudents.some(
-
-(item)=>
-
-item.email===student.email
+item=>item.email===student.email
 
 );
 
@@ -406,10 +308,7 @@ item.email===student.email
 
 
 
-
-
-if(!alreadyExists){
-
+if(!exists){
 
 
 const newStudent={
@@ -462,10 +361,7 @@ new Date().toLocaleDateString(),
 status:"Active"
 
 
-
 };
-
-
 
 
 
@@ -499,7 +395,6 @@ newStudent
 
 
 
-
 };
 return(
 
@@ -518,79 +413,32 @@ lg:p-10
 
 
 
-{/* HEADER */}
+{/* BACK BUTTON */}
 
-<div
+<button
+
+onClick={()=>navigate("/super-admin/admissions")}
 
 className="
 flex
 items-center
-gap-4
+gap-2
+text-teal-400
+mb-6
+hover:text-teal-300
 "
 
 >
 
+<ArrowLeft size={20}/>
 
-<button
+Back To Admissions
 
-onClick={()=>navigate(-1)}
-
-className="
-bg-[#102235]
-p-3
-rounded-xl
-hover:bg-slate-800
-transition
-"
-
->
-
-<ArrowLeft size={22}/>
-
-        </button>
-
-
-        <div>
-
-          <h1
-            className="
-              text-3xl
-              sm:text-4xl
-              font-black
-            "
-          >
-            Admission Details
-          </h1>
-
-
-<p
-
-className="
-text-slate-400
-mt-2
-"
-
->
-
-            Review complete student
-            application.
-
-</p>
-
-
-</div>
-
-      </div>
+</button>
 
 
 
 
-
-
-
-
-
-{/* PROFILE CARD */}
 
 
 <motion.div
@@ -606,25 +454,28 @@ y:0
 }}
 
 className="
-mt-8
+max-w-5xl
+mx-auto
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-5
-sm:p-7
+p-6
+sm:p-10
 "
 
 >
 
 
 
+{/* HEADER */}
+
 <div
 
 className="
 flex
 flex-col
-md:flex-row
+sm:flex-row
 justify-between
 gap-5
 "
@@ -632,35 +483,36 @@ gap-5
 >
 
 
+<div>
 
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
-
-<div
+<h1
 
 className="
-bg-teal-500/20
-p-4
-rounded-2xl
+text-3xl
+sm:text-5xl
+font-black
 "
 
 >
 
+Admission Details
 
-<User
+</h1>
 
-size={35}
+
+
+<p
 
 className="
-text-teal-400
+text-slate-400
+mt-3
 "
 
-/>
+>
+
+Review student application details
+
+</p>
 
 
 </div>
@@ -669,199 +521,181 @@ text-teal-400
 
 
 
-<div>
+
+<div
+
+className={`
+
+px-5
+py-3
+rounded-full
+font-bold
+
+
+${
+isApproved
+
+?
+
+"bg-green-500/20 text-green-400"
+
+:
+
+isRejected
+
+?
+
+"bg-red-500/20 text-red-400"
+
+:
+
+"bg-yellow-500/20 text-yellow-400"
+
+}
+
+`}
+
+>
+
+{status}
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* STUDENT PROFILE */}
+
+<div
+
+className="
+mt-10
+grid
+grid-cols-1
+md:grid-cols-2
+gap-6
+"
+
+>
+
+
+
+<InfoCard
+
+icon={<User/>}
+
+title="Student Name"
+
+value={student.name}
+
+/>
+
+
+
+<InfoCard
+
+icon={<FileText/>}
+
+title="Email"
+
+value={student.email}
+
+/>
+
+
+
+<InfoCard
+
+icon={<FileText/>}
+
+title="Phone"
+
+value={student.phone}
+
+/>
+
+
+
+<InfoCard
+
+icon={<MapPin/>}
+
+title="Branch"
+
+value={student.branch}
+
+/>
+
+
+
+<InfoCard
+
+icon={<FileText/>}
+
+title="Program"
+
+value={student.program}
+
+/>
+
+
+
+<InfoCard
+
+icon={<FileText/>}
+
+title="Experience"
+
+value={student.experience}
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* PERSONAL DETAILS */}
+
+<div
+
+className="
+mt-8
+bg-[#07131f]
+rounded-3xl
+p-6
+border
+border-slate-700
+"
+
+>
 
 
 <h2
 
 className="
-text-xl
-sm:text-2xl
-font-bold
-"
-
->
-
-{student.name}
-
-</h2>
-
-
-
-              <p
-                className="
-                  text-slate-400
-                  break-all
-                "
-              >
-                {student.email}
-              </p>
-
-
-              <p
-                className="
-                  text-sm
-                  text-slate-500
-                  mt-1
-                "
-              >
-                Student Code:{" "}
-                {student.student_code ||
-                  "N/A"}
-              </p>
-
-</div>
-
-
-
-</div>
-
-
-<span
-
-className={`
-
-px-5
-py-2
-rounded-full
-font-bold
-w-fit
-
-
-              ${
-                isApproved
-                  ? "bg-green-500/20 text-green-400"
-                  : isRejected
-                  ? "bg-red-500/20 text-red-400"
-                  : "bg-yellow-500/20 text-yellow-400"
-              }
-            `}
-          >
-
-            {status}
-
-          </span>
-
-        </div>
-
-      </motion.div>
-
-
-      {/* =================================================
-          DETAILS GRID
-      ================================================= */}
-
-      <div
-        className="
-          grid
-          grid-cols-1
-          lg:grid-cols-2
-          gap-6
-          mt-6
-        "
-      >
-
-
-        {/* =================================================
-            PERSONAL INFORMATION
-        ================================================= */}
-
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-          "
-        >
-
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Personal Information
-          </h2>
-
-
-          <div className="space-y-4">
-
-            <div>
-
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Phone
-              </p>
-
-              <p className="mt-1">
-                {student.phone}
-              </p>
-
-            </div>
-
-
-</motion.div>
-
-
-
-
-
-
-
-
-
-{/* INFORMATION GRID */}
-
-
-<div
-
-className="
-grid
-grid-cols-1
-lg:grid-cols-2
-gap-6
-mt-6
-"
-
->
-
-
-
-
-
-
-
-<div className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-6
-">
-
-
-<h2 className="
-text-xl
-font-bold
-text-teal-400
+text-2xl
+font-black
 mb-5
-">
+"
+
+>
 
 Personal Information
 
@@ -869,40 +703,39 @@ Personal Information
 
 
 
-<div className="
+<div
+
+className="
 space-y-3
 text-slate-300
-">
+"
+
+>
 
 
 <p>
 
-Phone:
+<b className="text-white">
+Date Of Birth:
+</b>
 
-<span className="
-text-white
-ml-2
-">
-
-{student.phone}
-
-</span>
-
-</p>
-
-
-<p>
-
-DOB:
-
-<span className="
-text-white
-ml-2
-">
+{" "}
 
 {student.dob}
 
-</span>
+</p>
+
+
+
+<p>
+
+<b className="text-white">
+Gender:
+</b>
+
+{" "}
+
+{student.gender}
 
 </p>
 
@@ -910,214 +743,99 @@ ml-2
 
 <p>
 
-Gender:
+<b className="text-white">
+Address:
+</b>
 
-<span className="
-text-white
-ml-2
-">
+{" "}
 
-{student.gender}
-
-</span>
+{student.address}
 
 </p>
 
 
-</div>
 
+<p>
 
-</div>
+<b className="text-white">
+City:
+</b>
 
+{" "}
 
+{student.city}
 
-
-
-
-
-
-
-<div className="
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-6
-">
-
-
-<h2 className="
-text-xl
-font-bold
-text-teal-400
-mb-5
-">
-
-Address Details
-
-</h2>
+</p>
 
 
 
+<p>
 
-<div className="
-flex
-gap-3
-text-slate-300
-">
+<b className="text-white">
+State:
+</b>
 
-<MapPin
-
-className="
-text-teal-400
-shrink-0
-"
-
-/>
-
-
-
-            <div>
-
-{student.address}
-
-<br/>
-
-{student.city},
+{" "}
 
 {student.state}
 
-<br/>
+</p>
+
+
+
+<p>
+
+<b className="text-white">
+Pincode:
+</b>
+
+{" "}
 
 {student.pincode}
 
 </p>
 
 
-</div>
-
 
 </div>
 
 
 
+</div>
 
 
 
 
 
 
-<div className="
-bg-[#102235]
-border
-border-slate-700
+
+
+
+{/* DOCUMENT */}
+
+<div
+
+className="
+mt-8
+bg-[#07131f]
 rounded-3xl
 p-6
-">
-
-
-<h2 className="
-text-xl
-font-bold
-text-teal-400
-mb-5
-">
-
-Skating Details
-
-</h2>
-
-
-
-<div className="
-space-y-3
-">
-
-
-<p>
-
-Program:
-
-<span className="
-text-white
-ml-2
-">
-
-{student.program}
-
-</span>
-
-
-</p>
-
-
-
-
-<p>
-
-Experience:
-
-<span className="
-text-white
-ml-2
-">
-
-{student.experience}
-
-</span>
-
-
-</p>
-
-
-
-
-<p>
-
-Branch:
-
-<span className="
-text-white
-ml-2
-">
-
-{student.branch}
-
-</span>
-
-
-</p>
-
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div className="
-bg-[#102235]
 border
 border-slate-700
-rounded-3xl
-p-6
-">
+"
+
+>
 
 
-<h2 className="
-text-xl
-font-bold
-text-teal-400
-mb-5
-">
+<h2
+
+className="
+text-2xl
+font-black
+mb-4
+"
+
+>
 
 Documents
 
@@ -1125,75 +843,17 @@ Documents
 
 
 
-
-<div className="
-bg-[#07131f]
-rounded-xl
-p-4
-flex
-justify-between
-items-center
-"
-
->
-
-
-<div className="
-flex
-items-center
-gap-3
-"
-
->
-
-
-<FileText
+<p
 
 className="
-text-teal-400
-"
-
-/>
-
-
-<span>
-
-{student.document || "No document uploaded"}
-
-</span>
-
-
-            </div>
-
-
-
-
-
-<button
-
-className="
-text-teal-400
-hover:text-teal-300
+text-slate-300
 "
 
 >
 
+{student.document}
 
-<Download size={22}/>
-
-
-</button>
-
-
-
-            </div>
-
-
-</div>
-
-
-
-
+</p>
 
 
 
@@ -1207,23 +867,20 @@ hover:text-teal-300
 
 
 
-{/* ACTION BUTTONS */}
-
+{/* ACTIONS */}
 
 <div
 
 className="
-mt-8
+mt-10
 flex
-flex-col
-sm:flex-row
+flex-wrap
 gap-4
 "
 
 >
 
 
-{/* PENDING */}
 
 {
 
@@ -1231,33 +888,34 @@ isPending &&
 
 <>
 
+
 <button
 
 onClick={()=>updateAdmissionStatus("Approved")}
 
 className="
 flex-1
+min-w-[180px]
 bg-green-500
 hover:bg-green-600
-py-4
+py-3
 rounded-xl
 font-bold
 flex
 items-center
 justify-center
 gap-2
-transition
 "
 
 >
 
-<CheckCircle size={22}/>
+<CheckCircle size={20}/>
 
-              {actionLoading
-                ? "Processing..."
-                : "Approve Admission"}
+Approve Admission
 
 </button>
+
+
 
 
 
@@ -1268,25 +926,25 @@ onClick={()=>updateAdmissionStatus("Rejected")}
 
 className="
 flex-1
+min-w-[180px]
 bg-red-500
 hover:bg-red-600
-py-4
+py-3
 rounded-xl
 font-bold
 flex
 items-center
 justify-center
 gap-2
-transition
 "
 
 >
 
-<XCircle size={22}/>
+<XCircle size={20}/>
 
 Reject Admission
 
-            </button>
+</button>
 
 
 </>
@@ -1299,7 +957,7 @@ Reject Admission
 
 
 
-{/* APPROVED */}
+
 
 {
 
@@ -1311,89 +969,10 @@ isApproved &&
 onClick={()=>generateReceipt(student)}
 
 className="
-w-full
+flex-1
+min-w-[180px]
 bg-teal-500
 hover:bg-teal-600
-py-4
-rounded-xl
-font-bold
-flex
-items-center
-justify-center
-gap-2
-transition
-"
-
->
-
-
-<Download size={22}/>
-
-            Generate Receipt
-
-          </button>
-
-
-}
-
-
-
-
-
-
-
-
-{/* REJECTED */}
-
-{
-
-isRejected &&
-
-
-<div
-
-className="
-w-full
-bg-red-500/20
-border
-border-red-500/30
-rounded-xl
-p-5
-text-center
-"
-
->
-
-
-<p
-
-className="
-text-red-400
-font-bold
-mb-4
-"
-
->
-
-            Admission Rejected
-
-</p>
-
-
-
-
-
-<button
-
-
-onClick={()=>updateAdmissionStatus("Pending Approval")}
-
-
-className="
-w-full
-bg-yellow-500
-hover:bg-yellow-600
-text-black
 py-3
 rounded-xl
 font-bold
@@ -1401,29 +980,120 @@ flex
 items-center
 justify-center
 gap-2
-transition
 "
 
 >
 
+<Download size={20}/>
 
-<CheckCircle size={20}/>
-
-Edit Status
-
+Download Receipt
 
 </button>
-
-
-
-      </div>
 
 
 }
 
 
 
+
+
 </div>
+
+
+
+
+
+
+
+
+
+</motion.div>
+
+
+
+
+
+</div>
+
+);
+
+}
+
+
+
+
+
+
+
+
+function InfoCard({
+
+icon,
+
+title,
+
+value
+
+}){
+
+
+return(
+
+<div
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-2xl
+p-5
+"
+
+>
+
+
+<div
+
+className="
+text-teal-400
+mb-3
+"
+
+>
+
+{icon}
+
+</div>
+
+
+<p
+
+className="
+text-slate-400
+"
+
+>
+
+{title}
+
+</p>
+
+
+<h3
+
+className="
+text-lg
+font-bold
+mt-2
+break-all
+"
+
+>
+
+{value || "N/A"}
+
+</h3>
+
 
 
 </div>

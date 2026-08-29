@@ -1,74 +1,46 @@
 import {
-Plus,
-Search,
-Building2,
-Pencil,
-Trash2,
-X,
-UserCog
+  Plus,
+  Search,
+  Building2,
+  Pencil,
+  Trash2,
+  X,
+  UserCog
 } from "lucide-react";
 
+import { motion } from "framer-motion";
 
 import {
-motion
-} from "framer-motion";
-
-
-import {
-useEffect,
-useState
+  useEffect,
+  useState
 } from "react";
-
-
-
-
 
 
 
 export default function Branches(){
 
 
-
 const [branches,setBranches]=useState([]);
-
 
 const [search,setSearch]=useState("");
 
-
 const [showModal,setShowModal]=useState(false);
-
 
 const [editId,setEditId]=useState(null);
 
 
 
-
-
-
-
 const initialForm={
 
-
 branchName:"",
-
 location:"",
-
 phone:"",
-
 email:"",
-
-
 adminName:"",
-
 adminEmail:"",
-
-
 status:"Active"
 
-
 };
-
-
 
 
 
@@ -79,16 +51,10 @@ const [form,setForm]=useState(initialForm);
 
 
 
-
-
-
-// LOAD BRANCHES
-
-
 useEffect(()=>{
 
 
-const saved = JSON.parse(
+const saved=JSON.parse(
 
 localStorage.getItem("academyBranches")
 
@@ -99,14 +65,10 @@ localStorage.getItem("academyBranches")
 );
 
 
-
 setBranches(saved);
 
 
-
 },[]);
-
-
 
 
 
@@ -120,7 +82,6 @@ const saveBranches=(data)=>{
 setBranches(data);
 
 
-
 localStorage.setItem(
 
 "academyBranches",
@@ -130,10 +91,7 @@ JSON.stringify(data)
 );
 
 
-
 };
-
-
 
 
 
@@ -153,9 +111,7 @@ setForm({
 });
 
 
-
 };
-
 
 
 
@@ -167,60 +123,36 @@ setForm({
 const saveBranch=()=>{
 
 
-if(
-
-!form.branchName ||
-
-!form.location
-
-){
-
-
+if(!form.branchName || !form.location)
 return;
-
-
-}
-
-
-
-
 
 
 
 if(editId){
 
 
+const updated=branches.map(item=>
 
-const updated = branches.map(item=>{
+item.id===editId
 
+?
 
-if(item.id===editId){
-
-
-return{
+{
 
 ...item,
 
 ...form
 
-};
-
-
 }
 
+:
 
+item
 
-return item;
-
-
-
-});
-
-
+);
 
 
 saveBranches(updated);
-
 
 
 }
@@ -230,14 +162,11 @@ else{
 
 const newBranch={
 
-
 id:Date.now(),
 
 ...form
 
-
 };
-
 
 
 saveBranches([
@@ -249,10 +178,7 @@ newBranch
 ]);
 
 
-
 }
-
-
 
 
 
@@ -260,9 +186,7 @@ newBranch
 
 setForm(initialForm);
 
-
 setEditId(null);
-
 
 setShowModal(false);
 
@@ -283,12 +207,9 @@ const editBranch=(branch)=>{
 
 setForm(branch);
 
-
 setEditId(branch.id);
 
-
 setShowModal(true);
-
 
 
 };
@@ -304,18 +225,14 @@ setShowModal(true);
 const deleteBranch=(id)=>{
 
 
-const updated = branches.filter(
+const updated=branches.filter(
 
-item=>
-
-item.id!==id
+item=>item.id!==id
 
 );
 
 
-
 saveBranches(updated);
-
 
 
 };
@@ -328,8 +245,7 @@ saveBranches(updated);
 
 
 
-const filteredBranches = branches.filter(item=>
-
+const filteredBranches=branches.filter(item=>
 
 item.branchName
 
@@ -340,7 +256,6 @@ item.branchName
 search.toLowerCase()
 
 )
-
 
 );
 
@@ -373,29 +288,31 @@ lg:p-10
 
 
 
-
-
-
 {/* HEADER */}
 
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        className="
-          flex
-          flex-col
-          sm:flex-row
-          justify-between
-          gap-5
-        "
-      >
+<motion.div
+
+initial={{
+opacity:0,
+y:-20
+}}
+
+animate={{
+opacity:1,
+y:0
+}}
+
+className="
+flex
+flex-col
+sm:flex-row
+justify-between
+gap-5
+"
+
+>
+
 
 <div>
 
@@ -413,7 +330,6 @@ font-black
 Branch Management
 
 </h1>
-
 
 
 <p
@@ -435,16 +351,9 @@ Create branches and assign branch administrators.
 
 
 
-
-
-
-
-
 <button
 
-
 onClick={()=>setShowModal(true)}
-
 
 className="
 bg-teal-500
@@ -456,7 +365,6 @@ font-bold
 flex
 items-center
 gap-2
-w-fit
 "
 
 >
@@ -464,16 +372,13 @@ w-fit
 
 <Plus size={20}/>
 
-
 Add Branch
 
 
 </button>
 
 
-
-
-</div>
+</motion.div>
 
 
 
@@ -484,7 +389,6 @@ Add Branch
 
 
 {/* SEARCH */}
-
 
 
 <div
@@ -517,27 +421,16 @@ px-4
 >
 
 
-<Search
-
-className="
-text-slate-400
-"
-
-/>
-
+<Search className="text-slate-400"/>
 
 
 <input
 
-
 placeholder="Search branch..."
-
 
 value={search}
 
-
 onChange={(e)=>setSearch(e.target.value)}
-
 
 className="
 bg-transparent
@@ -549,22 +442,20 @@ w-full
 />
 
 
+</div>
+
 
 </div>
 
 
 
-</div>
 
 
 
 
 
 
-
-
-
-{/* BRANCH CARDS */}
+{/* CARDS */}
 
 
 
@@ -582,13 +473,9 @@ mt-8
 >
 
 
-
-
-
 {
 
 filteredBranches.length===0 &&
-
 
 <div
 
@@ -605,17 +492,11 @@ text-slate-400
 
 >
 
-
 No branches created yet.
-
 
 </div>
 
-
 }
-
-
-
 
 
 
@@ -627,49 +508,29 @@ No branches created yet.
 filteredBranches.map((branch,index)=>(
 
 
-
 <motion.div
 
 
 key={branch.id}
 
 
-
 initial={{
-
 opacity:0,
-
 y:20
-
 }}
-
-
 
 animate={{
-
 opacity:1,
-
 y:0
-
 }}
-
-
 
 transition={{
-
 delay:index*0.05
-
 }}
-
-
 
 whileHover={{
-
 y:-6
-
 }}
-
-
 
 className="
 bg-[#102235]
@@ -680,9 +541,6 @@ p-6
 "
 
 >
-
-
-
 
 
 
@@ -706,23 +564,16 @@ rounded-2xl
 
 >
 
-
 <Building2
 
-className="
-text-teal-400
-"
-
 size={30}
+
+className="text-teal-400"
 
 />
 
 
 </div>
-
-
-
-
 
 
 
@@ -739,19 +590,12 @@ text-sm
 
 >
 
-
 {branch.status}
-
 
 </span>
 
 
-
 </div>
-
-
-
-
 
 
 
@@ -767,32 +611,20 @@ mt-6
 
 >
 
-
 {branch.branchName}
-
 
 </h2>
 
 
 
-
-
-<p
-
-className="
+<p className="
 text-slate-400
 mt-2
-"
-
->
-
+">
 
 {branch.location}
 
-
 </p>
-
-
 
 
 
@@ -807,18 +639,15 @@ mt-5
 bg-[#07131f]
 rounded-xl
 p-4
-space-y-2
 "
 
 >
 
 
-<div
-
-className="
+<div className="
 flex
-items-center
 gap-2
+items-center
 "
 
 >
@@ -828,19 +657,14 @@ gap-2
 
 size={18}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
-
 <p>
 
-
 {branch.adminName || "No Admin Assigned"}
-
 
 </p>
 
@@ -852,21 +676,15 @@ text-teal-400
 <p className="
 text-sm
 text-slate-400
-"
-
-
->
-
+mt-2
+">
 
 {branch.adminEmail || "No admin email"}
-
 
 </p>
 
 
-
-              </div>
-
+</div>
 
 
 
@@ -886,13 +704,9 @@ mt-6
 >
 
 
-
 <button
 
-
 onClick={()=>editBranch(branch)}
-
-
 
 className="
 flex-1
@@ -904,16 +718,13 @@ flex
 justify-center
 items-center
 gap-2
-hover:bg-slate-800
 "
 
 >
 
-
 <Pencil size={18}/>
 
 Edit
-
 
 </button>
 
@@ -921,16 +732,9 @@ Edit
 
 
 
-
-
-
-
 <button
 
-
 onClick={()=>deleteBranch(branch.id)}
-
-
 
 className="
 flex-1
@@ -946,17 +750,11 @@ gap-2
 
 >
 
-
 <Trash2 size={18}/>
-
 
 Delete
 
-
 </button>
-
-
-
 
 
 </div>
@@ -965,15 +763,16 @@ Delete
 
 
 
-
-
-
 </motion.div>
 
 
-          ))}
+))
 
-        </div>
+
+}
+
+
+</div>
 
 
 
@@ -992,7 +791,6 @@ Delete
 showModal &&
 
 
-
 <div
 
 className="
@@ -1009,28 +807,17 @@ p-4
 >
 
 
-
 <motion.div
 
-
 initial={{
-
 scale:0.9,
-
 opacity:0
-
 }}
-
 
 animate={{
-
 scale:1,
-
 opacity:1
-
 }}
-
-
 
 className="
 bg-[#102235]
@@ -1045,9 +832,6 @@ max-w-xl
 >
 
 
-
-
-
 <div
 
 className="
@@ -1058,17 +842,14 @@ items-center
 
 >
 
-              <div>
 
-<h2
+<div>
 
-className="
+
+<h2 className="
 text-2xl
 font-black
-"
-
->
-
+">
 
 {
 
@@ -1084,36 +865,44 @@ editId
 
 }
 
-
 </h2>
 
 
+<p className="
+text-slate-400
+text-sm
+mt-1
+">
 
-                <p
-                  className="
-                    text-slate-400
-                    text-sm
-                    mt-1
-                  "
-                >
-                  {editingBranch
-                    ? "Update branch information"
-                    : "Enter branch details"}
-                </p>
+{
 
-              </div>
+editId
+
+?
+
+"Update branch information"
+
+:
+
+"Enter branch details"
+
+}
+
+</p>
+
+
+</div>
+
+
+
 
 <button
 
-
 onClick={()=>setShowModal(false)}
-
 
 >
 
-
 <X/>
-
 
 </button>
 
@@ -1132,40 +921,27 @@ onClick={()=>setShowModal(false)}
 {
 
 [
-
 ["branchName","Branch Name"],
-
 ["location","Location"],
-
 ["phone","Contact Number"],
-
 ["email","Branch Email"],
-
 ["adminName","Branch Admin Name"],
-
 ["adminEmail","Admin Email"]
 
 ].map(([key,label])=>(
 
 
-
 <input
-
 
 key={key}
 
-
 name={key}
-
 
 placeholder={label}
 
-
 value={form[key]}
 
-
 onChange={handleChange}
-
 
 className="
 w-full
@@ -1179,14 +955,10 @@ py-3
 outline-none
 "
 
-
-
 />
 
 
-
 ))
-
 
 }
 
@@ -1195,21 +967,10 @@ outline-none
 
 
 
-              </div>
-
-              <div
-                className="
-                  flex
-                  gap-3
-                  pt-3
-                "
-              >
 
 <button
 
-
 onClick={saveBranch}
-
 
 className="
 mt-6
@@ -1222,7 +983,6 @@ font-bold
 "
 
 >
-
 
 {
 
@@ -1238,31 +998,19 @@ editId
 
 }
 
-
-                </button>
-
+</button>
 
 
-
-            </form>
 
 
 
 </motion.div>
 
 
-
-        </div>
-
+</div>
 
 
 }
-
-
-
-
-
-
 
 
 
@@ -1270,7 +1018,6 @@ editId
 
 
 );
-
 
 
 }

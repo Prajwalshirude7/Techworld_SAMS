@@ -8,21 +8,23 @@ import {
   Download
 } from "lucide-react";
 
-import { motion } from "framer-motion";
+
+import {
+  motion
+} from "framer-motion";
 
 
 import {
-useState,
-useEffect
+  useState,
+  useEffect
 } from "react";
 
 
 import {
-useNavigate
+  useNavigate
 } from "react-router-dom";
 
 
-import api from "../../services/api";
 import generateReceipt from "../../utils/generateReceipt";
 
 
@@ -32,13 +34,9 @@ import generateReceipt from "../../utils/generateReceipt";
 export default function Admissions(){
 
 
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
-  // =====================================================
-  // STATES
-  // =====================================================
 
-  const [search, setSearch] = useState("");
 
 const [search,setSearch]=useState("");
 
@@ -62,9 +60,9 @@ const [branches,setBranches]=useState([]);
 
 // LOAD DATA
 
-      setLoading(true);
 
-      const response = await api.get("/admin/admissions");
+useEffect(()=>{
+
 
 const savedApplications = JSON.parse(
 
@@ -74,11 +72,8 @@ localStorage.getItem("admissionApplications")
 
 "[]"
 
-        setApplications(
-          response.data.data || []
-        );
+);
 
-      } else {
 
 
 setApplications(savedApplications);
@@ -100,7 +95,6 @@ localStorage.getItem("academyBranches")
 
 
 
-
 setBranches(
 
 savedBranches.filter(
@@ -112,52 +106,33 @@ item=>item.status==="Active"
 );
 
 
-      }
 
 },[]);
 
 
 
 
-      console.error(
-        "FETCH ADMISSIONS ERROR:",
-        error
-      );
-
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to load admissions"
-      );
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
-  };
 
 
-  // =====================================================
-  // LOAD ON PAGE OPEN
-  // =====================================================
 
-  useEffect(() => {
+
+
+
+
+
+// UPDATE STATUS
+
 
 const updateStatus=(id,newStatus)=>{
 
 
-  }, []);
+const updatedApplications = applications.map(item=>{
 
-
-  // =====================================================
-  // APPROVE ADMISSION
-  // =====================================================
 
 if(item.id===id){
 
 
-    try {
+return{
 
 ...item,
 
@@ -178,15 +153,11 @@ return item;
 
 
 
-
 setApplications(updatedApplications);
 
 
 
 
-
-
-// UPDATE ALL APPLICATIONS
 
 localStorage.setItem(
 
@@ -195,9 +166,6 @@ localStorage.setItem(
 JSON.stringify(updatedApplications)
 
 );
-
-
-
 
 
 
@@ -215,14 +183,8 @@ item=>item.id===id
 
 
 
-
-
-
 if(updatedStudent){
 
-
-
-// STUDENT DASHBOARD DATA
 
 
 localStorage.setItem(
@@ -232,8 +194,6 @@ localStorage.setItem(
 JSON.stringify(updatedStudent)
 
 );
-
-
 
 
 
@@ -249,12 +209,6 @@ JSON.stringify(updatedStudent)
 
 
 
-
-
-
-
-
-// CREATE STUDENT ONLY AFTER APPROVAL
 
 
 if(newStatus==="Approved"){
@@ -275,13 +229,9 @@ localStorage.getItem("academyStudents")
 
 
 
-
-
 const exists = students.some(
 
-student=>
-
-student.email===updatedStudent.email
+item=>item.email===updatedStudent.email
 
 );
 
@@ -289,9 +239,7 @@ student.email===updatedStudent.email
 
 
 
-
 if(!exists){
-
 
 
 localStorage.setItem(
@@ -308,16 +256,13 @@ JSON.stringify(
 
 ...updatedStudent,
 
-
 studentStatus:"Active",
-
 
 joinedDate:
 
 new Date()
 
 .toLocaleDateString()
-
 
 }
 
@@ -370,9 +315,6 @@ id,
 
 
 
-
-
-
 const rejectApplication=(id)=>{
 
 
@@ -386,13 +328,24 @@ id,
 
 
 };
+
+
+
+
+
+
+
+
+
 const filteredApplications = applications.filter((item)=>{
 
 
 const searchMatch =
 
 item.name
+
 ?.toLowerCase()
+
 .includes(
 
 search.toLowerCase()
@@ -445,7 +398,13 @@ branchMatch
 
 
 
-          return (
+
+
+
+
+
+return(
+
 
 <div
 
@@ -461,28 +420,18 @@ lg:p-10
 >
 
 
-<div
 
-className="
-flex
-flex-col
-sm:flex-row
-justify-between
-gap-5
-"
 
->
+
 
 
 <div>
-
 
 <h1
 
 className="
 text-3xl
-sm:text-4xl
-lg:text-5xl
+sm:text-5xl
 font-black
 "
 
@@ -511,7 +460,6 @@ Review student applications and manage admissions.
 </div>
 
 
-</div>
 
 
 
@@ -519,9 +467,7 @@ Review student applications and manage admissions.
 
 
 
-
-{/* FILTER SECTION */}
-
+{/* FILTER */}
 
 
 <div
@@ -541,7 +487,7 @@ gap-4
 
 >
 
-        {/* SEARCH */}
+
 
 <div
 
@@ -558,19 +504,27 @@ px-4
 
 >
 
+
 <Search
+
 size={20}
+
 className="text-slate-400"
+
 />
 
 
 <input
 
+
 placeholder="Search student..."
+
 
 value={search}
 
+
 onChange={(e)=>setSearch(e.target.value)}
+
 
 className="
 bg-transparent
@@ -585,7 +539,11 @@ w-full
 </div>
 
 
-        {/* STATUS */}
+
+
+
+
+
 
 <select
 
@@ -600,31 +558,40 @@ border-slate-700
 rounded-xl
 px-4
 py-3
-outline-none
 "
 
 >
 
-          <option value="All">
-            All Status
-          </option>
 
-          <option value="PENDING">
-            Pending
-          </option>
+<option value="All">
+All Status
+</option>
 
-          <option value="APPROVED">
-            Approved
-          </option>
 
-          <option value="REJECTED">
-            Rejected
-          </option>
+<option value="Pending Approval">
+Pending
+</option>
+
+
+<option value="Approved">
+Approved
+</option>
+
+
+<option value="Rejected">
+Rejected
+</option>
 
 
 </select>
 
-        {/* BRANCH */}
+
+
+
+
+
+
+
 
 <select
 
@@ -639,20 +606,24 @@ border-slate-700
 rounded-xl
 px-4
 py-3
-outline-none
 "
 
 >
 
 
-          <option value="All">
-            All Branches
-          </option>
+<option value="All">
+
+All Branches
+
+</option>
+
+
 
 
 {
 
 branches.map(item=>(
+
 
 <option
 
@@ -666,9 +637,11 @@ value={item.branchName}
 
 </option>
 
+
 ))
 
 }
+
 
 
 </select>
@@ -685,7 +658,7 @@ value={item.branchName}
 
 
 
-{/* APPLICATION CARDS */}
+{/* CARDS */}
 
 
 
@@ -706,58 +679,32 @@ gap-6
 
 {
 
-filteredApplications.length===0 &&
-
-<div
-
-className="
-col-span-full
-bg-[#102235]
-rounded-3xl
-p-10
-text-center
-text-slate-400
-"
-
->
-
-No admission applications found.
-
-</div>
-
-}
-
-
-
-
-
-
-{
-
 filteredApplications.map((student,index)=>(
+
 
 
 <motion.div
 
+
 key={student.id}
+
 
 initial={{
 opacity:0,
 y:20
 }}
 
+
 animate={{
 opacity:1,
 y:0
 }}
 
+
 transition={{
 delay:index*0.05
 }}
 
-whileHover={{
-y:-6
-}}
 
 className="
 bg-[#102235]
@@ -770,9 +717,6 @@ p-6
 >
 
 
-                <div>
-
-                  {/* TOP */}
 
 <div
 
@@ -795,6 +739,7 @@ rounded-2xl
 
 >
 
+
 <FileText
 
 size={28}
@@ -803,46 +748,21 @@ className="text-teal-400"
 
 />
 
+
 </div>
-
-
 
 
 
 
 <span
 
-className={`
-
+className="
 px-4
 py-2
 rounded-full
-text-sm
-font-semibold
-
-
-${
-student.status==="Approved"
-
-?
-
-"bg-green-500/20 text-green-400"
-
-:
-
-student.status==="Rejected"
-
-?
-
-"bg-red-500/20 text-red-400"
-
-:
-
-"bg-yellow-500/20 text-yellow-400"
-
-}
-
-`}
+bg-yellow-500/20
+text-yellow-400
+"
 
 >
 
@@ -851,26 +771,38 @@ student.status==="Rejected"
 </span>
 
 
+
 </div>
 
-                  {/* STUDENT NAME */}
 
-<h2 className="
+
+
+
+
+<h2
+
+className="
 text-xl
 font-bold
 mt-6
-">
+"
+
+>
 
 {student.name}
 
 </h2>
 
-                  {/* EMAIL */}
 
-<p className="
+
+
+<p
+
+className="
 text-slate-400
-break-all
-">
+"
+
+>
 
 {student.email}
 
@@ -880,70 +812,70 @@ break-all
 
 
 
-<div className="
-mt-6
-space-y-3
-">
 
-<p className="flex gap-2 items-center">
+
+<p
+
+className="
+flex
+items-center
+gap-2
+mt-5
+"
+
+>
+
 
 <MapPin
+
 size={18}
+
 className="text-teal-400"
+
 />
+
 
 {student.branch || "Not Selected"}
 
+
 </p>
 
 
-<p>
 
-<span className="text-slate-400">
+
+
+
+<p className="mt-3">
+
 Program:
-</span>
 
 <span className="ml-2">
 
-{student.program || "Not Selected"}
+{student.program}
 
 </span>
+
 
 </p>
 
 
-<p>
-
-<span className="text-slate-400">
-Applied:
-</span>
-
-                        <span className="ml-2">
-
-{student.submittedAt || "N/A"}
-
-                        </span>
-
-</p>
-
-
-                  </div>
-
-                </div>
 
 
 
 
 
 
+<div
 
-
-<div className="
-mt-8
+className="
+mt-6
 flex
 flex-wrap
 gap-3
-">
+"
+
+>
+
 
 
 <button
@@ -967,14 +899,14 @@ flex-1
 border
 border-slate-600
 rounded-xl
-h-12
+py-3
 flex
-items-center
 justify-center
 gap-2
 "
 
 >
+
 
 <Eye size={18}/>
 
@@ -988,11 +920,14 @@ View
 
 
 
+
+
 {
 
 student.status==="Pending Approval" &&
 
 <>
+
 
 <button
 
@@ -1002,21 +937,23 @@ className="
 flex-1
 bg-green-500
 rounded-xl
+py-3
 font-bold
-h-12
 flex
-items-center
 justify-center
 gap-2
 "
 
 >
 
+
 <CheckCircle size={18}/>
 
 Approve
 
+
 </button>
+
 
 
 
@@ -1030,25 +967,30 @@ className="
 flex-1
 bg-red-500
 rounded-xl
+py-3
 font-bold
-h-12
 flex
-items-center
 justify-center
 gap-2
 "
 
 >
 
+
 <XCircle size={18}/>
 
 Reject
 
+
 </button>
+
 
 </>
 
+
 }
+
+
 
 
 
@@ -1069,19 +1011,20 @@ className="
 flex-1
 bg-teal-500
 rounded-xl
+py-3
 font-bold
-h-12
 flex
-items-center
 justify-center
 gap-2
 "
 
 >
 
+
 <Download size={18}/>
 
 Receipt
+
 
 </button>
 
@@ -1089,9 +1032,18 @@ Receipt
 }
 
 
-                </div>
 
-              </motion.div>
+
+</div>
+
+
+
+
+
+
+
+</motion.div>
+
 
 
 ))
@@ -1104,8 +1056,14 @@ Receipt
 </div>
 
 
-    </div>
 
-  );
+
+
+
+</div>
+
+
+);
+
 
 }

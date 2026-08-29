@@ -1,32 +1,30 @@
-import { useEffect, useState } from "react";
-import api from "../../services/api";
 import {
-Users,
-Building2,
-FileText,
-IndianRupee,
-Image,
-Megaphone,
-CreditCard,
-BarChart3,
-Package,
-ArrowRight
+  Users,
+  Building2,
+  FileText,
+  IndianRupee,
+  Image,
+  Megaphone,
+  CreditCard,
+  BarChart3,
+  Package,
+  ArrowRight
 } from "lucide-react";
 
 
 import {
-motion
+  motion
 } from "framer-motion";
 
 
 import {
-useNavigate
+  useNavigate
 } from "react-router-dom";
 
 
 import {
-useState,
-useEffect
+  useEffect,
+  useState
 } from "react";
 
 
@@ -35,18 +33,13 @@ import logo from "../../assets/images/logosams.png";
 
 
 
-
-
-
-
 export default function SuperAdminDashboard(){
-
 
 
 const navigate = useNavigate();
 
 
-const [refresh,setRefresh]=useState(0);
+const [refresh,setRefresh] = useState(0);
 
 
 
@@ -88,9 +81,6 @@ update
 
 
 
-
-
-
 const students = JSON.parse(
 
 localStorage.getItem("academyStudents")
@@ -100,6 +90,8 @@ localStorage.getItem("academyStudents")
 "[]"
 
 );
+
+
 
 
 
@@ -146,9 +138,6 @@ localStorage.getItem("payments")
 
 
 
-
-
-
 const totalRevenue = payments.reduce(
 
 (total,item)=>
@@ -158,8 +147,6 @@ total + Number(item.amount || 0),
 0
 
 );
-
-
 
 
 
@@ -177,13 +164,11 @@ icon:Users
 },
 
 
-
 {
 title:"Total Branches",
 value:branches.length,
 icon:Building2
 },
-
 
 
 {
@@ -307,7 +292,6 @@ path:"/super-admin/reports"
 
 
 
-
 return(
 
 
@@ -330,40 +314,23 @@ space-y-10
 
 
 
-
-
-
 {/* HERO */}
-
 
 <motion.div
 
-
 initial={{
-
 opacity:0,
 y:-40
-
 }}
-
-
 
 animate={{
-
 opacity:1,
 y:0
-
 }}
-
-
 
 transition={{
-
 duration:0.8
-
 }}
-
-
 
 className="
 relative
@@ -382,8 +349,7 @@ sm:p-10
 >
 
 
-
-
+{/* Glow */}
 
 <div
 
@@ -405,15 +371,31 @@ right-0
 
 
 
-
-
-
 <div
 
 className="
 relative
 z-10
-max-w-3xl
+flex
+flex-col
+lg:flex-row
+items-center
+justify-between
+gap-10
+"
+
+>
+
+
+
+
+
+{/* LEFT CONTENT */}
+
+<div
+
+className="
+flex-1
 "
 
 >
@@ -431,7 +413,12 @@ leading-tight
 
 >
 
+<span className="text-white">
+
 Welcome,
+
+</span>
+
 
 <span
 
@@ -446,10 +433,12 @@ Rushikesh Tarde
 
 </span>
 
+
 👋
 
 
 </h1>
+
 
 
 
@@ -461,7 +450,10 @@ className="
 mt-5
 text-slate-300
 text-base
-sm:text-xl
+sm:text-lg
+lg:text-xl
+leading-relaxed
+max-w-3xl
 "
 
 >
@@ -474,13 +466,15 @@ Manage admissions, branches, students and academy operations from one powerful d
 
 
 
+
+
 <div
 
 className="
 flex
+flex-wrap
 gap-3
 mt-6
-flex-wrap
 "
 
 >
@@ -505,6 +499,8 @@ Super Admin Panel
 
 
 
+
+
 <div
 
 className="
@@ -512,6 +508,7 @@ bg-white/10
 px-5
 py-2
 rounded-full
+text-slate-300
 "
 
 >
@@ -522,53 +519,61 @@ RTSA Academy
 
 
 
-</div>
-
-
 
 </div>
 
 
 
+</div>
 
 
 
 
 
-<motion.img
+
+
+
+
+{/* RIGHT LOGO */}
+
+
+<motion.div
+
+whileHover={{
+scale:1.05
+}}
+
+transition={{
+duration:0.3
+}}
+
+className="
+flex
+justify-center
+lg:justify-end
+w-full
+lg:w-auto
+"
+
+>
+
+
+<img
 
 
 src={logo}
 
 
-alt="RTSA"
-
-
-
-whileHover={{
-
-scale:1.08
-
-}}
-
-
-
-transition={{
-
-duration:0.3
-
-}}
-
+alt="RTSA Logo"
 
 
 className="
-absolute
-right-5
-bottom-5
-w-24
-h-24
-sm:w-40
-sm:h-40
+w-28
+h-28
+sm:w-36
+sm:h-36
+lg:w-52
+lg:h-52
 rounded-full
 object-cover
 shadow-[0_0_60px_rgba(20,184,166,.6)]
@@ -577,14 +582,17 @@ shadow-[0_0_60px_rgba(20,184,166,.6)]
 />
 
 
-
 </motion.div>
 
 
 
 
 
+</div>
 
+
+
+</motion.div>
 
 
 
@@ -615,47 +623,28 @@ const Icon=item.icon;
 
 return(
 
-
 <motion.div
-
 
 key={index}
 
-
 initial={{
-
 opacity:0,
 y:40
-
 }}
-
-
 
 animate={{
-
 opacity:1,
 y:0
-
 }}
-
-
 
 transition={{
-
 delay:index*0.15
-
 }}
-
-
 
 whileHover={{
-
 y:-10,
 scale:1.04
-
 }}
-
-
 
 className="
 bg-[#102235]
@@ -663,30 +652,29 @@ border
 border-slate-700
 rounded-3xl
 p-6
-hover:border-teal-400
-transition
 "
 
 >
 
 
-<div className="
+<div
+
+className="
 flex
 justify-between
 items-center
-">
+"
+
+>
 
 
 <div>
 
-<p className="
-text-slate-400
-">
+<p className="text-slate-400">
 
 {item.title}
 
 </p>
-
 
 
 <h2 className="
@@ -704,24 +692,23 @@ mt-3
 
 
 
+<div
 
-<div className="
+className="
 bg-teal-500/20
 p-4
 rounded-2xl
-">
+"
 
+>
 
 <Icon
 
 size={30}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
-
 
 </div>
 
@@ -753,7 +740,7 @@ text-teal-400
 
 
 
-{/* QUICK ACTIONS */}
+{/* ACTIONS */}
 
 
 
@@ -812,49 +799,34 @@ key={index}
 
 
 initial={{
-
 opacity:0,
 y:40
-
 }}
-
 
 
 animate={{
-
 opacity:1,
 y:0
-
 }}
-
 
 
 transition={{
-
 delay:index*0.08
-
 }}
-
 
 
 whileHover={{
-
 y:-10,
 scale:1.03
-
 }}
-
 
 
 onClick={()=>navigate(item.path)}
 
 
-
 className="
 cursor-pointer
-bg-gradient-to-br
-from-[#102235]
-to-[#0c1c2c]
+bg-[#102235]
 border
 border-slate-700
 rounded-3xl
@@ -865,26 +837,29 @@ hover:border-teal-400
 >
 
 
-<div className="
+<div
+
+className="
 bg-teal-500/20
 p-4
 rounded-2xl
 w-fit
-">
+"
+
+>
 
 
 <Icon
 
 size={28}
 
-className="
-text-teal-400
-"
+className="text-teal-400"
 
 />
 
 
 </div>
+
 
 
 
@@ -911,40 +886,23 @@ mt-2
 
 
 
-<div className="
+<div
+
+className="
 flex
 justify-between
 items-center
 mt-6
 text-teal-400
 font-semibold
-">
-
-Open
-
-<motion.div
-
-animate={{
-
-x:[0,5,0]
-
-}}
-
-
-
-transition={{
-
-duration:1.5,
-
-repeat:Infinity
-
-}}
+"
 
 >
 
-<ArrowRight size={18}/>
+Open
 
-</motion.div>
+
+<ArrowRight size={18}/>
 
 
 </div>
@@ -967,9 +925,7 @@ repeat:Infinity
 </div>
 
 
-
 </section>
-
 
 
 
@@ -982,7 +938,6 @@ repeat:Infinity
 
 
 );
-
 
 
 }
