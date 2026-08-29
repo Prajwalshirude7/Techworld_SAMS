@@ -379,19 +379,23 @@ lg:p-10
 {/* HEADER */}
 
 
-
-<div
-
-className="
-flex
-flex-col
-sm:flex-row
-justify-between
-gap-5
-"
-
->
-
+      <motion.div
+        initial={{
+          opacity: 0,
+          y: -20,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
+        className="
+          flex
+          flex-col
+          sm:flex-row
+          justify-between
+          gap-5
+        "
+      >
 
 <div>
 
@@ -861,7 +865,7 @@ text-slate-400
 
 
 
-</div>
+              </div>
 
 
 
@@ -967,15 +971,9 @@ Delete
 </motion.div>
 
 
+          ))}
 
-))
-
-
-}
-
-
-
-</div>
+        </div>
 
 
 
@@ -1060,6 +1058,7 @@ items-center
 
 >
 
+              <div>
 
 <h2
 
@@ -1090,7 +1089,19 @@ editId
 
 
 
+                <p
+                  className="
+                    text-slate-400
+                    text-sm
+                    mt-1
+                  "
+                >
+                  {editingBranch
+                    ? "Update branch information"
+                    : "Enter branch details"}
+                </p>
 
+              </div>
 
 <button
 
@@ -1184,8 +1195,15 @@ outline-none
 
 
 
+              </div>
 
-
+              <div
+                className="
+                  flex
+                  gap-3
+                  pt-3
+                "
+              >
 
 <button
 
@@ -1221,11 +1239,12 @@ editId
 }
 
 
-</button>
+                </button>
 
 
 
 
+            </form>
 
 
 
@@ -1233,7 +1252,7 @@ editId
 
 
 
-</div>
+        </div>
 
 
 

@@ -8,7 +8,6 @@ import {
   Download
 } from "lucide-react";
 
-
 import { motion } from "framer-motion";
 
 
@@ -23,6 +22,7 @@ useNavigate
 } from "react-router-dom";
 
 
+import api from "../../services/api";
 import generateReceipt from "../../utils/generateReceipt";
 
 
@@ -32,9 +32,13 @@ import generateReceipt from "../../utils/generateReceipt";
 export default function Admissions(){
 
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
+  // =====================================================
+  // STATES
+  // =====================================================
 
+  const [search, setSearch] = useState("");
 
 const [search,setSearch]=useState("");
 
@@ -58,8 +62,9 @@ const [branches,setBranches]=useState([]);
 
 // LOAD DATA
 
-useEffect(()=>{
+      setLoading(true);
 
+      const response = await api.get("/admin/admissions");
 
 const savedApplications = JSON.parse(
 
@@ -69,8 +74,11 @@ localStorage.getItem("admissionApplications")
 
 "[]"
 
-);
+        setApplications(
+          response.data.data || []
+        );
 
+      } else {
 
 
 setApplications(savedApplications);
@@ -104,33 +112,52 @@ item=>item.status==="Active"
 );
 
 
+      }
 
 },[]);
 
 
 
 
+      console.error(
+        "FETCH ADMISSIONS ERROR:",
+        error
+      );
+
+      toast.error(
+        error.response?.data?.message ||
+        "Failed to load admissions"
+      );
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  };
 
 
+  // =====================================================
+  // LOAD ON PAGE OPEN
+  // =====================================================
 
-
-
-
-
-
-// UPDATE STATUS
+  useEffect(() => {
 
 const updateStatus=(id,newStatus)=>{
 
 
+  }, []);
 
-const updatedApplications = applications.map((item)=>{
 
+  // =====================================================
+  // APPROVE ADMISSION
+  // =====================================================
 
 if(item.id===id){
 
 
-return{
+    try {
 
 ...item,
 
@@ -418,9 +445,7 @@ branchMatch
 
 
 
-
-return(
-
+          return (
 
 <div
 
@@ -516,7 +541,7 @@ gap-4
 
 >
 
-
+        {/* SEARCH */}
 
 <div
 
@@ -560,10 +585,7 @@ w-full
 </div>
 
 
-
-
-
-
+        {/* STATUS */}
 
 <select
 
@@ -583,30 +605,26 @@ outline-none
 
 >
 
-<option value="All">
-All Status
-</option>
+          <option value="All">
+            All Status
+          </option>
 
-<option value="Pending Approval">
-Pending
-</option>
+          <option value="PENDING">
+            Pending
+          </option>
 
-<option value="Approved">
-Approved
-</option>
+          <option value="APPROVED">
+            Approved
+          </option>
 
-<option value="Rejected">
-Rejected
-</option>
+          <option value="REJECTED">
+            Rejected
+          </option>
 
 
 </select>
 
-
-
-
-
-
+        {/* BRANCH */}
 
 <select
 
@@ -627,9 +645,9 @@ outline-none
 >
 
 
-<option value="All">
-All Branches
-</option>
+          <option value="All">
+            All Branches
+          </option>
 
 
 {
@@ -752,8 +770,9 @@ p-6
 >
 
 
-<div>
+                <div>
 
+                  {/* TOP */}
 
 <div
 
@@ -834,10 +853,7 @@ student.status==="Rejected"
 
 </div>
 
-
-
-
-
+                  {/* STUDENT NAME */}
 
 <h2 className="
 text-xl
@@ -849,6 +865,7 @@ mt-6
 
 </h2>
 
+                  {/* EMAIL */}
 
 <p className="
 text-slate-400
@@ -901,19 +918,18 @@ Program:
 Applied:
 </span>
 
-<span className="ml-2">
+                        <span className="ml-2">
 
 {student.submittedAt || "N/A"}
 
-</span>
+                        </span>
 
 </p>
 
 
-</div>
+                  </div>
 
-
-</div>
+                </div>
 
 
 
@@ -1073,13 +1089,9 @@ Receipt
 }
 
 
-</div>
+                </div>
 
-
-
-
-
-</motion.div>
+              </motion.div>
 
 
 ))
@@ -1092,10 +1104,8 @@ Receipt
 </div>
 
 
-</div>
+    </div>
 
-
-);
-
+  );
 
 }

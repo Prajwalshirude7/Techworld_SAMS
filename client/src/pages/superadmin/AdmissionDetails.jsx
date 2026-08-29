@@ -5,16 +5,15 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  Download
+  Download,
 } from "lucide-react";
-
 
 import { motion } from "framer-motion";
 
 
 import {
   useNavigate,
-  useLocation
+  useLocation,
 } from "react-router-dom";
 
 
@@ -24,17 +23,32 @@ import { useEffect, useState } from "react";
 import generateReceipt from "../../utils/generateReceipt";
 
 
+export default function AdmissionDetails() {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
 
 
+  // =====================================================
+  // GET ADMISSION ID
+  // =====================================================
 
-export default function AdmissionDetails(){
+  const admissionId =
+    location.state?.student?.id ||
+    location.state?.admissionId;
 
 
-const navigate = useNavigate();
+  // =====================================================
+  // GET TOKEN
+  // =====================================================
 
-const location = useLocation();
-
-
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
 
 
 
@@ -92,25 +106,45 @@ dob:
 receivedStudent.dob || "N/A",
 
 
-gender:
-receivedStudent.gender || "N/A",
+        gender:
+          admission.gender ||
+          "N/A",
 
+        father_name:
+          admission.father_name ||
+          "N/A",
 
-address:
-receivedStudent.address || "N/A",
+        branch:
+          admission.branch_name ||
+          "Not Assigned",
 
+        branch_code:
+          admission.branch_code ||
+          "N/A",
 
-city:
-receivedStudent.city || "",
+        document:
+          admission.document ||
+          "Not available",
 
+        address:
+          admission.address ||
+          "Not available",
 
-state:
-receivedStudent.state || "",
+        city:
+          admission.city ||
+          "",
 
+        state:
+          admission.state ||
+          "",
 
-pincode:
-receivedStudent.pincode || "",
+        pincode:
+          admission.pincode ||
+          "",
 
+        program:
+          admission.program ||
+          "Not available",
 
 experience:
 receivedStudent.experience || "N/A",
@@ -513,27 +547,20 @@ transition
 
 <ArrowLeft size={22}/>
 
-</button>
+        </button>
 
 
+        <div>
 
-
-<div>
-
-
-<h1
-
-className="
-text-3xl
-sm:text-4xl
-font-black
-"
-
->
-
-Admission Details
-
-</h1>
+          <h1
+            className="
+              text-3xl
+              sm:text-4xl
+              font-black
+            "
+          >
+            Admission Details
+          </h1>
 
 
 <p
@@ -545,16 +572,15 @@ mt-2
 
 >
 
-Review complete student application.
+            Review complete student
+            application.
 
 </p>
 
 
 </div>
 
-
-
-</div>
+      </div>
 
 
 
@@ -607,16 +633,13 @@ gap-5
 
 
 
-<div
-
-className="
-flex
-items-center
-gap-4
-"
-
->
-
+          <div
+            className="
+              flex
+              items-center
+              gap-4
+            "
+          >
 
 <div
 
@@ -665,30 +688,33 @@ font-bold
 
 
 
-<p
+              <p
+                className="
+                  text-slate-400
+                  break-all
+                "
+              >
+                {student.email}
+              </p>
 
-className="
-text-slate-400
-break-all
-"
 
->
-
-{student.email}
-
-</p>
-
+              <p
+                className="
+                  text-sm
+                  text-slate-500
+                  mt-1
+                "
+              >
+                Student Code:{" "}
+                {student.student_code ||
+                  "N/A"}
+              </p>
 
 </div>
 
 
 
 </div>
-
-
-
-
-
 
 
 <span
@@ -702,38 +728,92 @@ font-bold
 w-fit
 
 
-${
-isApproved
+              ${
+                isApproved
+                  ? "bg-green-500/20 text-green-400"
+                  : isRejected
+                  ? "bg-red-500/20 text-red-400"
+                  : "bg-yellow-500/20 text-yellow-400"
+              }
+            `}
+          >
 
-?
+            {status}
 
-"bg-green-500/20 text-green-400"
+          </span>
 
-:
+        </div>
 
-isRejected
-
-?
-
-"bg-red-500/20 text-red-400"
-
-:
-
-"bg-yellow-500/20 text-yellow-400"
-
-}
-
-`}
-
->
-
-{status}
-
-</span>
+      </motion.div>
 
 
+      {/* =================================================
+          DETAILS GRID
+      ================================================= */}
 
-</div>
+      <div
+        className="
+          grid
+          grid-cols-1
+          lg:grid-cols-2
+          gap-6
+          mt-6
+        "
+      >
+
+
+        {/* =================================================
+            PERSONAL INFORMATION
+        ================================================= */}
+
+        <motion.div
+          initial={{
+            opacity: 0,
+            y: 20,
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+          }}
+          className="
+            bg-[#102235]
+            border
+            border-slate-700
+            rounded-3xl
+            p-6
+          "
+        >
+
+          <h2
+            className="
+              text-xl
+              font-bold
+              text-teal-400
+              mb-5
+            "
+          >
+            Personal Information
+          </h2>
+
+
+          <div className="space-y-4">
+
+            <div>
+
+              <p
+                className="
+                  text-slate-400
+                  text-sm
+                "
+              >
+                Phone
+              </p>
+
+              <p className="mt-1">
+                {student.phone}
+              </p>
+
+            </div>
 
 
 </motion.div>
@@ -897,7 +977,7 @@ shrink-0
 
 
 
-<p>
+            <div>
 
 {student.address}
 
@@ -1083,7 +1163,7 @@ text-teal-400
 </span>
 
 
-</div>
+            </div>
 
 
 
@@ -1106,7 +1186,7 @@ hover:text-teal-300
 
 
 
-</div>
+            </div>
 
 
 </div>
@@ -1173,7 +1253,9 @@ transition
 
 <CheckCircle size={22}/>
 
-Approve Admission
+              {actionLoading
+                ? "Processing..."
+                : "Approve Admission"}
 
 </button>
 
@@ -1204,7 +1286,7 @@ transition
 
 Reject Admission
 
-</button>
+            </button>
 
 
 </>
@@ -1247,10 +1329,9 @@ transition
 
 <Download size={22}/>
 
-Generate Receipt
+            Generate Receipt
 
-
-</button>
+          </button>
 
 
 }
@@ -1294,7 +1375,7 @@ mb-4
 
 >
 
-Admission Rejected
+            Admission Rejected
 
 </p>
 
@@ -1335,7 +1416,7 @@ Edit Status
 
 
 
-</div>
+      </div>
 
 
 }

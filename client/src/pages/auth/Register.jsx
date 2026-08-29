@@ -130,6 +130,7 @@ e.preventDefault();
 
 
 
+    // ================= VALIDATION =================
 
 if(
 
@@ -453,8 +454,7 @@ right-0
 
 
 
-
-
+      {/* ================= MAIN CONTAINER ================= */}
 
 <div
 
@@ -669,23 +669,15 @@ bg-teal-400
 />
 
 
-<p className="text-white">
-
-{item}
-
-</p>
+                <p className="text-white">
+                  {item}
+                </p>
 
 
 </div>
 
 
-
-))
-
-
-}
-
-
+            ))}
 
 </div>
 
@@ -694,16 +686,7 @@ bg-teal-400
 </motion.div>
 
 
-
-
-
-
-
-
-
-{/* REGISTER CARD */}
-
-
+        {/* ================= REGISTER CARD ================= */}
 
 <AuthCard>
 
@@ -826,57 +809,61 @@ space-y-5
 
 
 
-<AuthInput
+              <AuthInput
 
-icon={User}
+                icon={User}
 
-type="text"
+                type="text"
 
-placeholder="Full Name"
+                placeholder="Full Name"
 
-value={name}
+                value={name}
 
-onChange={(e)=>setName(e.target.value)}
-
-/>
-
-
-
-
-
-
-
-<AuthInput
-
-icon={Mail}
-
-type="email"
-
-placeholder="Email Address"
-
-value={email}
-
-onChange={(e)=>setEmail(e.target.value)}
+                onChange={(e) =>
+                  setName(e.target.value)
+                }
 
 />
 
 
 
 
+              {/* ================= EMAIL ================= */}
+
+              <AuthInput
+
+                icon={Mail}
+
+                type="email"
+
+                placeholder="Email Address"
+
+                value={email}
+
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+
+/>
 
 
 
-<AuthInput
 
-icon={Phone}
+              {/* ================= PHONE ================= */}
 
-type="tel"
+              <AuthInput
 
-placeholder="Mobile Number"
+                icon={Phone}
 
-value={phone}
+                type="tel"
 
-onChange={(e)=>setPhone(e.target.value)}
+                placeholder="Mobile Number"
+
+                value={phone}
+
+                onChange={(e) =>
+                  setPhone(e.target.value)
+                }
 
 />
 
@@ -1063,10 +1050,7 @@ className="text-black"
 
 
 
-
-
-
-
+              {/* ================= PASSWORD ================= */}
 
 <div className="relative">
 
@@ -1105,11 +1089,15 @@ onChange={(e)=>setPassword(e.target.value)}
 
 
 
-<button
+                <button
 
-type="button"
+                  type="button"
 
-onClick={()=>setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
 
 className="
 
@@ -1155,10 +1143,7 @@ showPassword
 
 
 
-
-
-
-
+              {/* ================= CONFIRM PASSWORD ================= */}
 
 <div className="relative">
 
@@ -1197,11 +1182,15 @@ onChange={(e)=>setConfirmPassword(e.target.value)}
 
 
 
-<button
+                <button
 
-type="button"
+                  type="button"
 
-onClick={()=>setShowConfirmPassword(!showConfirmPassword)}
+                  onClick={() =>
+                    setShowConfirmPassword(
+                      !showConfirmPassword
+                    )
+                  }
 
 className="
 
@@ -1263,9 +1252,7 @@ Create Account
 
 
 
-
-
-
+              {/* ================= LOGIN LINK ================= */}
 
 <p
 
@@ -1283,9 +1270,9 @@ text-slate-400
 Already have an account?
 
 
-<Link
+                <Link
 
-to="/login"
+                  to="/login"
 
 className="
 
@@ -1299,9 +1286,9 @@ ml-2
 
 >
 
-Login
+                  Login
 
-</Link>
+                </Link>
 
 
 </p>
@@ -1313,11 +1300,9 @@ Login
 
 
 
-</form>
+            </form>
 
-
-
-</div>
+          </div>
 
 
 
@@ -1337,8 +1322,6 @@ Login
 
 </div>
 
-
-);
-
+  );
 
 }
