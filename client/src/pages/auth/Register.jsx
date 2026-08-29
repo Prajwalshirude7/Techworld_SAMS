@@ -1,5 +1,14 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  useState,
+  useEffect
+} from "react";
+
+
+import {
+  Link,
+  useNavigate
+} from "react-router-dom";
+
 
 import {
   User,
@@ -8,416 +17,797 @@ import {
   Lock,
   Eye,
   EyeOff,
+  MapPin
 } from "lucide-react";
 
-import { motion } from "framer-motion";
+
+import {
+  motion
+} from "framer-motion";
+
+
 import toast from "react-hot-toast";
+
 
 import AuthCard from "../../components/auth/AuthCard";
 import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
 
-export default function Register() {
-
-  const navigate = useNavigate();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState(false);
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] =
-    useState("");
-
-  const [loading, setLoading] = useState(false);
 
 
-  // ================= REGISTER =================
 
-  const handleRegister = async (e) => {
+export default function Register(){
 
-    e.preventDefault();
+
+
+const navigate = useNavigate();
+
+
+
+
+const [showPassword,setShowPassword] = useState(false);
+
+
+const [showConfirmPassword,setShowConfirmPassword] =
+useState(false);
+
+
+
+
+
+const [name,setName] = useState("");
+
+const [email,setEmail] = useState("");
+
+const [phone,setPhone] = useState("");
+
+const [password,setPassword] = useState("");
+
+const [confirmPassword,setConfirmPassword] = useState("");
+
+
+
+const [branch,setBranch] = useState("");
+
+const [branches,setBranches] = useState([]);
+
+
+
+
+
+
+
+
+// LOAD BRANCHES CREATED BY SUPER ADMIN
+
+
+useEffect(()=>{
+
+
+const savedBranches = JSON.parse(
+
+localStorage.getItem("academyBranches")
+
+||
+
+"[]"
+
+);
+
+
+
+
+const activeBranches = savedBranches.filter(
+
+(item)=>
+
+item.status==="Active"
+
+);
+
+
+
+setBranches(activeBranches);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+const handleRegister=(e)=>{
+
+
+e.preventDefault();
+
+
 
 
     // ================= VALIDATION =================
 
-    if (
-      !name ||
-      !email ||
-      !phone ||
-      !password ||
-      !confirmPassword
-    ) {
+if(
 
-      toast.error("Please fill all fields");
+!name ||
 
-      return;
-    }
+!email ||
 
+!phone ||
 
-    if (password !== confirmPassword) {
+!password ||
 
-      toast.error("Passwords do not match");
+!confirmPassword ||
 
-      return;
-    }
+!branch
 
+){
 
-    if (phone.length !== 10) {
 
-      toast.error(
-        "Please enter a valid 10-digit mobile number"
-      );
+toast.error(
 
-      return;
-    }
+"Please fill all fields"
 
+);
 
-    try {
 
-      setLoading(true);
+return;
 
 
-      // ================= API CALL =================
+}
 
-      const response = await fetch(
-        "http://localhost:5001/api/auth/register",
-        {
-          method: "POST",
 
-          headers: {
-            "Content-Type": "application/json",
-          },
 
-          body: JSON.stringify({
 
-            name: name,
 
-            email: email,
 
-            phone: phone,
 
-            password: password,
 
-            // 3 = STUDENT
-            role_id: 3,
 
-            // Testing branch
-            branch_id: 1,
+if(password !== confirmPassword){
 
-          }),
-        }
-      );
 
+toast.error(
 
-      const data = await response.json();
+"Passwords do not match"
 
+);
 
-      console.log(
-        "REGISTER RESPONSE:",
-        data
-      );
 
+return;
 
-      // ================= API ERROR =================
 
-      if (!response.ok) {
+}
 
-        toast.error(
-          data.message ||
-          "Registration failed"
-        );
 
-        return;
-      }
 
 
-      // ================= SUCCESS =================
 
-      toast.success(
-        "Registration successful!"
-      );
 
 
-      // Store only non-sensitive information
-      localStorage.setItem(
-        "studentName",
-        name
-      );
 
 
-      // Clear form
+const user={
 
-      setName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
-      setConfirmPassword("");
 
+name,
 
-      // Go to login
+email,
 
-      setTimeout(() => {
+phone,
 
-        navigate("/login");
+password,
 
-      }, 1000);
+branch,
 
 
-    } catch (error) {
+role_id:3
 
-      console.error(
-        "REGISTER ERROR:",
-        error
-      );
 
+};
 
-      toast.error(
-        "Unable to connect to server. Please check backend."
-      );
 
 
-    } finally {
 
-      setLoading(false);
 
-    }
 
-  };
 
 
-  return (
 
-    <div
-      className="
-        min-h-screen
-        bg-[#08131E]
-        relative
-        overflow-hidden
-        flex
-        items-center
-        justify-center
-        px-6
-      "
-    >
 
-      {/* ================= BACKGROUND GLOW ================= */}
 
-      <div
-        className="
-          absolute
-          w-96
-          h-96
-          bg-teal-500/20
-          rounded-full
-          blur-[150px]
-          -top-24
-          -left-24
-        "
-      />
+// SAVE USER
 
 
-      <div
-        className="
-          absolute
-          w-80
-          h-80
-          bg-cyan-500/20
-          rounded-full
-          blur-[150px]
-          bottom-0
-          right-0
-        "
-      />
+localStorage.setItem(
+
+"user",
+
+JSON.stringify(user)
+
+);
+
+
+
+
+
+
+
+
+
+// CLEAR OLD ADMISSION DATA
+
+
+localStorage.removeItem(
+
+"admissionStatus"
+
+);
+
+
+localStorage.removeItem(
+
+"admissionApplication"
+
+);
+
+
+localStorage.removeItem(
+
+"admissionStudent"
+
+);
+
+
+
+
+
+
+
+
+
+// SAVE STUDENT DETAILS
+
+
+localStorage.setItem(
+
+"studentName",
+
+name
+
+);
+
+
+
+localStorage.setItem(
+
+"studentEmail",
+
+email
+
+);
+
+
+
+localStorage.setItem(
+
+"studentPhone",
+
+phone
+
+);
+
+
+
+localStorage.setItem(
+
+"studentBranch",
+
+branch
+
+);
+
+
+
+
+
+
+
+
+
+toast.success(
+
+"User registered successfully!"
+
+);
+
+
+
+
+
+
+
+setTimeout(()=>{
+
+
+navigate("/login");
+
+
+},1000);
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+return(
+
+
+<div
+
+
+className="
+
+min-h-screen
+
+bg-[#08131E]
+
+relative
+
+overflow-hidden
+
+flex
+
+items-center
+
+justify-center
+
+px-4
+
+sm:px-6
+
+"
+
+
+
+>
+
+
+
+
+
+
+
+
+{/* BACKGROUND GLOW */}
+
+
+
+<div
+
+className="
+
+absolute
+
+w-96
+
+h-96
+
+bg-teal-500/20
+
+rounded-full
+
+blur-[150px]
+
+top-0
+
+left-0
+
+"
+
+/>
+
+
+
+
+
+<div
+
+className="
+
+absolute
+
+w-80
+
+h-80
+
+bg-cyan-500/20
+
+rounded-full
+
+blur-[150px]
+
+bottom-0
+
+right-0
+
+"
+
+/>
+
+
+
+
 
 
       {/* ================= MAIN CONTAINER ================= */}
 
-      <div
-        className="
-          relative
-          z-10
-          w-full
-          max-w-7xl
-          grid
-          lg:grid-cols-2
-          gap-16
-          items-center
-        "
-      >
+<div
+
+className="
+
+relative
+
+z-10
+
+w-full
+
+max-w-7xl
+
+grid
+
+lg:grid-cols-2
+
+gap-10
+
+lg:gap-16
+
+items-center
+
+"
+
+>
 
 
-        {/* ================= LEFT SECTION ================= */}
-
-        <motion.div
-
-          initial={{
-            opacity: 0,
-            x: -60,
-          }}
-
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-
-          transition={{
-            duration: 0.8,
-          }}
-
-          className="
-            hidden
-            lg:block
-          "
-        >
-
-          <h1
-            className="
-              text-6xl
-              font-bold
-              text-white
-              leading-tight
-            "
-          >
-
-            Join the
-
-            <span
-              className="
-                block
-                text-teal-400
-              "
-            >
-              Skating Academy
-            </span>
-
-          </h1>
 
 
-          <p
-            className="
-              mt-6
-              text-slate-300
-              text-lg
-              leading-8
-            "
-          >
-
-            Create your account and start your journey with
-            professional coaching and modern management.
-
-          </p>
 
 
-          <div
-            className="
-              mt-10
-              space-y-4
-            "
-          >
 
-            {[
-              "Professional Coaching",
-              "Competition Training",
-              "Progress Tracking",
-            ].map((item) => (
 
-              <div
-                key={item}
-                className="
-                  flex
-                  items-center
-                  gap-3
-                "
-              >
 
-                <div
-                  className="
-                    w-3
-                    h-3
-                    rounded-full
-                    bg-teal-400
-                  "
-                />
+{/* LEFT CONTENT */}
+
+
+
+<motion.div
+
+
+initial={{
+
+opacity:0,
+
+x:-50
+
+}}
+
+
+animate={{
+
+opacity:1,
+
+x:0
+
+}}
+
+
+
+transition={{
+
+duration:0.8
+
+}}
+
+
+
+className="
+
+hidden
+
+lg:block
+
+"
+
+>
+
+
+<h1
+
+className="
+
+text-5xl
+
+xl:text-6xl
+
+font-black
+
+text-white
+
+leading-tight
+
+"
+
+>
+
+
+Join the
+
+
+<span
+
+className="
+
+block
+
+text-teal-400
+
+"
+
+>
+
+Skating Academy
+
+</span>
+
+
+</h1>
+
+
+
+
+
+<p
+
+className="
+
+mt-6
+
+text-slate-300
+
+text-lg
+
+leading-8
+
+"
+
+>
+
+
+Create your account and start your skating journey with SAMS Academy.
+
+
+</p>
+
+
+
+
+
+
+
+<div
+
+className="
+
+mt-10
+
+space-y-4
+
+"
+
+>
+
+
+{
+
+[
+
+"Professional Coaching",
+
+"Competition Training",
+
+"Progress Tracking"
+
+].map(item=>(
+
+
+
+<div
+
+key={item}
+
+className="
+
+flex
+
+items-center
+
+gap-3
+
+"
+
+>
+
+
+<div
+
+className="
+
+w-3
+
+h-3
+
+rounded-full
+
+bg-teal-400
+
+"
+
+/>
+
 
                 <p className="text-white">
                   {item}
                 </p>
 
-              </div>
+
+</div>
+
 
             ))}
 
-          </div>
+</div>
 
-        </motion.div>
+
+
+</motion.div>
 
 
         {/* ================= REGISTER CARD ================= */}
 
-        <AuthCard>
-
-          <div
-            className="
-              bg-[#102235]
-              border
-              border-teal-500/20
-              rounded-3xl
-              p-10
-              shadow-2xl
-            "
-          >
-
-            <motion.h2
-
-              initial={{
-                opacity: 0,
-                y: -15,
-              }}
-
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-
-              className="
-                text-3xl
-                font-bold
-                text-center
-                text-white
-              "
-            >
-
-              Create Account
-
-            </motion.h2>
+<AuthCard>
 
 
-            <p
-              className="
-                text-center
-                text-slate-400
-                mt-2
-                mb-8
-              "
-            >
 
-              Register to continue
+<div
 
-            </p>
+className="
+
+bg-[#102235]
+
+border
+
+border-teal-500/20
+
+rounded-3xl
+
+p-6
+
+sm:p-10
+
+shadow-2xl
+
+"
+
+>
 
 
-            <form
-              onSubmit={handleRegister}
-              className="space-y-5"
-            >
+
+<motion.h2
 
 
-              {/* ================= NAME ================= */}
+initial={{
+
+opacity:0,
+
+y:-15
+
+}}
+
+
+animate={{
+
+opacity:1,
+
+y:0
+
+}}
+
+
+
+className="
+
+text-3xl
+
+font-bold
+
+text-center
+
+text-white
+
+"
+
+>
+
+
+Create Account
+
+
+</motion.h2>
+
+
+
+
+
+<p
+
+className="
+
+text-center
+
+text-slate-400
+
+mt-2
+
+mb-8
+
+"
+
+>
+
+
+Register to continue
+
+
+</p>
+
+
+
+
+
+
+
+
+
+<form
+
+onSubmit={handleRegister}
+
+className="
+
+space-y-5
+
+"
+
+>
+
+
+
+
+
 
               <AuthInput
 
@@ -433,7 +823,9 @@ export default function Register() {
                   setName(e.target.value)
                 }
 
-              />
+/>
+
+
 
 
               {/* ================= EMAIL ================= */}
@@ -452,7 +844,9 @@ export default function Register() {
                   setEmail(e.target.value)
                 }
 
-              />
+/>
+
+
 
 
               {/* ================= PHONE ================= */}
@@ -471,32 +865,228 @@ export default function Register() {
                   setPhone(e.target.value)
                 }
 
-              />
+/>
+
+
+
+
+
+
+
+
+
+{/* BRANCH SELECT */}
+
+
+
+<div>
+
+
+<label
+
+className="
+
+text-slate-300
+
+text-sm
+
+"
+
+>
+
+
+Select Branch
+
+
+</label>
+
+
+
+
+
+<div
+
+className="
+
+flex
+
+items-center
+
+gap-3
+
+bg-[#07131f]
+
+border
+
+border-slate-700
+
+rounded-xl
+
+px-4
+
+mt-2
+
+"
+
+>
+
+
+<MapPin
+
+size={20}
+
+className="text-teal-400"
+
+/>
+
+
+
+<select
+
+
+value={branch}
+
+
+onChange={(e)=>setBranch(e.target.value)}
+
+
+className="
+
+bg-transparent
+
+outline-none
+
+w-full
+
+py-4
+
+text-white
+
+"
+
+>
+
+
+<option
+
+value=""
+
+className="text-black"
+
+>
+
+Choose Branch
+
+</option>
+
+
+
+
+
+{
+
+branches.length===0 &&
+
+
+<option
+
+disabled
+
+className="text-black"
+
+>
+
+No branches available
+
+</option>
+
+
+}
+
+
+
+
+
+
+
+{
+
+branches.map(item=>(
+
+
+<option
+
+key={item.id}
+
+value={item.branchName}
+
+className="text-black"
+
+>
+
+{item.branchName}
+
+</option>
+
+
+))
+
+
+}
+
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+</div>
+
+
 
 
               {/* ================= PASSWORD ================= */}
 
-              <div className="relative">
+<div className="relative">
 
-                <AuthInput
 
-                  icon={Lock}
+<AuthInput
 
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
 
-                  placeholder="Password"
+icon={Lock}
 
-                  value={password}
 
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
+type={
 
-                />
+showPassword
+
+?
+
+"text"
+
+:
+
+"password"
+
+}
+
+
+placeholder="Password"
+
+
+value={password}
+
+
+onChange={(e)=>setPassword(e.target.value)}
+
+
+/>
+
 
 
                 <button
@@ -509,56 +1099,87 @@ export default function Register() {
                     )
                   }
 
-                  className="
-                    absolute
-                    right-4
-                    top-1/2
-                    -translate-y-1/2
-                    text-slate-400
-                    hover:text-teal-400
-                  "
-                >
+className="
 
-                  {showPassword ? (
+absolute
 
-                    <EyeOff size={20} />
+right-4
 
-                  ) : (
+top-1/2
 
-                    <Eye size={20} />
+-translate-y-1/2
 
-                  )}
+text-slate-400
 
-                </button>
+hover:text-teal-400
 
-              </div>
+"
+
+>
+
+
+{
+
+showPassword
+
+?
+
+<EyeOff size={20}/>
+
+:
+
+<Eye size={20}/>
+
+}
+
+
+
+</button>
+
+
+
+</div>
+
+
 
 
               {/* ================= CONFIRM PASSWORD ================= */}
 
-              <div className="relative">
+<div className="relative">
 
-                <AuthInput
 
-                  icon={Lock}
+<AuthInput
 
-                  type={
-                    showConfirmPassword
-                      ? "text"
-                      : "password"
-                  }
 
-                  placeholder="Confirm Password"
+icon={Lock}
 
-                  value={confirmPassword}
 
-                  onChange={(e) =>
-                    setConfirmPassword(
-                      e.target.value
-                    )
-                  }
+type={
 
-                />
+showConfirmPassword
+
+?
+
+"text"
+
+:
+
+"password"
+
+}
+
+
+placeholder="Confirm Password"
+
+
+value={confirmPassword}
+
+
+onChange={(e)=>setConfirmPassword(e.target.value)}
+
+
+/>
+
 
 
                 <button
@@ -571,87 +1192,135 @@ export default function Register() {
                     )
                   }
 
-                  className="
-                    absolute
-                    right-4
-                    top-1/2
-                    -translate-y-1/2
-                    text-slate-400
-                    hover:text-teal-400
-                  "
-                >
+className="
 
-                  {showConfirmPassword ? (
+absolute
 
-                    <EyeOff size={20} />
+right-4
 
-                  ) : (
+top-1/2
 
-                    <Eye size={20} />
+-translate-y-1/2
 
-                  )}
+text-slate-400
 
-                </button>
+hover:text-teal-400
 
-              </div>
+"
+
+>
 
 
-              {/* ================= REGISTER BUTTON ================= */}
+{
 
-              <AuthButton
+showConfirmPassword
 
-                type="submit"
+?
 
-                disabled={loading}
+<EyeOff size={20}/>
 
-              >
+:
 
-                {loading
-                  ? "Creating Account..."
-                  : "Create Account"}
+<Eye size={20}/>
 
-              </AuthButton>
+}
+
+
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<AuthButton type="submit">
+
+
+Create Account
+
+
+</AuthButton>
+
+
 
 
               {/* ================= LOGIN LINK ================= */}
 
-              <p
-                className="
-                  text-center
-                  text-slate-400
-                "
-              >
+<p
 
-                Already have an account?{" "}
+className="
+
+text-center
+
+text-slate-400
+
+"
+
+>
+
+
+Already have an account?
+
 
                 <Link
 
                   to="/login"
 
-                  className="
-                    text-teal-400
-                    font-semibold
-                    hover:text-teal-300
-                  "
-                >
+className="
+
+text-teal-400
+
+font-semibold
+
+ml-2
+
+"
+
+>
 
                   Login
 
                 </Link>
 
-              </p>
+
+</p>
+
+
+
+
+
+
 
 
             </form>
 
           </div>
 
-        </AuthCard>
 
 
-      </div>
+</AuthCard>
 
-    </div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
 
   );
 

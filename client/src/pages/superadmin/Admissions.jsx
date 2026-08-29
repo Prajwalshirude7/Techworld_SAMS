@@ -3,1171 +3,1067 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  Clock,
   Eye,
   MapPin,
-  Download,
-  Users,
+  Download
 } from "lucide-react";
 
-import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 
-import api from "../../services/api";
+import {
+  motion
+} from "framer-motion";
+
+
+import {
+  useState,
+  useEffect
+} from "react";
+
+
+import {
+  useNavigate
+} from "react-router-dom";
+
+
 import generateReceipt from "../../utils/generateReceipt";
 
 
-export default function Admissions() {
 
-  const navigate = useNavigate();
 
-  // =====================================================
-  // STATES
-  // =====================================================
 
-  const [search, setSearch] = useState("");
+export default function Admissions(){
 
-  const [status, setStatus] = useState("All");
 
-  const [branch, setBranch] = useState("All");
+const navigate = useNavigate();
 
-  const [applications, setApplications] = useState([]);
 
-  const [loading, setLoading] = useState(true);
 
-  const [actionLoading, setActionLoading] = useState(null);
+const [search,setSearch]=useState("");
 
+const [status,setStatus]=useState("All");
 
-  // =====================================================
-  // FETCH ADMISSIONS
-  // =====================================================
+const [branch,setBranch]=useState("All");
 
-  const fetchAdmissions = async () => {
 
-    try {
+const [applications,setApplications]=useState([]);
 
-      setLoading(true);
 
-      const response = await api.get("/admin/admissions");
+const [branches,setBranches]=useState([]);
 
-      console.log(
-        "ADMISSIONS RESPONSE:",
-        response.data
-      );
 
-      if (response.data.success) {
 
-        setApplications(
-          response.data.data || []
-        );
 
-      } else {
 
-        toast.error(
-          response.data.message ||
-          "Failed to load admissions"
-        );
 
-      }
 
-    } catch (error) {
 
-      console.error(
-        "FETCH ADMISSIONS ERROR:",
-        error
-      );
 
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to load admissions"
-      );
+// LOAD DATA
 
-    } finally {
 
-      setLoading(false);
+useEffect(()=>{
 
-    }
 
-  };
+const savedApplications = JSON.parse(
 
+localStorage.getItem("admissionApplications")
 
-  // =====================================================
-  // LOAD ON PAGE OPEN
-  // =====================================================
+||
 
-  useEffect(() => {
+"[]"
 
-    fetchAdmissions();
+);
 
-  }, []);
 
 
-  // =====================================================
-  // APPROVE ADMISSION
-  // =====================================================
+setApplications(savedApplications);
 
-  const approveApplication = async (id) => {
 
-    try {
 
-      setActionLoading(id);
 
-      const response = await api.put(
-        `/admin/admissions/${id}/approve`
-      );
 
 
-      if (response.data.success) {
+const savedBranches = JSON.parse(
 
-        toast.success(
-          "Admission approved successfully"
-        );
+localStorage.getItem("academyBranches")
 
-        // Reload data from MySQL
-        await fetchAdmissions();
+||
 
-      } else {
+"[]"
 
-        toast.error(
-          response.data.message ||
-          "Failed to approve admission"
-        );
+);
 
-      }
 
-    } catch (error) {
 
-      console.error(
-        "APPROVE ADMISSION ERROR:",
-        error
-      );
+setBranches(
 
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to approve admission"
-      );
+savedBranches.filter(
 
-    } finally {
+item=>item.status==="Active"
 
-      setActionLoading(null);
+)
 
-    }
+);
 
-  };
 
 
-  // =====================================================
-  // REJECT ADMISSION
-  // =====================================================
+},[]);
 
-  const rejectApplication = async (id) => {
 
-    try {
 
-      setActionLoading(id);
 
-      const response = await api.put(
-        `/admin/admissions/${id}/reject`,
-        {
-          remarks: "Rejected by Super Admin",
-        }
-      );
 
 
-      if (response.data.success) {
 
-        toast.success(
-          "Admission rejected successfully"
-        );
 
-        // Reload data from MySQL
-        await fetchAdmissions();
 
-      } else {
 
-        toast.error(
-          response.data.message ||
-          "Failed to reject admission"
-        );
 
-      }
 
-    } catch (error) {
+// UPDATE STATUS
 
-      console.error(
-        "REJECT ADMISSION ERROR:",
-        error
-      );
 
-      toast.error(
-        error.response?.data?.message ||
-        "Failed to reject admission"
-      );
+const updateStatus=(id,newStatus)=>{
 
-    } finally {
 
-      setActionLoading(null);
+const updatedApplications = applications.map(item=>{
 
-    }
 
-  };
+if(item.id===id){
 
 
-  // =====================================================
-  // STATUS STYLE
-  // =====================================================
+return{
 
-  const statusStyle = (value) => {
+...item,
 
-    if (value === "APPROVED") {
+status:newStatus
 
-      return "bg-green-500/20 text-green-400";
+};
 
-    }
 
-    if (value === "REJECTED") {
+}
 
-      return "bg-red-500/20 text-red-400";
 
-    }
+return item;
 
-    return "bg-yellow-500/20 text-yellow-400";
 
-  };
+});
 
 
-  // =====================================================
-  // STATUS DISPLAY
-  // =====================================================
 
-  const displayStatus = (value) => {
 
-    if (value === "PENDING") {
 
-      return "Pending";
+setApplications(updatedApplications);
 
-    }
 
-    if (value === "APPROVED") {
 
-      return "Approved";
 
-    }
 
-    if (value === "REJECTED") {
+localStorage.setItem(
 
-      return "Rejected";
+"admissionApplications",
 
-    }
+JSON.stringify(updatedApplications)
 
-    return value || "Unknown";
+);
 
-  };
 
 
-  // =====================================================
-  // UNIQUE BRANCHES
-  // =====================================================
 
-  const branches = [
-    ...new Set(
-      applications
-        .map((item) => item.branch_name)
-        .filter(Boolean)
-    ),
-  ];
 
 
-  // =====================================================
-  // FILTER APPLICATIONS
-  // =====================================================
+const updatedStudent = updatedApplications.find(
 
-  const filteredApplications =
-    applications.filter((item) => {
+item=>item.id===id
 
-      const searchText =
-        search.toLowerCase().trim();
+);
 
 
-      const studentName =
-        item.student_name
-          ?.toLowerCase() || "";
 
 
-      const studentEmail =
-        item.email
-          ?.toLowerCase() || "";
 
 
-      const studentCode =
-        item.student_code
-          ?.toLowerCase() || "";
+if(updatedStudent){
 
 
-      const searchMatch =
-        studentName.includes(searchText) ||
-        studentEmail.includes(searchText) ||
-        studentCode.includes(searchText);
 
+localStorage.setItem(
 
-      const statusMatch =
-        status === "All" ||
-        item.status === status;
+"admissionStudent",
 
+JSON.stringify(updatedStudent)
 
-      const branchMatch =
-        branch === "All" ||
-        item.branch_name === branch;
+);
 
 
-      return (
-        searchMatch &&
-        statusMatch &&
-        branchMatch
-      );
 
-    });
 
+localStorage.setItem(
 
-  // =====================================================
-  // STATISTICS
-  // =====================================================
+"admissionApplication",
 
-  const stats = [
+JSON.stringify(updatedStudent)
 
-    {
-      title: "Total Applications",
-      value: applications.length,
-      icon: Users,
-    },
+);
 
-    {
-      title: "Pending",
-      value:
-        applications.filter(
-          (item) =>
-            item.status === "PENDING"
-        ).length,
-      icon: Clock,
-    },
 
-    {
-      title: "Approved",
-      value:
-        applications.filter(
-          (item) =>
-            item.status === "APPROVED"
-        ).length,
-      icon: CheckCircle,
-    },
 
-    {
-      title: "Rejected",
-      value:
-        applications.filter(
-          (item) =>
-            item.status === "REJECTED"
-        ).length,
-      icon: XCircle,
-    },
 
-  ];
 
 
-  // =====================================================
-  // VIEW DETAILS
-  // =====================================================
+if(newStatus==="Approved"){
 
-  const viewAdmissionDetails = (item) => {
 
-    navigate(
-      "/super-admin/admission-details",
-      {
-        state: {
-          student: item,
-        },
-      }
-    );
 
-  };
+const students = JSON.parse(
 
+localStorage.getItem("academyStudents")
 
-  // =====================================================
-  // RENDER
-  // =====================================================
+||
 
-  return (
+"[]"
 
-    <div
-      className="
-        min-h-screen
-        bg-[#07131f]
-        text-white
-        p-4
-        sm:p-6
-        lg:p-10
-      "
-    >
+);
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
 
-      <div>
 
-        <h1
-          className="
-            text-3xl
-            sm:text-4xl
-            lg:text-5xl
-            font-black
-          "
-        >
-          Admissions Management
-        </h1>
 
-        <p
-          className="
-            text-slate-400
-            mt-2
-          "
-        >
-          Review, approve and manage student
-          admission requests.
-        </p>
 
-      </div>
+const exists = students.some(
 
+item=>item.email===updatedStudent.email
 
-      {/* =================================================
-          STAT CARDS
-      ================================================= */}
+);
 
-      <div
-        className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-4
-          gap-5
-          mt-8
-        "
-      >
 
-        {stats.map((item, index) => {
 
-          const Icon = item.icon;
 
-          return (
 
-            <motion.div
-              key={index}
-              whileHover={{
-                y: -5,
-              }}
-              className="
-                bg-[#102235]
-                border
-                border-slate-700
-                rounded-3xl
-                p-5
-              "
-            >
+if(!exists){
 
-              <div
-                className="
-                  flex
-                  justify-between
-                  items-center
-                "
-              >
 
-                <div>
+localStorage.setItem(
 
-                  <p
-                    className="
-                      text-slate-400
-                      text-sm
-                    "
-                  >
-                    {item.title}
-                  </p>
+"academyStudents",
 
-                  <h2
-                    className="
-                      text-3xl
-                      font-black
-                      mt-2
-                    "
-                  >
-                    {item.value}
-                  </h2>
+JSON.stringify(
 
-                </div>
+[
 
+...students,
 
-                <div
-                  className="
-                    bg-teal-500/20
-                    p-3
-                    rounded-xl
-                  "
-                >
+{
 
-                  <Icon
-                    size={25}
-                    className="text-teal-400"
-                  />
+...updatedStudent,
 
-                </div>
+studentStatus:"Active",
 
-              </div>
+joinedDate:
 
-            </motion.div>
+new Date()
 
-          );
+.toLocaleDateString()
 
-        })}
+}
 
-      </div>
+]
 
+)
 
-      {/* =================================================
-          FILTER SECTION
-      ================================================= */}
+);
 
-      <div
-        className="
-          mt-8
-          bg-[#102235]
-          border
-          border-slate-700
-          rounded-3xl
-          p-4
-          sm:p-6
-          grid
-          grid-cols-1
-          md:grid-cols-3
-          gap-4
-        "
-      >
 
-        {/* SEARCH */}
 
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-            bg-[#07131f]
-            border
-            border-slate-700
-            rounded-xl
-            px-4
-          "
-        >
+}
 
-          <Search
-            size={20}
-            className="text-slate-400"
-          />
 
-          <input
-            placeholder="Search student..."
-            value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
-            className="
-              w-full
-              bg-transparent
-              outline-none
-              py-3
-            "
-          />
 
-        </div>
+}
 
 
-        {/* STATUS */}
 
-        <select
-          value={status}
-          onChange={(e) =>
-            setStatus(e.target.value)
-          }
-          className="
-            bg-[#07131f]
-            border
-            border-slate-700
-            rounded-xl
-            px-4
-            py-3
-            outline-none
-          "
-        >
+}
 
-          <option value="All">
-            All Status
-          </option>
 
-          <option value="PENDING">
-            Pending
-          </option>
 
-          <option value="APPROVED">
-            Approved
-          </option>
+};
 
-          <option value="REJECTED">
-            Rejected
-          </option>
 
-        </select>
 
 
-        {/* BRANCH */}
 
-        <select
-          value={branch}
-          onChange={(e) =>
-            setBranch(e.target.value)
-          }
-          className="
-            bg-[#07131f]
-            border
-            border-slate-700
-            rounded-xl
-            px-4
-            py-3
-            outline-none
-          "
-        >
 
-          <option value="All">
-            All Branches
-          </option>
 
-          {branches.map((branchName) => (
 
-            <option
-              key={branchName}
-              value={branchName}
-            >
-              {branchName}
-            </option>
 
-          ))}
+const approveApplication=(id)=>{
 
-        </select>
 
-      </div>
+updateStatus(
 
+id,
 
-      {/* =================================================
-          LOADING
-      ================================================= */}
+"Approved"
 
-      {loading && (
+);
 
-        <div
-          className="
-            mt-8
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-10
-            text-center
-          "
-        >
 
-          <div
-            className="
-              animate-spin
-              w-10
-              h-10
-              border-4
-              border-slate-600
-              border-t-teal-400
-              rounded-full
-              mx-auto
-            "
-          />
+};
 
-          <p
-            className="
-              text-slate-400
-              mt-4
-            "
-          >
-            Loading admissions...
-          </p>
 
-        </div>
 
-      )}
 
 
-      {/* =================================================
-          NO APPLICATIONS
-      ================================================= */}
 
-      {!loading &&
-        filteredApplications.length === 0 && (
+const rejectApplication=(id)=>{
 
-          <div
-            className="
-              mt-8
-              bg-[#102235]
-              border
-              border-slate-700
-              rounded-3xl
-              p-10
-              text-center
-              text-slate-400
-            "
-          >
 
-            <FileText
-              size={45}
-              className="
-                mx-auto
-                mb-4
-                text-slate-600
-              "
-            />
+updateStatus(
 
-            <p className="text-lg">
-              No admission applications found.
-            </p>
-
-            {applications.length === 0 && (
-
-              <p
-                className="
-                  text-sm
-                  mt-2
-                  text-slate-500
-                "
-              >
-                There are currently no admission
-                records in the database.
-              </p>
-
-            )}
-
-          </div>
-
-        )}
+id,
 
+"Rejected"
 
-      {/* =================================================
-          APPLICATION CARDS
-      ================================================= */}
+);
 
-      {!loading &&
-        filteredApplications.length > 0 && (
-
-          <div
-            className="
-              mt-8
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              xl:grid-cols-3
-              gap-6
-            "
-          >
-
-            {filteredApplications.map((item) => (
 
-              <motion.div
-                key={item.id}
-                whileHover={{
-                  y: -6,
-                }}
-                className="
-                  bg-[#102235]
-                  border
-                  border-slate-700
-                  rounded-3xl
-                  p-5
-                  flex
-                  flex-col
-                  justify-between
-                "
-              >
-
-                <div>
+};
 
-                  {/* TOP */}
 
-                  <div
-                    className="
-                      flex
-                      justify-between
-                      items-start
-                    "
-                  >
 
-                    <div
-                      className="
-                        bg-teal-500/20
-                        p-4
-                        rounded-2xl
-                      "
-                    >
-
-                      <FileText
-                        size={28}
-                        className="
-                          text-teal-400
-                        "
-                      />
 
-                    </div>
 
 
-                    <span
-                      className={`
-                        px-4
-                        py-2
-                        rounded-full
-                        text-sm
-                        font-semibold
-                        ${statusStyle(item.status)}
-                      `}
-                    >
-                      {displayStatus(item.status)}
-                    </span>
 
-                  </div>
 
 
-                  {/* STUDENT NAME */}
+const filteredApplications = applications.filter((item)=>{
 
-                  <h2
-                    className="
-                      text-2xl
-                      font-bold
-                      mt-6
-                    "
-                  >
-                    {item.student_name ||
-                      "Unknown Student"}
-                  </h2>
 
+const searchMatch =
 
-                  {/* EMAIL */}
+item.name
 
-                  <p
-                    className="
-                      text-slate-400
-                      break-all
-                    "
-                  >
-                    {item.email || "N/A"}
-                  </p>
+?.toLowerCase()
 
+.includes(
 
-                  {/* DETAILS */}
+search.toLowerCase()
 
-                  <div
-                    className="
-                      mt-6
-                      space-y-4
-                    "
-                  >
+);
 
-                    {/* STUDENT CODE */}
 
-                    <p>
 
-                      <span
-                        className="
-                          text-slate-400
-                        "
-                      >
-                        Student Code:
-                      </span>
+const statusMatch =
 
-                      <span className="ml-2">
-                        {item.student_code ||
-                          "N/A"}
-                      </span>
+status==="All"
 
-                    </p>
+||
 
+item.status===status;
 
-                    {/* BRANCH */}
 
-                    <p
-                      className="
-                        flex
-                        gap-3
-                        items-center
-                      "
-                    >
 
-                      <MapPin
-                        size={18}
-                        className="
-                          text-teal-400
-                        "
-                      />
 
-                      {item.branch_name ||
-                        "Not Assigned"}
 
-                    </p>
+const branchMatch =
 
+branch==="All"
 
-                    {/* STATUS */}
+||
 
-                    <p>
+item.branch===branch;
 
-                      <span
-                        className="
-                          text-slate-400
-                        "
-                      >
-                        Status:
-                      </span>
 
-                      <span className="ml-2">
-                        {displayStatus(
-                          item.status
-                        )}
-                      </span>
 
-                    </p>
 
 
-                    {/* APPROVED DATE */}
+return(
 
-                    {item.approved_date && (
+searchMatch
 
-                      <p>
+&&
 
-                        <span
-                          className="
-                            text-slate-400
-                          "
-                        >
-                          Updated:
-                        </span>
+statusMatch
 
-                        <span className="ml-2">
+&&
 
-                          {new Date(
-                            item.approved_date
-                          ).toLocaleDateString()}
+branchMatch
 
-                        </span>
+);
 
-                      </p>
 
-                    )}
+});
 
-                  </div>
 
-                </div>
 
 
-                {/* =================================================
-                    ACTION BUTTONS
-                ================================================= */}
 
-                <div
-                  className="
-                    mt-8
-                    flex
-                    gap-3
-                    flex-wrap
-                  "
-                >
 
-                  {/* VIEW */}
 
-                  <button
-                    onClick={() =>
-                      viewAdmissionDetails(item)
-                    }
-                    className="
-                      flex-1
-                      min-w-[100px]
-                      h-12
-                      rounded-xl
-                      border
-                      border-slate-600
-                      flex
-                      items-center
-                      justify-center
-                      gap-2
-                      hover:bg-slate-800
-                      transition
-                    "
-                  >
 
-                    <Eye size={18} />
-
-                    View
 
-                  </button>
+return(
 
 
-                  {/* PENDING ACTIONS */}
+<div
 
-                  {item.status === "PENDING" && (
+className="
+min-h-screen
+bg-[#07131f]
+text-white
+p-4
+sm:p-6
+lg:p-10
+"
 
-                    <>
+>
 
-                      {/* APPROVE */}
 
-                      <button
-                        disabled={
-                          actionLoading === item.id
-                        }
-                        onClick={() =>
-                          approveApplication(
-                            item.id
-                          )
-                        }
-                        className="
-                          flex-1
-                          min-w-[100px]
-                          h-12
-                          rounded-xl
-                          bg-green-500
-                          hover:bg-green-600
-                          flex
-                          items-center
-                          justify-center
-                          gap-2
-                          font-semibold
-                          disabled:opacity-50
-                        "
-                      >
 
-                        {actionLoading ===
-                        item.id ? (
 
-                          "Processing..."
 
-                        ) : (
 
-                          <>
-                            <CheckCircle
-                              size={18}
-                            />
 
-                            Approve
-                          </>
+<div>
 
-                        )}
+<h1
 
-                      </button>
+className="
+text-3xl
+sm:text-5xl
+font-black
+"
 
+>
 
-                      {/* REJECT */}
+Admissions Management
 
-                      <button
-                        disabled={
-                          actionLoading === item.id
-                        }
-                        onClick={() =>
-                          rejectApplication(
-                            item.id
-                          )
-                        }
-                        className="
-                          flex-1
-                          min-w-[100px]
-                          h-12
-                          rounded-xl
-                          bg-red-500
-                          hover:bg-red-600
-                          flex
-                          items-center
-                          justify-center
-                          gap-2
-                          font-semibold
-                          disabled:opacity-50
-                        "
-                      >
+</h1>
 
-                        {actionLoading ===
-                        item.id ? (
 
-                          "Processing..."
 
-                        ) : (
+<p
 
-                          <>
-                            <XCircle
-                              size={18}
-                            />
+className="
+text-slate-400
+mt-2
+"
 
-                            Reject
-                          </>
+>
 
-                        )}
+Review student applications and manage admissions.
 
-                      </button>
+</p>
 
-                    </>
 
-                  )}
+</div>
 
 
-                  {/* APPROVED → RECEIPT */}
 
-                  {item.status === "APPROVED" && (
 
-                    <button
-                      onClick={() =>
-                        generateReceipt(item)
-                      }
-                      className="
-                        flex-1
-                        min-w-[100px]
-                        h-12
-                        rounded-xl
-                        bg-teal-500
-                        hover:bg-teal-600
-                        flex
-                        items-center
-                        justify-center
-                        gap-2
-                        font-semibold
-                      "
-                    >
 
-                      <Download
-                        size={18}
-                      />
 
-                      Receipt
 
-                    </button>
 
-                  )}
 
-                </div>
+{/* FILTER */}
 
-              </motion.div>
 
-            ))}
+<div
 
-          </div>
+className="
+mt-8
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+grid
+grid-cols-1
+md:grid-cols-3
+gap-4
+"
 
-        )}
+>
 
-    </div>
 
-  );
+
+<div
+
+className="
+flex
+items-center
+gap-3
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+"
+
+>
+
+
+<Search
+
+size={20}
+
+className="text-slate-400"
+
+/>
+
+
+<input
+
+
+placeholder="Search student..."
+
+
+value={search}
+
+
+onChange={(e)=>setSearch(e.target.value)}
+
+
+className="
+bg-transparent
+outline-none
+py-3
+w-full
+"
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+<select
+
+value={status}
+
+onChange={(e)=>setStatus(e.target.value)}
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+py-3
+"
+
+>
+
+
+<option value="All">
+All Status
+</option>
+
+
+<option value="Pending Approval">
+Pending
+</option>
+
+
+<option value="Approved">
+Approved
+</option>
+
+
+<option value="Rejected">
+Rejected
+</option>
+
+
+</select>
+
+
+
+
+
+
+
+
+
+<select
+
+value={branch}
+
+onChange={(e)=>setBranch(e.target.value)}
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+py-3
+"
+
+>
+
+
+<option value="All">
+
+All Branches
+
+</option>
+
+
+
+
+{
+
+branches.map(item=>(
+
+
+<option
+
+key={item.id}
+
+value={item.branchName}
+
+>
+
+{item.branchName}
+
+</option>
+
+
+))
+
+}
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* CARDS */}
+
+
+
+<div
+
+className="
+mt-8
+grid
+grid-cols-1
+md:grid-cols-2
+xl:grid-cols-3
+gap-6
+"
+
+>
+
+
+
+{
+
+filteredApplications.map((student,index)=>(
+
+
+
+<motion.div
+
+
+key={student.id}
+
+
+initial={{
+opacity:0,
+y:20
+}}
+
+
+animate={{
+opacity:1,
+y:0
+}}
+
+
+transition={{
+delay:index*0.05
+}}
+
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-6
+"
+
+>
+
+
+
+<div
+
+className="
+flex
+justify-between
+items-start
+"
+
+>
+
+
+<div
+
+className="
+bg-teal-500/20
+p-4
+rounded-2xl
+"
+
+>
+
+
+<FileText
+
+size={28}
+
+className="text-teal-400"
+
+/>
+
+
+</div>
+
+
+
+
+<span
+
+className="
+px-4
+py-2
+rounded-full
+bg-yellow-500/20
+text-yellow-400
+"
+
+>
+
+{student.status}
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+<h2
+
+className="
+text-xl
+font-bold
+mt-6
+"
+
+>
+
+{student.name}
+
+</h2>
+
+
+
+
+<p
+
+className="
+text-slate-400
+"
+
+>
+
+{student.email}
+
+</p>
+
+
+
+
+
+
+
+<p
+
+className="
+flex
+items-center
+gap-2
+mt-5
+"
+
+>
+
+
+<MapPin
+
+size={18}
+
+className="text-teal-400"
+
+/>
+
+
+{student.branch || "Not Selected"}
+
+
+</p>
+
+
+
+
+
+
+<p className="mt-3">
+
+Program:
+
+<span className="ml-2">
+
+{student.program}
+
+</span>
+
+
+</p>
+
+
+
+
+
+
+
+
+<div
+
+className="
+mt-6
+flex
+flex-wrap
+gap-3
+"
+
+>
+
+
+
+<button
+
+onClick={()=>navigate(
+
+"/super-admin/admission-details",
+
+{
+
+state:{
+student
+}
+
+}
+
+)}
+
+className="
+flex-1
+border
+border-slate-600
+rounded-xl
+py-3
+flex
+justify-center
+gap-2
+"
+
+>
+
+
+<Eye size={18}/>
+
+View
+
+</button>
+
+
+
+
+
+
+
+
+
+{
+
+student.status==="Pending Approval" &&
+
+<>
+
+
+<button
+
+onClick={()=>approveApplication(student.id)}
+
+className="
+flex-1
+bg-green-500
+rounded-xl
+py-3
+font-bold
+flex
+justify-center
+gap-2
+"
+
+>
+
+
+<CheckCircle size={18}/>
+
+Approve
+
+
+</button>
+
+
+
+
+
+
+<button
+
+onClick={()=>rejectApplication(student.id)}
+
+className="
+flex-1
+bg-red-500
+rounded-xl
+py-3
+font-bold
+flex
+justify-center
+gap-2
+"
+
+>
+
+
+<XCircle size={18}/>
+
+Reject
+
+
+</button>
+
+
+</>
+
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+student.status==="Approved" &&
+
+
+<button
+
+onClick={()=>generateReceipt(student)}
+
+className="
+flex-1
+bg-teal-500
+rounded-xl
+py-3
+font-bold
+flex
+justify-center
+gap-2
+"
+
+>
+
+
+<Download size={18}/>
+
+Receipt
+
+
+</button>
+
+
+}
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</motion.div>
+
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+);
+
 
 }

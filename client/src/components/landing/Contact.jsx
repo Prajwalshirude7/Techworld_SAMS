@@ -1,11 +1,12 @@
-import { motion } from "framer-motion";
 import {
   Phone,
   Mail,
-  MapPin,
-  Send,
-  MessageCircle
+  MapPin
 } from "lucide-react";
+
+import {
+  motion
+} from "framer-motion";
 
 
 export default function Contact(){
@@ -13,81 +14,27 @@ export default function Contact(){
 
 return(
 
+
 <section
 
 id="contact"
 
 className="
-relative
+bg-[#07131f]
+text-white
 py-20
-sm:py-28
-bg-[#08131E]
-overflow-hidden
-"
-
->
-
-
-<div
-
-className="
-absolute
-right-0
-top-20
-w-80
-h-80
-bg-teal-500/20
-blur-[120px]
-rounded-full
-"
-
-/>
-
-
-
-<div
-
-className="
-relative
-z-10
-max-w-7xl
-mx-auto
 px-5
 sm:px-8
-lg:px-10
 "
 
 >
 
 
-
-
-
-{/* HEADING */}
-
-
-
-<motion.div
-
-initial={{
-opacity:0,
-y:40
-}}
-
-whileInView={{
-opacity:1,
-y:0
-}}
-
-viewport={{
-once:true
-}}
-
-transition={{
-duration:0.7
-}}
+<div
 
 className="
+max-w-5xl
+mx-auto
 text-center
 "
 
@@ -99,28 +46,16 @@ text-center
 className="
 text-4xl
 sm:text-5xl
-md:text-6xl
 font-black
-text-white
 "
 
 >
 
 Contact
 
-<span
-
-className="
-text-teal-400
-drop-shadow-[0_0_25px_rgba(20,184,166,0.8)]
-"
-
->
-
+<span className="text-teal-400">
  RTSA
-
 </span>
-
 
 </h2>
 
@@ -129,47 +64,18 @@ drop-shadow-[0_0_25px_rgba(20,184,166,0.8)]
 <p
 
 className="
-mt-5
-text-slate-300
+text-slate-400
+mt-4
 text-lg
 "
 
 >
 
-Start your skating journey with
-Rushikesh Tarde Skates Arena.
+Start your skating journey with Rushikesh Tarde Skates Arena.
 
 </p>
 
 
-
-</motion.div>
-
-
-
-
-
-
-
-
-<div
-
-className="
-mt-14
-grid
-lg:grid-cols-2
-gap-10
-"
-
->
-
-
-
-
-
-
-
-{/* CONTACT DETAILS */}
 
 
 
@@ -177,33 +83,29 @@ gap-10
 
 initial={{
 opacity:0,
-x:-50
+y:30
 }}
 
 whileInView={{
 opacity:1,
-x:0
-}}
-
-viewport={{
-once:true
+y:0
 }}
 
 transition={{
-duration:0.7
+duration:0.5
 }}
 
 className="
+mt-12
 bg-[#102235]
 border
-border-white/10
+border-slate-700
 rounded-3xl
-p-7
+p-8
 sm:p-10
 "
 
 >
-
 
 
 <h3
@@ -211,7 +113,6 @@ sm:p-10
 className="
 text-3xl
 font-black
-text-white
 "
 
 >
@@ -227,65 +128,79 @@ Rushikesh Tarde Skates Arena
 <div
 
 className="
-mt-8
-space-y-6
+grid
+grid-cols-1
+md:grid-cols-3
+gap-8
+mt-10
 "
 
 >
 
 
+{/* PHONE */}
+
+<div>
 
 
 <div
 
 className="
-flex
-gap-4
-items-center
+bg-teal-500/20
+w-fit
+mx-auto
+p-4
+rounded-2xl
 "
 
 >
 
-<div
+<Phone
 
-className="
-w-12
-h-12
-rounded-xl
-bg-teal-400/10
-text-teal-400
-flex
-items-center
-justify-center
-"
+className="text-teal-400"
 
->
-
-<Phone/>
+/>
 
 </div>
 
 
-<div>
 
-<p className="text-slate-400">
+<h4
+
+className="
+mt-4
+text-slate-400
+"
+
+>
+
 Call Us
-</p>
 
-<p className="text-white font-bold">
+</h4>
+
+
+
+<p
+
+className="
+font-bold
+mt-2
+"
+
+>
+
 8830806221
-</p>
 
-<p className="text-white font-bold">
+<br/>
+
 7218158989
-</p>
 
-<p className="text-white font-bold">
+<br/>
+
 7666345539
+
 </p>
 
-</div>
-
 
 </div>
 
@@ -294,54 +209,66 @@ Call Us
 
 
 
-<div
 
-className="
-flex
-gap-4
-items-center
-"
 
->
-
-<div
-
-className="
-w-12
-h-12
-rounded-xl
-bg-teal-400/10
-text-teal-400
-flex
-items-center
-justify-center
-"
-
->
-
-<Mail/>
-
-</div>
+{/* EMAIL */}
 
 
 <div>
 
-<p className="text-slate-400">
-Email
-</p>
 
-<p className="
-text-white
+<div
+
+className="
+bg-teal-500/20
+w-fit
+mx-auto
+p-4
+rounded-2xl
+"
+
+>
+
+<Mail
+
+className="text-teal-400"
+
+/>
+
+</div>
+
+
+
+
+<h4
+
+className="
+mt-4
+text-slate-400
+"
+
+>
+
+Email
+
+</h4>
+
+
+
+<p
+
+className="
 font-bold
+mt-2
 break-all
-">
+"
+
+>
 
 rushikeshtarde95@gmail.com
 
 </p>
 
-</div>
-
 
 </div>
 
@@ -351,47 +278,74 @@ rushikeshtarde95@gmail.com
 
 
 
-<div
 
-className="
-flex
-gap-4
-items-center
-"
-
->
-
-<div
-
-className="
-w-12
-h-12
-rounded-xl
-bg-teal-400/10
-text-teal-400
-flex
-items-center
-justify-center
-"
-
->
-
-<MapPin/>
-
-</div>
+{/* BRANCHES */}
 
 
 <div>
 
-<p className="text-slate-400">
+
+<div
+
+className="
+bg-teal-500/20
+w-fit
+mx-auto
+p-4
+rounded-2xl
+"
+
+>
+
+<MapPin
+
+className="text-teal-400"
+
+/>
+
+</div>
+
+
+
+
+
+<h4
+
+className="
+mt-4
+text-slate-400
+"
+
+>
+
 Branches
-</p>
 
-<p className="text-white font-bold">
+</h4>
 
-Rahuri • Rahata • Shirdi
+
+
+<p
+
+className="
+font-bold
+mt-2
+"
+
+>
+
+Rahuri
+
 <br/>
-Ahmednagar & More
+
+Rahata
+
+<br/>
+
+Shirdi
+
+<br/>
+
+Ahmednagar
 
 </p>
 
@@ -399,261 +353,14 @@ Ahmednagar & More
 </div>
 
 
-</div>
-
-
-
 
 
 </div>
-
-
-
-
-
-
-
-<button
-
-className="
-mt-8
-flex
-items-center
-justify-center
-gap-3
-w-full
-py-4
-rounded-xl
-bg-green-500
-text-white
-font-black
-hover:bg-green-600
-transition
-"
-
->
-
-<MessageCircle/>
-
-Chat On WhatsApp
-
-</button>
-
-
 
 
 
 
 </motion.div>
-
-
-
-
-
-
-
-
-
-{/* CONTACT FORM */}
-
-
-
-
-<motion.div
-
-initial={{
-opacity:0,
-x:50
-}}
-
-whileInView={{
-opacity:1,
-x:0
-}}
-
-viewport={{
-once:true
-}}
-
-transition={{
-duration:0.7
-}}
-
-className="
-bg-[#102235]
-border
-border-white/10
-rounded-3xl
-p-7
-sm:p-10
-"
-
->
-
-
-
-<h3
-
-className="
-text-3xl
-font-black
-text-white
-"
-
->
-
-Send An Enquiry
-
-</h3>
-
-
-
-
-
-<form
-
-className="
-mt-8
-space-y-5
-"
-
->
-
-
-<input
-
-type="text"
-
-placeholder="Your Name"
-
-className="
-w-full
-bg-[#07131f]
-border
-border-white/10
-rounded-xl
-px-5
-py-4
-text-white
-outline-none
-focus:border-teal-400
-"
-
-/>
-
-
-
-<input
-
-type="email"
-
-placeholder="Email Address"
-
-className="
-w-full
-bg-[#07131f]
-border
-border-white/10
-rounded-xl
-px-5
-py-4
-text-white
-outline-none
-focus:border-teal-400
-"
-
-/>
-
-
-
-<input
-
-type="tel"
-
-placeholder="Mobile Number"
-
-className="
-w-full
-bg-[#07131f]
-border
-border-white/10
-rounded-xl
-px-5
-py-4
-text-white
-outline-none
-focus:border-teal-400
-"
-
-/>
-
-
-
-<textarea
-
-rows="4"
-
-placeholder="Message"
-
-className="
-w-full
-bg-[#07131f]
-border
-border-white/10
-rounded-xl
-px-5
-py-4
-text-white
-outline-none
-focus:border-teal-400
-"
-
-/>
-
-
-
-
-<button
-
-type="button"
-
-className="
-w-full
-flex
-items-center
-justify-center
-gap-3
-py-4
-rounded-xl
-bg-teal-500
-text-white
-font-black
-hover:bg-teal-600
-transition
-"
-
->
-
-<Send size={20}/>
-
-Submit Enquiry
-
-</button>
-
-
-
-</form>
-
-
-
-
-</motion.div>
-
-
-
-
-
-</div>
 
 
 
@@ -663,6 +370,7 @@ Submit Enquiry
 </section>
 
 
-)
+);
+
 
 }

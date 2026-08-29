@@ -5,1585 +5,1100 @@ import {
   FileText,
   CheckCircle,
   XCircle,
-  Download,
+  Download
 } from "lucide-react";
 
 import { motion } from "framer-motion";
 
 import {
   useNavigate,
-  useLocation,
+  useLocation
 } from "react-router-dom";
 
-import { useEffect, useState } from "react";
-
-import api from "../../services/api";
+import {
+  useEffect,
+  useState
+} from "react";
 
 import generateReceipt from "../../utils/generateReceipt";
 
 
-export default function AdmissionDetails() {
 
-  const navigate = useNavigate();
-  const location = useLocation();
+export default function AdmissionDetails(){
 
-  const [student, setStudent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
 
+const navigate = useNavigate();
 
-  // =====================================================
-  // GET ADMISSION ID
-  // =====================================================
+const location = useLocation();
 
-  const admissionId =
-    location.state?.student?.id ||
-    location.state?.admissionId;
 
 
-  // =====================================================
-  // GET TOKEN
-  // =====================================================
+const receivedStudent = location.state?.student;
 
-  const getToken = () => {
-    return localStorage.getItem("token");
-  };
 
 
-  // =====================================================
-  // LOAD ADMISSION DETAILS
-  // =====================================================
+const [student,setStudent] = useState(null);
 
-  const fetchAdmission = async () => {
+const [status,setStatus] = useState(
+  receivedStudent?.status || "Pending Approval"
+);
 
-    try {
 
-      if (!admissionId) {
 
-        console.error(
-          "Admission ID not found"
-        );
+useEffect(()=>{
 
-        navigate(
-          "/super-admin/admissions"
-        );
 
-        return;
-      }
+if(!receivedStudent){
 
+navigate("/super-admin/admissions");
 
-      const token = getToken();
+return;
 
+}
 
-      if (!token) {
 
-        alert(
-          "Authentication token not found. Please login again."
-        );
 
-        navigate("/login");
+const formattedStudent = {
 
-        return;
-      }
 
+...receivedStudent,
 
-      const response = await api.get(
-        `/admin/admissions/${admissionId}`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
 
+phone:
+receivedStudent.phone || "N/A",
 
-      console.log(
-        "ADMISSION DETAILS:",
-        response.data
-      );
 
+dob:
+receivedStudent.dob || "N/A",
 
-      if (
-        !response.data ||
-        !response.data.success
-      ) {
 
-        throw new Error(
-          response.data?.message ||
-          "Failed to load admission details"
-        );
+gender:
+receivedStudent.gender || "N/A",
 
-      }
 
+father_name:
+receivedStudent.father_name || "N/A",
 
-      const admission =
-        response.data.data;
 
+branch:
+receivedStudent.branch || "Not Assigned",
 
-      // =================================================
-      // STORE REAL DATABASE DATA
-      // =================================================
 
-      setStudent({
+program:
+receivedStudent.program || "Not Assigned",
 
-        ...admission,
 
-        name:
-          admission.student_name ||
-          "N/A",
+experience:
+receivedStudent.experience || "N/A",
 
-        email:
-          admission.email ||
-          "N/A",
 
-        phone:
-          admission.phone ||
-          "N/A",
+address:
+receivedStudent.address || "Not Available",
 
-        dob:
-          admission.dob ||
-          "N/A",
 
-        gender:
-          admission.gender ||
-          "N/A",
+city:
+receivedStudent.city || "",
 
-        father_name:
-          admission.father_name ||
-          "N/A",
 
-        branch:
-          admission.branch_name ||
-          "Not Assigned",
+state:
+receivedStudent.state || "",
 
-        branch_code:
-          admission.branch_code ||
-          "N/A",
 
-        document:
-          admission.document ||
-          "Not available",
+pincode:
+receivedStudent.pincode || "",
 
-        address:
-          admission.address ||
-          "Not available",
 
-        city:
-          admission.city ||
-          "",
 
-        state:
-          admission.state ||
-          "",
+document:
 
-        pincode:
-          admission.pincode ||
-          "",
+typeof receivedStudent.document === "object"
 
-        program:
-          admission.program ||
-          "Not available",
+?
 
-        experience:
-          admission.experience ||
-          "Not available",
+receivedStudent.document?.name || "Uploaded Document"
 
-      });
+:
 
-    }
+receivedStudent.document || "No Document"
 
-    catch (error) {
 
-      console.error(
-        "ADMISSION DETAILS ERROR:",
-        error
-      );
 
+};
 
-      if (
-        error.response?.status === 401
-      ) {
 
-        alert(
-          "Your session has expired. Please login again."
-        );
 
-        navigate("/login");
+setStudent(formattedStudent);
 
-        return;
-      }
 
+setStatus(
+formattedStudent.status || "Pending Approval"
+);
 
-      if (
-        error.response?.status === 404
-      ) {
 
-        alert(
-          "Admission not found."
-        );
 
-        navigate(
-          "/super-admin/admissions"
-        );
+},[receivedStudent,navigate]);
 
-        return;
-      }
 
 
-      alert(
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to load admission details"
-      );
 
-    }
 
-    finally {
 
-      setLoading(false);
+if(!student){
 
-    }
+return null;
 
-  };
+}
 
 
-  // =====================================================
-  // LOAD DATA
-  // =====================================================
 
-  useEffect(() => {
 
-    fetchAdmission();
+const isPending =
+status==="Pending Approval"
+||
+status==="Pending";
 
-  }, [admissionId]);
 
 
-  // =====================================================
-  // APPROVE ADMISSION
-  // =====================================================
+const isApproved =
+status==="Approved";
 
-  const approveAdmission = async () => {
 
-    try {
 
-      setActionLoading(true);
+const isRejected =
+status==="Rejected";
 
 
-      const token = getToken();
 
 
-      const response = await api.put(
-        `/admin/admissions/${admissionId}/approve`,
-        {},
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
 
 
-      console.log(
-        "APPROVE RESPONSE:",
-        response.data
-      );
 
+const updateAdmissionStatus=(newStatus)=>{
 
-      if (
-        !response.data?.success
-      ) {
 
-        throw new Error(
-          response.data?.message ||
-          "Failed to approve admission"
-        );
+const updatedStudent = {
 
-      }
+...student,
 
+status:newStatus
 
-      alert(
-        "Admission approved successfully"
-      );
+};
 
 
-      // Reload details
-      await fetchAdmission();
 
-    }
+setStudent(updatedStudent);
 
-    catch (error) {
+setStatus(newStatus);
 
-      console.error(
-        "APPROVE ERROR:",
-        error
-      );
 
 
-      alert(
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to approve admission"
-      );
 
-    }
 
-    finally {
+// CURRENT STUDENT DATA
 
-      setActionLoading(false);
+localStorage.setItem(
 
-    }
+"admissionStatus",
 
-  };
+newStatus
 
+);
 
-  // =====================================================
-  // REJECT ADMISSION
-  // =====================================================
 
-  const rejectAdmission = async () => {
 
-    try {
+localStorage.setItem(
 
-      const remarks =
-        window.prompt(
-          "Enter rejection remarks:",
-          "Rejected by Super Admin"
-        );
+"admissionStudent",
 
+JSON.stringify(updatedStudent)
 
-      if (remarks === null) {
-        return;
-      }
+);
 
 
-      setActionLoading(true);
 
+localStorage.setItem(
 
-      const token = getToken();
+"admissionApplication",
 
+JSON.stringify(updatedStudent)
 
-      const response = await api.put(
-        `/admin/admissions/${admissionId}/reject`,
-        {
-          remarks:
-            remarks ||
-            "Rejected by Super Admin",
-        },
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+);
 
 
-      console.log(
-        "REJECT RESPONSE:",
-        response.data
-      );
 
 
-      if (
-        !response.data?.success
-      ) {
 
-        throw new Error(
-          response.data?.message ||
-          "Failed to reject admission"
-        );
 
-      }
+// UPDATE APPLICATION LIST
 
+const applications = JSON.parse(
 
-      alert(
-        "Admission rejected successfully"
-      );
+localStorage.getItem("admissionApplications")
 
+||
 
-      // Reload details
-      await fetchAdmission();
+"[]"
 
-    }
+);
 
-    catch (error) {
 
-      console.error(
-        "REJECT ERROR:",
-        error
-      );
 
 
-      alert(
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to reject admission"
-      );
+const updatedApplications = applications.map(item=>{
 
-    }
 
-    finally {
+if(item.id===student.id){
 
-      setActionLoading(false);
+return updatedStudent;
 
-    }
+}
 
-  };
 
+return item;
 
-  // =====================================================
-  // LOADING SCREEN
-  // =====================================================
 
-  if (loading) {
+});
 
-    return (
 
-      <div
-        className="
-          min-h-screen
-          bg-[#07131f]
-          flex
-          items-center
-          justify-center
-          text-white
-        "
-      >
 
-        <div className="text-center">
 
-          <div
-            className="
-              w-12
-              h-12
-              border-4
-              border-teal-500
-              border-t-transparent
-              rounded-full
-              animate-spin
-              mx-auto
-              mb-5
-            "
-          />
 
-          <p className="text-xl">
-            Loading admission details...
-          </p>
+localStorage.setItem(
 
-        </div>
+"admissionApplications",
 
-      </div>
+JSON.stringify(updatedApplications)
 
-    );
+);
 
-  }
 
 
-  // =====================================================
-  // NO DATA
-  // =====================================================
 
-  if (!student) {
 
-    return (
 
-      <div
-        className="
-          min-h-screen
-          bg-[#07131f]
-          text-white
-          flex
-          items-center
-          justify-center
-        "
-      >
 
-        <div className="text-center">
+// ADD STUDENT AFTER APPROVAL
 
-          <p className="text-xl mb-5">
-            Admission details not found.
-          </p>
+if(newStatus==="Approved"){
 
-          <button
-            onClick={() =>
-              navigate(
-                "/super-admin/admissions"
-              )
-            }
-            className="
-              bg-teal-500
-              hover:bg-teal-600
-              px-6
-              py-3
-              rounded-xl
-              font-bold
-            "
-          >
-            Back to Admissions
-          </button>
 
-        </div>
 
-      </div>
+const existingStudents = JSON.parse(
 
-    );
+localStorage.getItem("academyStudents")
 
-  }
+||
 
+"[]"
 
-  // =====================================================
-  // STATUS
-  // =====================================================
+);
 
-  const status =
-    student.status;
 
 
-  const isPending =
-    status === "PENDING";
 
 
-  const isApproved =
-    status === "APPROVED";
+const exists = existingStudents.some(
 
+item=>item.email===student.email
 
-  const isRejected =
-    status === "REJECTED";
+);
 
 
-  // =====================================================
-  // FORMAT DATE
-  // =====================================================
 
-  const formatDate = (date) => {
 
-    if (!date) {
-      return "N/A";
-    }
 
-    try {
 
-      return new Date(date)
-        .toLocaleDateString(
-          "en-IN",
-          {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-          }
-        );
+if(!exists){
 
-    }
 
-    catch {
+const newStudent={
 
-      return date;
 
-    }
+id:Date.now(),
 
-  };
 
+name:student.name,
 
-  // =====================================================
-  // UI
-  // =====================================================
 
-  return (
+email:student.email,
 
-    <div
-      className="
-        min-h-screen
-        bg-[#07131f]
-        text-white
-        p-4
-        sm:p-6
-        lg:p-10
-      "
-    >
 
-      {/* =================================================
-          HEADER
-      ================================================= */}
+phone:student.phone,
 
-      <div
-        className="
-          flex
-          items-center
-          gap-4
-        "
-      >
 
-        <button
-          onClick={() =>
-            navigate(-1)
-          }
-          className="
-            bg-[#102235]
-            p-3
-            rounded-xl
-            hover:bg-slate-800
-            transition
-          "
-        >
+dob:student.dob,
 
-          <ArrowLeft
-            size={22}
-          />
 
-        </button>
+gender:student.gender,
 
 
-        <div>
+address:student.address,
 
-          <h1
-            className="
-              text-3xl
-              sm:text-4xl
-              font-black
-            "
-          >
-            Admission Details
-          </h1>
 
+city:student.city,
 
-          <p className="text-slate-400">
 
-            Review complete student
-            application.
+state:student.state,
 
-          </p>
 
-        </div>
+pincode:student.pincode,
 
-      </div>
 
+program:student.program,
 
-      {/* =================================================
-          PROFILE CARD
-      ================================================= */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        className="
-          mt-8
-          bg-[#102235]
-          border
-          border-slate-700
-          rounded-3xl
-          p-5
-          sm:p-7
-        "
-      >
+branch:student.branch,
 
-        <div
-          className="
-            flex
-            flex-col
-            sm:flex-row
-            justify-between
-            gap-5
-          "
-        >
 
-          <div
-            className="
-              flex
-              items-center
-              gap-4
-            "
-          >
+experience:student.experience,
 
-            <div
-              className="
-                bg-teal-500/20
-                p-4
-                rounded-2xl
-              "
-            >
 
-              <User
-                className="text-teal-400"
-                size={28}
-              />
+joinedDate:
 
-            </div>
+new Date().toLocaleDateString(),
 
 
-            <div>
+status:"Active"
 
-              <h2
-                className="
-                  text-2xl
-                  font-bold
-                "
-              >
-                {student.name}
-              </h2>
 
+};
 
-              <p
-                className="
-                  text-slate-400
-                  break-all
-                "
-              >
-                {student.email}
-              </p>
 
 
-              <p
-                className="
-                  text-sm
-                  text-slate-500
-                  mt-1
-                "
-              >
-                Student Code:{" "}
-                {student.student_code ||
-                  "N/A"}
-              </p>
 
-            </div>
 
-          </div>
+localStorage.setItem(
 
+"academyStudents",
 
-          <span
-            className={`
-              px-5
-              py-2
-              rounded-full
-              font-bold
-              w-fit
-              h-fit
+JSON.stringify(
 
-              ${
-                isApproved
-                  ? "bg-green-500/20 text-green-400"
-                  : isRejected
-                  ? "bg-red-500/20 text-red-400"
-                  : "bg-yellow-500/20 text-yellow-400"
-              }
-            `}
-          >
+[
 
-            {status}
+...existingStudents,
 
-          </span>
+newStudent
 
-        </div>
+]
 
-      </motion.div>
+)
 
+);
 
-      {/* =================================================
-          DETAILS GRID
-      ================================================= */}
 
-      <div
-        className="
-          grid
-          grid-cols-1
-          lg:grid-cols-2
-          gap-6
-          mt-6
-        "
-      >
 
+}
 
-        {/* =================================================
-            PERSONAL INFORMATION
-        ================================================= */}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-          "
-        >
 
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Personal Information
-          </h2>
+}
 
 
-          <div className="space-y-4">
 
-            <div>
+};
+return(
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Phone
-              </p>
+<div
 
-              <p className="mt-1">
-                {student.phone}
-              </p>
+className="
+min-h-screen
+bg-[#07131f]
+text-white
+p-4
+sm:p-6
+lg:p-10
+"
 
-            </div>
+>
 
 
-            <div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Date of Birth
-              </p>
+{/* BACK BUTTON */}
 
-              <p className="mt-1">
-                {formatDate(student.dob)}
-              </p>
+<button
 
-            </div>
+onClick={()=>navigate("/super-admin/admissions")}
 
+className="
+flex
+items-center
+gap-2
+text-teal-400
+mb-6
+hover:text-teal-300
+"
 
-            <div>
+>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Gender
-              </p>
+<ArrowLeft size={20}/>
 
-              <p className="mt-1">
-                {student.gender}
-              </p>
+Back To Admissions
 
-            </div>
+</button>
 
 
-            <div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Father's Name
-              </p>
 
-              <p className="mt-1">
-                {student.father_name}
-              </p>
 
-            </div>
 
-          </div>
+<motion.div
 
-        </motion.div>
+initial={{
+opacity:0,
+y:20
+}}
 
+animate={{
+opacity:1,
+y:0
+}}
 
-        {/* =================================================
-            BRANCH INFORMATION
-        ================================================= */}
+className="
+max-w-5xl
+mx-auto
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-6
+sm:p-10
+"
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.05,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-          "
-        >
+>
 
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Branch Information
-          </h2>
 
 
-          <div
-            className="
-              flex
-              gap-4
-              items-start
-            "
-          >
+{/* HEADER */}
 
-            <div
-              className="
-                bg-teal-500/20
-                p-3
-                rounded-xl
-              "
-            >
+<div
 
-              <MapPin
-                className="text-teal-400"
-              />
+className="
+flex
+flex-col
+sm:flex-row
+justify-between
+gap-5
+"
 
-            </div>
+>
 
 
-            <div>
+<div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Branch
-              </p>
+<h1
 
-              <p
-                className="
-                  text-lg
-                  font-bold
-                  mt-1
-                "
-              >
-                {student.branch}
-              </p>
+className="
+text-3xl
+sm:text-5xl
+font-black
+"
 
+>
 
-              <p
-                className="
-                  text-slate-400
-                  mt-1
-                "
-              >
-                Code:{" "}
-                {student.branch_code}
-              </p>
+Admission Details
 
-            </div>
+</h1>
 
-          </div>
 
-        </motion.div>
 
+<p
 
-        {/* =================================================
-            ADDRESS
-        ================================================= */}
+className="
+text-slate-400
+mt-3
+"
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.1,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-          "
-        >
+>
 
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Address
-          </h2>
+Review student application details
 
+</p>
 
-          <div
-            className="
-              flex
-              gap-3
-            "
-          >
 
-            <MapPin
-              className="text-teal-400 shrink-0"
-            />
+</div>
 
 
-            <div>
 
-              <p>
-                {student.address}
-              </p>
 
 
-              {(student.city ||
-                student.state) && (
 
-                <p className="mt-1">
+<div
 
-                  {student.city}
+className={`
 
-                  {student.city &&
-                    student.state
-                    ? ", "
-                    : ""}
+px-5
+py-3
+rounded-full
+font-bold
 
-                  {student.state}
 
-                </p>
+${
+isApproved
 
-              )}
+?
 
+"bg-green-500/20 text-green-400"
 
-              {student.pincode && (
+:
 
-                <p className="mt-1">
+isRejected
 
-                  PIN:{" "}
-                  {student.pincode}
+?
 
-                </p>
+"bg-red-500/20 text-red-400"
 
-              )}
+:
 
-            </div>
+"bg-yellow-500/20 text-yellow-400"
 
-          </div>
+}
 
-        </motion.div>
+`}
 
+>
 
-        {/* =================================================
-            SKATING DETAILS
-        ================================================= */}
+{status}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.15,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-          "
-        >
+</div>
 
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Skating Details
-          </h2>
 
 
-          <div className="space-y-4">
+</div>
 
-            <div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Program
-              </p>
 
-              <p className="mt-1">
-                {student.program}
-              </p>
 
-            </div>
 
 
-            <div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Experience
-              </p>
 
-              <p className="mt-1">
-                {student.experience}
-              </p>
 
-            </div>
+{/* STUDENT PROFILE */}
 
+<div
 
-            <div>
+className="
+mt-10
+grid
+grid-cols-1
+md:grid-cols-2
+gap-6
+"
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Branch
-              </p>
+>
 
-              <p className="mt-1">
-                {student.branch}
-              </p>
 
-            </div>
 
-          </div>
+<InfoCard
 
-        </motion.div>
+icon={<User/>}
 
+title="Student Name"
 
-        {/* =================================================
-            DOCUMENT
-        ================================================= */}
+value={student.name}
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.2,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-            lg:col-span-2
-          "
-        >
+/>
 
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Documents
-          </h2>
 
 
-          <div
-            className="
-              bg-[#07131f]
-              rounded-xl
-              p-4
-              flex
-              items-center
-              gap-3
-            "
-          >
+<InfoCard
 
-            <FileText
-              className="text-teal-400"
-            />
+icon={<FileText/>}
 
+title="Email"
 
-            <span>
-              {student.document}
-            </span>
+value={student.email}
 
-          </div>
+/>
 
-        </motion.div>
 
 
-        {/* =================================================
-            ADMISSION INFORMATION
-        ================================================= */}
+<InfoCard
 
-        <motion.div
-          initial={{
-            opacity: 0,
-            y: 20,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
-          transition={{
-            delay: 0.25,
-          }}
-          className="
-            bg-[#102235]
-            border
-            border-slate-700
-            rounded-3xl
-            p-6
-            lg:col-span-2
-          "
-        >
+icon={<FileText/>}
 
-          <h2
-            className="
-              text-xl
-              font-bold
-              text-teal-400
-              mb-5
-            "
-          >
-            Admission Information
-          </h2>
+title="Phone"
 
+value={student.phone}
 
-          <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-2
-              lg:grid-cols-4
-              gap-5
-            "
-          >
+/>
 
-            <div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Admission ID
-              </p>
 
-              <p className="mt-1 font-bold">
-                #{student.id}
-              </p>
+<InfoCard
 
-            </div>
+icon={<MapPin/>}
 
+title="Branch"
 
-            <div>
+value={student.branch}
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Student ID
-              </p>
+/>
 
-              <p className="mt-1 font-bold">
-                {student.student_id}
-              </p>
 
-            </div>
 
+<InfoCard
 
-            <div>
+icon={<FileText/>}
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Status
-              </p>
+title="Program"
 
-              <p className="mt-1 font-bold">
-                {student.status}
-              </p>
+value={student.program}
 
-            </div>
+/>
 
 
-            <div>
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Approved Date
-              </p>
+<InfoCard
 
-              <p className="mt-1 font-bold">
-                {formatDate(
-                  student.approved_date
-                )}
-              </p>
+icon={<FileText/>}
 
-            </div>
+title="Experience"
 
-          </div>
+value={student.experience}
 
+/>
 
-          {student.approved_by_name && (
 
-            <div className="mt-5">
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Approved By
-              </p>
+</div>
 
-              <p className="mt-1 font-bold">
-                {student.approved_by_name}
-              </p>
 
-            </div>
 
-          )}
 
 
-          {student.remarks && (
 
-            <div className="mt-5">
 
-              <p
-                className="
-                  text-slate-400
-                  text-sm
-                "
-              >
-                Remarks
-              </p>
 
-              <p className="mt-1">
-                {student.remarks}
-              </p>
 
-            </div>
+{/* PERSONAL DETAILS */}
 
-          )}
+<div
 
-        </motion.div>
+className="
+mt-8
+bg-[#07131f]
+rounded-3xl
+p-6
+border
+border-slate-700
+"
 
-      </div>
+>
 
 
-      {/* =================================================
-          ACTION BUTTONS
-      ================================================= */}
+<h2
 
-      <div
-        className="
-          mt-8
-          flex
-          flex-col
-          sm:flex-row
-          gap-4
-        "
-      >
+className="
+text-2xl
+font-black
+mb-5
+"
 
-        {/* PENDING */}
+>
 
-        {isPending && (
+Personal Information
 
-          <>
+</h2>
 
-            <button
-              onClick={
-                approveAdmission
-              }
-              disabled={
-                actionLoading
-              }
-              className="
-                flex-1
-                bg-green-500
-                hover:bg-green-600
-                disabled:opacity-50
-                py-4
-                rounded-xl
-                font-bold
-                flex
-                justify-center
-                items-center
-                gap-2
-                transition
-              "
-            >
 
-              <CheckCircle />
 
-              {actionLoading
-                ? "Processing..."
-                : "Approve Admission"}
+<div
 
-            </button>
+className="
+space-y-3
+text-slate-300
+"
 
+>
 
-            <button
-              onClick={
-                rejectAdmission
-              }
-              disabled={
-                actionLoading
-              }
-              className="
-                flex-1
-                bg-red-500
-                hover:bg-red-600
-                disabled:opacity-50
-                py-4
-                rounded-xl
-                font-bold
-                flex
-                justify-center
-                items-center
-                gap-2
-                transition
-              "
-            >
 
-              <XCircle />
+<p>
 
-              {actionLoading
-                ? "Processing..."
-                : "Reject Admission"}
+<b className="text-white">
+Date Of Birth:
+</b>
 
-            </button>
+{" "}
 
-          </>
+{student.dob}
 
-        )}
+</p>
 
 
-        {/* APPROVED */}
 
-        {isApproved && (
+<p>
 
-          <button
-            onClick={() =>
-              generateReceipt(student)
-            }
-            className="
-              w-full
-              bg-teal-500
-              hover:bg-teal-600
-              py-4
-              rounded-xl
-              font-bold
-              flex
-              justify-center
-              items-center
-              gap-2
-              transition
-            "
-          >
+<b className="text-white">
+Gender:
+</b>
 
-            <Download />
+{" "}
 
-            Generate Receipt
+{student.gender}
 
-          </button>
+</p>
 
-        )}
 
 
-        {/* REJECTED */}
+<p>
 
-        {isRejected && (
+<b className="text-white">
+Address:
+</b>
 
-          <div
-            className="
-              w-full
-              bg-red-500/20
-              border
-              border-red-500/30
-              text-red-400
-              py-4
-              rounded-xl
-              text-center
-              font-bold
-            "
-          >
+{" "}
 
-            Admission Rejected
+{student.address}
 
-          </div>
+</p>
 
-        )}
 
-      </div>
 
-    </div>
+<p>
 
-  );
+<b className="text-white">
+City:
+</b>
+
+{" "}
+
+{student.city}
+
+</p>
+
+
+
+<p>
+
+<b className="text-white">
+State:
+</b>
+
+{" "}
+
+{student.state}
+
+</p>
+
+
+
+<p>
+
+<b className="text-white">
+Pincode:
+</b>
+
+{" "}
+
+{student.pincode}
+
+</p>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* DOCUMENT */}
+
+<div
+
+className="
+mt-8
+bg-[#07131f]
+rounded-3xl
+p-6
+border
+border-slate-700
+"
+
+>
+
+
+<h2
+
+className="
+text-2xl
+font-black
+mb-4
+"
+
+>
+
+Documents
+
+</h2>
+
+
+
+<p
+
+className="
+text-slate-300
+"
+
+>
+
+{student.document}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* ACTIONS */}
+
+<div
+
+className="
+mt-10
+flex
+flex-wrap
+gap-4
+"
+
+>
+
+
+
+{
+
+isPending &&
+
+<>
+
+
+<button
+
+onClick={()=>updateAdmissionStatus("Approved")}
+
+className="
+flex-1
+min-w-[180px]
+bg-green-500
+hover:bg-green-600
+py-3
+rounded-xl
+font-bold
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<CheckCircle size={20}/>
+
+Approve Admission
+
+</button>
+
+
+
+
+
+
+<button
+
+onClick={()=>updateAdmissionStatus("Rejected")}
+
+className="
+flex-1
+min-w-[180px]
+bg-red-500
+hover:bg-red-600
+py-3
+rounded-xl
+font-bold
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<XCircle size={20}/>
+
+Reject Admission
+
+</button>
+
+
+</>
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+isApproved &&
+
+
+<button
+
+onClick={()=>generateReceipt(student)}
+
+className="
+flex-1
+min-w-[180px]
+bg-teal-500
+hover:bg-teal-600
+py-3
+rounded-xl
+font-bold
+flex
+items-center
+justify-center
+gap-2
+"
+
+>
+
+<Download size={20}/>
+
+Download Receipt
+
+</button>
+
+
+}
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</motion.div>
+
+
+
+
+
+</div>
+
+);
+
+}
+
+
+
+
+
+
+
+
+function InfoCard({
+
+icon,
+
+title,
+
+value
+
+}){
+
+
+return(
+
+<div
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-2xl
+p-5
+"
+
+>
+
+
+<div
+
+className="
+text-teal-400
+mb-3
+"
+
+>
+
+{icon}
+
+</div>
+
+
+<p
+
+className="
+text-slate-400
+"
+
+>
+
+{title}
+
+</p>
+
+
+<h3
+
+className="
+text-lg
+font-bold
+mt-2
+break-all
+"
+
+>
+
+{value || "N/A"}
+
+</h3>
+
+
+
+</div>
+
+
+);
 
 }

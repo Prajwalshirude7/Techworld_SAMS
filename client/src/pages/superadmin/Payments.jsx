@@ -1,93 +1,156 @@
 import {
-IndianRupee,
-CreditCard,
-Clock,
-CheckCircle,
-XCircle,
 Search,
-TrendingUp
+CreditCard,
+CheckCircle,
+Clock,
+IndianRupee
 } from "lucide-react";
 
-import {motion} from "framer-motion";
 
-import {useState} from "react";
+import {
+motion
+} from "framer-motion";
+
+
+import {
+useEffect,
+useState
+} from "react";
+
+
+
+
+
 
 
 export default function Payments(){
 
 
+
+const [payments,setPayments]=useState([]);
+
+
 const [search,setSearch]=useState("");
 
 
-
-const stats=[
-
-{
-title:"Total Revenue",
-value:"₹4,50,000",
-icon:IndianRupee,
-color:"text-teal-400"
-},
-
-{
-title:"Completed Payments",
-value:"320",
-icon:CheckCircle,
-color:"text-green-400"
-},
-
-{
-title:"Pending Payments",
-value:"45",
-icon:Clock,
-color:"text-yellow-400"
-},
-
-{
-title:"Failed Payments",
-value:"12",
-icon:XCircle,
-color:"text-red-400"
-}
-
-];
+const [status,setStatus]=useState("All");
 
 
 
-const payments=[
 
 
-{
-student:"Rahul Sharma",
-email:"rahul@gmail.com",
-plan:"Professional Plan",
-amount:"₹5000",
-date:"24 Aug 2026",
-status:"Paid"
-},
 
 
-{
-student:"Aarav Patil",
-email:"aarav@gmail.com",
-plan:"Beginner Plan",
-amount:"₹3000",
-date:"22 Aug 2026",
-status:"Pending"
-},
+
+// LOAD PAYMENTS
 
 
-{
-student:"Riya Deshmukh",
-email:"riya@gmail.com",
-plan:"Advanced Plan",
-amount:"₹8000",
-date:"20 Aug 2026",
-status:"Failed"
-}
+useEffect(()=>{
 
 
-];
+const data = JSON.parse(
+
+localStorage.getItem("payments")
+
+||
+
+"[]"
+
+);
+
+
+
+setPayments(data);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+const filteredPayments = payments.filter((item)=>{
+
+
+const searchMatch =
+
+item.studentName
+
+?.toLowerCase()
+
+.includes(
+
+search.toLowerCase()
+
+)
+
+||
+
+item.email
+
+?.toLowerCase()
+
+.includes(
+
+search.toLowerCase()
+
+);
+
+
+
+
+
+
+const statusMatch =
+
+status==="All"
+
+||
+
+item.status===status;
+
+
+
+
+
+
+return(
+
+searchMatch && statusMatch
+
+);
+
+
+
+});
+
+
+
+
+
+
+
+
+
+const totalRevenue = payments.reduce(
+
+(total,item)=>
+
+total + Number(item.amount || 0)
+
+,0
+
+);
+
+
+
+
+
 
 
 
@@ -100,32 +163,25 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-5
-sm:p-8
-lg:p-10
 text-white
+p-4
+sm:p-6
+lg:p-10
 "
 
 >
 
 
 
+
+
+
+
 {/* HEADER */}
 
 
-<motion.div
 
-initial={{
-opacity:0,
-y:-20
-}}
-
-animate={{
-opacity:1,
-y:0
-}}
-
->
+<div>
 
 
 <h1
@@ -138,9 +194,10 @@ font-black
 
 >
 
-Payment Management
+Payments Management
 
 </h1>
+
 
 
 <p
@@ -152,12 +209,13 @@ mt-2
 
 >
 
-Monitor revenue and student transactions.
+Manage student payments and transactions.
 
 </p>
 
 
-</motion.div>
+
+</div>
 
 
 
@@ -167,7 +225,7 @@ Monitor revenue and student transactions.
 
 
 
-{/* STAT CARDS */}
+{/* STATS */}
 
 
 
@@ -176,39 +234,643 @@ Monitor revenue and student transactions.
 className="
 grid
 grid-cols-1
-sm:grid-cols-2
-lg:grid-cols-4
-gap-6
+sm:grid-cols-3
+gap-5
 mt-8
 "
 
 >
 
 
+
+<Card
+
+title="Total Payments"
+
+value={payments.length}
+
+icon={<CreditCard/>}
+
+/>
+
+
+
+
+
+
+<Card
+
+title="Paid Amount"
+
+value={`₹${totalRevenue}`}
+
+icon={<IndianRupee/>}
+
+/>
+
+
+
+
+
+
+
+<Card
+
+title="Completed"
+
+value={
+
+payments.filter(
+
+item=>
+
+item.status==="Paid"
+
+).length
+
+}
+
+icon={<CheckCircle/>}
+
+/>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* FILTER */}
+
+
+
+<div
+
+className="
+mt-8
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+flex
+flex-col
+md:flex-row
+gap-4
+"
+
+>
+
+
+
+
+<div
+
+className="
+flex
+items-center
+gap-3
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+flex-1
+"
+
+>
+
+
+<Search
+
+className="
+text-slate-400
+"
+
+/>
+
+
+
+<input
+
+
+placeholder="Search student..."
+
+value={search}
+
+
+onChange={(e)=>setSearch(e.target.value)}
+
+
+className="
+bg-transparent
+outline-none
+w-full
+py-3
+"
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+<select
+
+
+value={status}
+
+
+onChange={(e)=>setStatus(e.target.value)}
+
+
+className="
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+px-4
+py-3
+"
+
+>
+
+
+<option value="All">
+
+All Status
+
+</option>
+
+
+
+<option value="Paid">
+
+Paid
+
+</option>
+
+
+
+
+<option value="Pending">
+
+Pending
+
+</option>
+
+
+
+</select>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* PAYMENT LIST */}
+
+
+
+<div
+
+className="
+mt-8
+space-y-5
+"
+
+>
+
+
+
 {
 
-stats.map((item,index)=>{
+filteredPayments.length===0 &&
 
 
-const Icon=item.icon;
-
-
-return(
-
-<motion.div
-
-key={index}
-
-whileHover={{
-y:-6
-}}
+<div
 
 className="
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-10
+text-center
+text-slate-400
+"
+
+>
+
+
+No payments found.
+
+</div>
+
+
+
+}
+
+
+
+
+
+
+
+
+
+{
+
+filteredPayments.map((payment,index)=>(
+
+
+
+<motion.div
+
+
+key={payment.id}
+
+
+initial={{
+
+opacity:0,
+
+y:20
+
+}}
+
+
+
+animate={{
+
+opacity:1,
+
+y:0
+
+}}
+
+
+transition={{
+
+delay:index*0.05
+
+}}
+
+
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
+"
+
+>
+
+
+
+
+<div
+
+className="
+flex
+flex-col
+md:flex-row
+justify-between
+gap-5
+"
+
+>
+
+
+
+
+
+
+
+<div>
+
+
+<h2
+
+className="
+text-xl
+font-bold
+"
+
+>
+
+{payment.studentName}
+
+</h2>
+
+
+
+<p
+
+className="
+text-slate-400
+"
+
+>
+
+{payment.email}
+
+</p>
+
+
+
+
+<p
+
+className="
+mt-3
+text-slate-300
+"
+
+>
+
+Branch:
+
+<span className="text-white ml-2">
+
+{payment.branch || "N/A"}
+
+</span>
+
+
+</p>
+
+
+
+<p
+
+className="
+text-slate-300
+"
+
+>
+
+Program:
+
+<span className="text-white ml-2">
+
+{payment.program || "N/A"}
+
+</span>
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+md:text-right
+"
+
+>
+
+
+<h3
+
+className="
+text-2xl
+font-black
+text-teal-400
+"
+
+>
+
+₹{payment.amount}
+
+</h3>
+
+
+
+
+
+<span
+
+className={`
+
+inline-flex
+
+items-center
+
+gap-2
+
+mt-3
+
+px-4
+
+py-2
+
+rounded-full
+
+text-sm
+
+
+${
+payment.status==="Paid"
+
+?
+
+"bg-green-500/20 text-green-400"
+
+:
+
+"bg-yellow-500/20 text-yellow-400"
+
+}
+
+`}
+
+>
+
+
+{
+
+payment.status==="Paid"
+
+?
+
+<CheckCircle size={16}/>
+
+:
+
+<Clock size={16}/>
+
+}
+
+
+{payment.status}
+
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+mt-5
+border-t
+border-slate-700
+pt-4
+text-sm
+text-slate-400
+flex
+justify-between
+"
+
+>
+
+
+<span>
+
+Method:
+{payment.paymentMethod}
+
+</span>
+
+
+
+<span>
+
+{payment.date}
+
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
+</motion.div>
+
+
+
+))
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+</div>
+
+
+);
+
+
+}
+
+
+
+
+
+
+
+
+
+function Card({
+
+title,
+
+value,
+
+icon
+
+}){
+
+
+return(
+
+
+<motion.div
+
+
+whileHover={{
+
+y:-5
+
+}}
+
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-5
 "
 
 >
@@ -227,11 +889,16 @@ items-center
 
 <div>
 
-<p className="
-text-slate-400
-">
 
-{item.title}
+<p
+
+className="
+text-slate-400
+"
+
+>
+
+{title}
 
 </p>
 
@@ -239,14 +906,14 @@ text-slate-400
 <h2
 
 className="
-text-2xl
+text-3xl
 font-black
 mt-2
 "
 
 >
 
-{item.value}
+{value}
 
 </h2>
 
@@ -255,479 +922,36 @@ mt-2
 
 
 
-<Icon
-
-size={35}
-
-className={item.color}
-
-/>
-
-
-</div>
-
-
-</motion.div>
-
-)
-
-
-})
-
-}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* REVENUE CARD */}
-
-
-
-<motion.div
-
-whileHover={{
-scale:1.01
-}}
-
-className="
-mt-8
-bg-gradient-to-r
-from-[#102235]
-to-[#163b57]
-border
-border-teal-500/30
-rounded-3xl
-p-6
-"
-
->
-
-
-<div
-
-className="
-flex
-items-center
-gap-4
-"
-
->
 
 
 <div
 
 className="
 bg-teal-500/20
-p-4
-rounded-2xl
-"
-
->
-
-<TrendingUp
-
-className="
+p-3
+rounded-xl
 text-teal-400
 "
 
-/>
-
-</div>
-
-
-<div>
-
-
-<h2
-
-className="
-text-2xl
-font-bold
-"
-
 >
 
-Monthly Revenue Growth
 
-</h2>
-
-
-<p
-
-className="
-text-slate-300
-mt-2
-"
-
->
-
-Revenue increased by 18% compared to last month.
-
-</p>
+{icon}
 
 
 </div>
 
 
+
+
 </div>
+
 
 
 </motion.div>
 
 
+);
 
-
-
-
-
-
-
-{/* SEARCH */}
-
-
-
-<div
-
-className="
-mt-8
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-p-5
-"
-
->
-
-
-<div
-
-className="
-flex
-items-center
-gap-3
-bg-[#07131f]
-rounded-xl
-px-4
-border
-border-slate-700
-"
-
->
-
-
-<Search
-
-className="
-text-slate-400
-"
-
-/>
-
-
-<input
-
-placeholder="Search payment..."
-
-value={search}
-
-onChange={(e)=>setSearch(e.target.value)}
-
-className="
-bg-transparent
-outline-none
-py-3
-w-full
-"
-
-/>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* PAYMENT TABLE */}
-
-
-
-<div
-
-className="
-mt-8
-bg-[#102235]
-border
-border-slate-700
-rounded-3xl
-overflow-hidden
-"
-
->
-
-
-<div
-
-className="
-p-6
-border-b
-border-slate-700
-"
-
->
-
-<h2
-
-className="
-text-xl
-font-bold
-"
-
->
-
-Transaction History
-
-</h2>
-
-</div>
-
-
-
-
-
-
-<div
-
-className="
-overflow-x-auto
-"
-
->
-
-
-<table
-
-className="
-w-full
-"
-
->
-
-
-<thead
-
-className="
-bg-[#07131f]
-text-slate-400
-"
-
->
-
-
-<tr>
-
-<th className="p-4 text-left">
-Student
-</th>
-
-
-<th className="p-4 text-left">
-Plan
-</th>
-
-
-<th className="p-4 text-left">
-Amount
-</th>
-
-
-<th className="p-4 text-left">
-Date
-</th>
-
-
-<th className="p-4 text-left">
-Status
-</th>
-
-
-</tr>
-
-
-</thead>
-
-
-
-
-
-<tbody>
-
-
-{
-
-payments
-
-.filter((item)=>
-
-item.student
-.toLowerCase()
-.includes(search.toLowerCase())
-
-)
-
-.map((payment,index)=>(
-
-
-<tr
-
-key={index}
-
-className="
-border-t
-border-slate-700
-"
-
->
-
-
-<td className="p-4">
-
-
-<p className="
-font-bold
-">
-
-{payment.student}
-
-</p>
-
-
-<p className="
-text-slate-400
-text-sm
-">
-
-{payment.email}
-
-</p>
-
-
-</td>
-
-
-
-<td className="p-4">
-
-{payment.plan}
-
-</td>
-
-
-<td className="p-4 font-bold">
-
-{payment.amount}
-
-</td>
-
-
-
-<td className="p-4">
-
-{payment.date}
-
-</td>
-
-
-
-<td className="p-4">
-
-
-<span
-
-className={`
-px-3
-py-1
-rounded-full
-text-sm
-
-${
-payment.status==="Paid"
-
-?
-
-"bg-green-500/20 text-green-400"
-
-:
-
-payment.status==="Pending"
-
-?
-
-"bg-yellow-500/20 text-yellow-400"
-
-:
-
-"bg-red-500/20 text-red-400"
-
-}
-
-`}
-
->
-
-{payment.status}
-
-</span>
-
-
-</td>
-
-
-</tr>
-
-
-))
-
-
-}
-
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-)
 
 }
