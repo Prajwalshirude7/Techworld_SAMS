@@ -9,108 +9,259 @@ Cell,
 XAxis,
 YAxis,
 Tooltip,
-ResponsiveContainer
+ResponsiveContainer,
+Legend
 } from "recharts";
 
+
 import {
-TrendingUp,
 Users,
 IndianRupee,
-Building2
+Building2,
+Award,
+FileText
 } from "lucide-react";
 
-import {motion} from "framer-motion";
+
+import {
+motion
+} from "framer-motion";
+
+
+import {
+useEffect,
+useState
+} from "react";
+
+
+
 
 
 export default function Reports(){
 
 
 
+const [students,setStudents]=useState([]);
+
+const [payments,setPayments]=useState([]);
+
+const [branches,setBranches]=useState([]);
+
+const [achievements,setAchievements]=useState([]);
+
+const [admissions,setAdmissions]=useState([]);
+
+
+
+
+
+
+
+
+useEffect(()=>{
+
+
+setStudents(
+
+JSON.parse(
+
+localStorage.getItem("academyStudents")
+
+||
+
+"[]"
+
+)
+
+);
+
+
+
+setPayments(
+
+JSON.parse(
+
+localStorage.getItem("payments")
+
+||
+
+"[]"
+
+)
+
+);
+
+
+
+setBranches(
+
+JSON.parse(
+
+localStorage.getItem("academyBranches")
+
+||
+
+"[]"
+
+)
+
+);
+
+
+
+setAchievements(
+
+JSON.parse(
+
+localStorage.getItem("academyAchievements")
+
+||
+
+"[]"
+
+)
+
+);
+
+
+
+setAdmissions(
+
+JSON.parse(
+
+localStorage.getItem("admissionApplications")
+
+||
+
+"[]"
+
+)
+
+);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+// TOTAL REVENUE
+
+
+const totalRevenue = payments.reduce(
+
+(sum,item)=>
+
+sum + Number(item.amount || item.price || 0),
+
+0
+
+);
+
+
+
+
+
+
+
+// MONTHLY REVENUE
+
+
+const revenueData = payments.reduce(
+
+(acc,item)=>{
+
+
+const date = new Date(
+
+item.date || item.createdAt || Date.now()
+
+);
+
+
+
+const month = date.toLocaleString(
+
+"default",
+
+{
+month:"short"
+}
+
+);
+
+
+
+const existing = acc.find(
+
+x=>x.month===month
+
+);
+
+
+
+if(existing){
+
+existing.revenue += Number(
+
+item.amount || item.price || 0
+
+);
+
+}
+
+else{
+
+
+acc.push({
+
+month,
+
+revenue:Number(
+
+item.amount || item.price || 0
+
+)
+
+});
+
+
+}
+
+
+
+return acc;
+
+
+},
+
+[]
+
+
+);
+
+
+
+
+
+
+
+
+
+// STUDENT GROWTH
+
+
 const studentGrowth=[
 
 {
-month:"Jan",
-students:120
-},
-
-{
-month:"Feb",
-students:220
-},
-
-{
-month:"Mar",
-students:350
-},
-
-{
-month:"Apr",
-students:520
-},
-
-{
-month:"May",
-students:700
-},
-
-{
-month:"Jun",
-students:900
-}
-
-];
-
-
-
-
-const revenueData=[
-
-{
-month:"Jan",
-revenue:30000
-},
-
-{
-month:"Feb",
-revenue:45000
-},
-
-{
-month:"Mar",
-revenue:65000
-},
-
-{
-month:"Apr",
-revenue:90000
-},
-
-{
-month:"May",
-revenue:120000
-}
-
-];
-
-
-
-
-
-const branchData=[
-
-{
-name:"Pune",
-students:350
-},
-
-{
-name:"Mumbai",
-students:250
-},
-
-{
-name:"Nashik",
-students:180
+month:"Total",
+students:students.length
 }
 
 ];
@@ -120,24 +271,107 @@ students:180
 
 
 
-const programData=[
+
+
+
+
+
+// BRANCH PERFORMANCE
+
+
+const branchData = branches.map(branch=>{
+
+
+const count = students.filter(
+
+student=>
+
+student.branch===branch.branchName
+
+).length;
+
+
+
+return{
+
+name:branch.branchName,
+
+students:count
+
+};
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+// PROGRAM DISTRIBUTION
+
+
+const programMap={};
+
+
+
+students.forEach(student=>{
+
+
+const program=
+
+student.program || "Other";
+
+
+programMap[program]=
+
+(programMap[program] || 0)+1;
+
+
+});
+
+
+
+
+
+const programData = Object.keys(programMap).map(item=>(
 
 {
-name:"Beginner",
-value:40
-},
 
-{
-name:"Professional",
-value:35
-},
+name:item,
 
-{
-name:"Advanced",
-value:25
+value:programMap[item]
+
 }
 
+));
+
+
+
+
+
+
+
+const COLORS=[
+
+"#14b8a6",
+
+"#22c55e",
+
+"#38bdf8",
+
+"#f59e0b"
+
 ];
+
+
+
+
 
 
 
@@ -145,31 +379,59 @@ value:25
 
 const cards=[
 
+
 {
+
 title:"Total Students",
-value:"900",
+
+value:students.length,
+
 icon:Users
+
 },
 
+
 {
-title:"Monthly Revenue",
-value:"₹1,20,000",
+
+title:"Total Revenue",
+
+value:`₹${totalRevenue.toLocaleString("en-IN")}`,
+
 icon:IndianRupee
+
 },
 
+
 {
+
 title:"Active Branches",
-value:"8",
+
+value:branches.filter(
+
+b=>b.status==="Active"
+
+).length,
+
 icon:Building2
+
 },
 
+
 {
-title:"Growth",
-value:"+18%",
-icon:TrendingUp
+
+title:"Achievements",
+
+value:achievements.length,
+
+icon:Award
+
 }
 
+
 ];
+
+
+
 
 
 
@@ -182,10 +444,10 @@ return(
 className="
 min-h-screen
 bg-[#07131f]
-p-5
-sm:p-8
-lg:p-10
 text-white
+p-4
+sm:p-6
+lg:p-10
 "
 
 >
@@ -193,7 +455,10 @@ text-white
 
 
 
+
+
 {/* HEADER */}
+
 
 
 <motion.div
@@ -226,6 +491,7 @@ Reports & Analytics
 </h1>
 
 
+
 <p
 
 className="
@@ -235,9 +501,10 @@ mt-2
 
 >
 
-Monitor academy growth and performance.
+Real-time academy performance overview.
 
 </p>
+
 
 
 </motion.div>
@@ -248,7 +515,9 @@ Monitor academy growth and performance.
 
 
 
-{/* SUMMARY CARDS */}
+
+
+{/* CARDS */}
 
 
 
@@ -258,8 +527,8 @@ className="
 grid
 grid-cols-1
 sm:grid-cols-2
-lg:grid-cols-4
-gap-6
+xl:grid-cols-4
+gap-5
 mt-8
 "
 
@@ -276,12 +545,13 @@ const Icon=item.icon;
 
 return(
 
+
 <motion.div
 
 key={index}
 
 whileHover={{
-y:-6
+y:-5
 }}
 
 className="
@@ -305,7 +575,9 @@ items-center
 
 >
 
+
 <div>
+
 
 <p className="
 text-slate-400
@@ -316,22 +588,30 @@ text-slate-400
 </p>
 
 
-<h2
-
-className="
+<h2 className="
 text-3xl
 font-black
 mt-2
-"
-
->
+">
 
 {item.value}
 
 </h2>
 
+
 </div>
 
+
+
+<div
+
+className="
+bg-teal-500/20
+p-4
+rounded-xl
+"
+
+>
 
 
 <Icon
@@ -340,10 +620,10 @@ className="
 text-teal-400
 "
 
-size={35}
-
 />
 
+
+</div>
 
 
 </div>
@@ -391,10 +671,6 @@ mt-10
 
 
 
-{/* STUDENT GROWTH */}
-
-
-
 <div
 
 className="
@@ -402,21 +678,17 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 mb-5
-"
-
->
+">
 
 Student Growth
 
@@ -457,8 +729,8 @@ strokeWidth={3}
 </LineChart>
 
 
-
 </ResponsiveContainer>
+
 
 
 </div>
@@ -470,10 +742,6 @@ strokeWidth={3}
 
 
 
-{/* REVENUE */}
-
-
-
 <div
 
 className="
@@ -481,23 +749,19 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 mb-5
-"
+">
 
->
-
-Revenue Overview
+Revenue
 
 </h2>
 
@@ -537,21 +801,18 @@ fill="#14b8a6"
 </ResponsiveContainer>
 
 
-</div>
-
-
 
 </div>
 
 
 
+</div>
 
 
 
 
 
 
-{/* LOWER ANALYTICS */}
 
 
 
@@ -571,6 +832,7 @@ mt-6
 
 
 
+
 <div
 
 className="
@@ -578,21 +840,17 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 mb-5
-"
-
->
+">
 
 Branch Performance
 
@@ -616,6 +874,7 @@ height={300}
 
 <YAxis/>
 
+
 <Tooltip/>
 
 
@@ -623,7 +882,7 @@ height={300}
 
 dataKey="students"
 
-fill="#14b8a6"
+fill="#22c55e"
 
 />
 
@@ -631,11 +890,13 @@ fill="#14b8a6"
 </BarChart>
 
 
-
 </ResponsiveContainer>
 
 
+
 </div>
+
+
 
 
 
@@ -650,21 +911,17 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
 
 
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
 mb-5
-"
-
->
+">
 
 Program Distribution
 
@@ -699,16 +956,35 @@ label
 
 {
 
-programData.map((entry,index)=>(
+programData.map(
 
-<Cell key={index}/>
+(entry,index)=>(
 
-))
+
+<Cell
+
+key={index}
+
+fill={COLORS[index % COLORS.length]}
+
+/>
+
+
+)
+
+)
+
 
 }
 
 
 </Pie>
+
+
+<Tooltip/>
+
+
+<Legend/>
 
 
 </PieChart>
@@ -718,10 +994,6 @@ programData.map((entry,index)=>(
 </ResponsiveContainer>
 
 
-</div>
-
-
-
 
 </div>
 
@@ -734,6 +1006,16 @@ programData.map((entry,index)=>(
 </div>
 
 
-)
+
+
+
+
+
+
+</div>
+
+
+);
+
 
 }

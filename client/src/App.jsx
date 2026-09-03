@@ -35,30 +35,23 @@ import Admission from "./pages/student/admission/Admission";
 import SuperAdminDashboard 
 from "./pages/superadmin/SuperAdminDashboard";
 
-
 import Admissions 
 from "./pages/superadmin/Admissions";
-
 
 import AdmissionDetails 
 from "./pages/superadmin/AdmissionDetails";
 
-
 import Branches 
 from "./pages/superadmin/Branches";
-
 
 import Students 
 from "./pages/superadmin/Students";
 
-
 import StudentDetails 
 from "./pages/superadmin/StudentDetails";
 
-
 import ProgramsManagement 
 from "./pages/superadmin/Programs";
-
 
 import Gallery 
 from "./pages/superadmin/Gallery";
@@ -67,33 +60,28 @@ from "./pages/superadmin/Gallery";
 import Announcements 
 from "./pages/superadmin/Announcements";
 
-
 import Payments 
 from "./pages/superadmin/Payments";
-
 
 import Reports 
 from "./pages/superadmin/Reports";
 
 
-import Settings 
-from "./pages/superadmin/Settings";
 
 
-
-// NEW CMS MODULES
+// ================= CMS MODULES =================
 
 import Achievements
 from "./pages/superadmin/Achievements";
 
-
 import Accessories
 from "./pages/superadmin/Accessories";
 
+import AccessoryRequests
+from "./pages/superadmin/AccessoryRequests";
 
 import ContactManagement
 from "./pages/superadmin/Contact";
-
 
 
 
@@ -101,8 +89,6 @@ from "./pages/superadmin/Contact";
 
 import ProtectedRoute 
 from "./routes/ProtectedRoute";
-
-
 
 
 
@@ -125,6 +111,7 @@ return(
 {/* ================= PUBLIC ================= */}
 
 
+
 <Route
 
 path="/"
@@ -142,7 +129,6 @@ path="/programs"
 element={<Programs/>}
 
 />
-
 
 
 
@@ -236,7 +222,7 @@ element={
 
 <Route
 
-path="/admission"
+path="/student/admission"
 
 element={
 
@@ -258,7 +244,7 @@ element={
 
 
 
-{/* ================= SUPER ADMIN DASHBOARD ================= */}
+{/* ================= SUPER ADMIN ================= */}
 
 
 
@@ -269,7 +255,6 @@ path="/super-admin/dashboard"
 element={<SuperAdminDashboard/>}
 
 />
-
 
 
 
@@ -298,6 +283,7 @@ path="/super-admin/admission-details"
 element={<AdmissionDetails/>}
 
 />
+
 
 
 
@@ -416,7 +402,7 @@ element={<Achievements/>}
 
 
 
-{/* ACCESSORIES */}
+{/* ACCESSORIES MANAGEMENT */}
 
 
 
@@ -434,9 +420,27 @@ element={<Accessories/>}
 
 
 
+{/* ACCESSORY REQUESTS */}
 
 
-{/* CONTACT MANAGEMENT */}
+
+<Route
+
+path="/super-admin/accessory-requests"
+
+element={<AccessoryRequests/>}
+
+/>
+
+
+
+
+
+
+
+
+
+{/* CONTACT */}
 
 
 
@@ -507,27 +511,6 @@ path="/super-admin/reports"
 element={<Reports/>}
 
 />
-
-
-
-
-
-
-
-
-
-{/* SETTINGS */}
-
-
-
-<Route
-
-path="/super-admin/settings"
-
-element={<Settings/>}
-
-/>
-
 
 
 

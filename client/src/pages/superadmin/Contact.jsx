@@ -1,46 +1,76 @@
 import {
-useEffect,
-useState
+  Phone,
+  Mail,
+  MapPin,
+  Save
+} from "lucide-react";
+
+
+import {
+  useEffect,
+  useState
 } from "react";
+
 
 
 export default function Contact(){
 
 
-const [contact,setContact]=useState({
+const defaultContact={
 
-phone:"",
-email:"",
-address:""
+phone:[
+"8830806221",
+"7218158989",
+"7666345539"
+],
 
-});
+email:
+"rushikeshtarde95@gmail.com",
+
+branches:[
+"Rahuri",
+"Rahata",
+"Shirdi",
+"Ahmednagar"
+],
+
+description:
+"Start your skating journey with Rushikesh Tarde Skates Arena."
+
+};
+
+
+
+
+const [contact,setContact]=useState(
+defaultContact
+);
+
+
 
 
 
 useEffect(()=>{
 
 
-const data=JSON.parse(
+const saved = JSON.parse(
 
 localStorage.getItem("academyContact")
-
-||
-
-"{}"
 
 );
 
 
-setContact({
+if(saved){
 
-phone:data.phone || "",
-email:data.email || "",
-address:data.address || ""
+setContact(saved);
 
-});
+}
 
 
 },[]);
+
+
+
 
 
 
@@ -57,7 +87,10 @@ JSON.stringify(contact)
 );
 
 
-alert("Contact updated");
+alert(
+"Contact details updated successfully"
+);
+
 
 };
 
@@ -65,7 +98,10 @@ alert("Contact updated");
 
 
 
+
+
 return(
+
 
 <div
 
@@ -80,10 +116,15 @@ sm:p-10
 >
 
 
-<h1 className="
-text-4xl
+<h1
+
+className="
+text-3xl
+sm:text-5xl
 font-black
-">
+"
+
+>
 
 Manage Contact
 
@@ -91,118 +132,340 @@ Manage Contact
 
 
 
+<p
 
-<div className="
+className="
+text-slate-400
+mt-2
+"
+
+>
+
+Update academy contact information displayed on website.
+
+</p>
+
+
+
+
+
+
+<div
+
+className="
 mt-8
 bg-[#102235]
+border
+border-slate-700
 rounded-3xl
 p-6
-space-y-4
-">
-
-
-<input
-
-placeholder="Phone"
-
-value={contact.phone}
-
-onChange={(e)=>
-setContact({
-...contact,
-phone:e.target.value
-})
-}
-
-className="
-w-full
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-3
+space-y-6
 "
 
-/>
+>
 
 
 
-<input
 
-placeholder="Email"
+{/* PHONE */}
 
-value={contact.email}
 
-onChange={(e)=>
-setContact({
-...contact,
-email:e.target.value
-})
-}
+<div>
 
-className="
-w-full
-bg-[#07131f]
-border
-border-slate-700
-rounded-xl
-p-3
+
+<label className="
+text-slate-400
 "
 
-/>
+>
 
+Phone Numbers
+
+</label>
 
 
 
 <textarea
 
-placeholder="Address"
-
-value={contact.address}
-
-onChange={(e)=>
-setContact({
-...contact,
-address:e.target.value
-})
+value={
+contact.phone.join("\n")
 }
 
+onChange={(e)=>
+
+setContact({
+
+...contact,
+
+phone:
+e.target.value.split("\n")
+
+})
+
+}
+
+
 className="
+mt-2
 w-full
 bg-[#07131f]
 border
 border-slate-700
 rounded-xl
 p-3
+outline-none
+"
+
+rows="3"
+
+/>
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* EMAIL */}
+
+
+<div>
+
+
+<label className="
+text-slate-400
+"
+
+>
+
+Email
+
+</label>
+
+
+<input
+
+value={contact.email}
+
+
+onChange={(e)=>
+
+setContact({
+
+...contact,
+
+email:e.target.value
+
+})
+
+}
+
+
+className="
+mt-2
+w-full
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+outline-none
 "
 
 />
 
 
 
-<button
+</div>
 
-onClick={saveContact}
+
+
+
+
+
+
+
+
+{/* BRANCHES */}
+
+
+<div>
+
+
+<label
 
 className="
-bg-teal-500
-px-6
-py-3
-rounded-xl
-font-bold
+text-slate-400
 "
 
 >
 
+Branches
+
+</label>
+
+
+
+<textarea
+
+
+value={
+contact.branches.join("\n")
+}
+
+
+
+onChange={(e)=>
+
+setContact({
+
+...contact,
+
+branches:
+e.target.value.split("\n")
+
+})
+
+}
+
+
+
+className="
+mt-2
+w-full
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+outline-none
+"
+
+rows="4"
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* DESCRIPTION */}
+
+
+<div>
+
+
+<label
+
+className="
+text-slate-400
+"
+
+>
+
+Contact Description
+
+</label>
+
+
+
+<textarea
+
+
+value={
+contact.description
+}
+
+
+
+onChange={(e)=>
+
+setContact({
+
+...contact,
+
+description:e.target.value
+
+})
+
+}
+
+
+
+className="
+mt-2
+w-full
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+outline-none
+"
+
+rows="3"
+
+/>
+
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+
+onClick={saveContact}
+
+
+className="
+bg-teal-500
+hover:bg-teal-600
+px-6
+py-3
+rounded-xl
+font-bold
+flex
+items-center
+gap-2
+"
+
+>
+
+
+<Save size={20}/>
+
+
 Save Contact
+
 
 </button>
 
 
-</div>
 
 
 </div>
+
+
+
+</div>
+
 
 );
 

@@ -3,30 +3,123 @@
 @import "tailwindcss";
 
 
+/* GLOBAL RESET */
+
+* {
+  box-sizing: border-box;
+}
+
+
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 
 body {
+
   margin:0;
   padding:0;
+
   background:#020b14;
+
   color:white;
+
   font-family:'Montserrat',sans-serif;
+
+  overflow-x:hidden;
+
 }
 
 
-h1 {
-  font-family:"Montserrat",sans-serif;
+
+/* REMOVE IMAGE OVERFLOW */
+
+img {
+
+  max-width:100%;
+
+  display:block;
+
 }
 
 
+
+
+
+/* TYPOGRAPHY */
+
+
+h1,
 h2,
 h3,
 h4,
+h5,
+h6 {
+
+  font-family:'Montserrat',sans-serif;
+
+  margin:0;
+
+}
+
+
+
 p,
 button,
-a {
+a,
+span {
+
   font-family:'Montserrat',sans-serif;
+
+}
+
+
+
+
+
+/* MOBILE OPTIMIZATION */
+
+
+@media(max-width:640px){
+
+
+  h1 {
+
+    line-height:1.05;
+
+  }
+
+
+  h2 {
+
+    line-height:1.1;
+
+  }
+
+
+  p {
+
+    line-height:1.5;
+
+  }
+
+
+  button {
+
+    font-size:14px;
+
+  }
+
+
+}
+.input-style{
+width:100%;
+margin-top:16px;
+background:#07131f;
+border:1px solid #334155;
+border-radius:12px;
+padding:12px;
+color:white;
+outline:none;
 }

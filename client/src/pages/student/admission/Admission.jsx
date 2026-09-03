@@ -1,11 +1,11 @@
 import {
-useState,
-useEffect
+  useState,
+  useEffect
 } from "react";
 
 
 import {
-motion
+  motion
 } from "framer-motion";
 
 
@@ -13,7 +13,7 @@ import toast from "react-hot-toast";
 
 
 import {
-useNavigate
+  useNavigate
 } from "react-router-dom";
 
 
@@ -63,8 +63,8 @@ const steps=[
 const [currentStep,setCurrentStep]=useState(0);
 
 
-
 const [programs,setPrograms]=useState([]);
+
 
 const [branches,setBranches]=useState([]);
 
@@ -75,11 +75,17 @@ const [branches,setBranches]=useState([]);
 
 
 
-// LOAD SUPER ADMIN DATA
+
+// ================= LOAD SUPER ADMIN DATA =================
 
 
 useEffect(()=>{
 
+
+const loadAcademyData=()=>{
+
+
+// PROGRAMS
 
 const savedPrograms = JSON.parse(
 
@@ -110,6 +116,11 @@ item.status==="Active"
 
 
 
+
+
+
+// BRANCHES
+
 const savedBranches = JSON.parse(
 
 localStorage.getItem("academyBranches")
@@ -136,6 +147,51 @@ item.status==="Active"
 
 
 
+};
+
+
+
+
+
+
+// first load
+
+loadAcademyData();
+
+
+
+
+
+
+// listen for super admin updates
+
+window.addEventListener(
+
+"storage",
+
+loadAcademyData
+
+);
+
+
+
+
+
+return()=>{
+
+
+window.removeEventListener(
+
+"storage",
+
+loadAcademyData
+
+);
+
+
+};
+
+
 
 },[]);
 
@@ -144,6 +200,13 @@ item.status==="Active"
 
 
 
+
+
+
+
+
+
+// ================= FORM DATA =================
 
 
 
@@ -221,15 +284,9 @@ programFees:"",
 
 
 
-// IMPORTANT
+// branch selected during admission
 
-// Branch selected during registration
-
-branch:
-
-localStorage.getItem("studentBranch")
-
-|| "",
+branch:"",
 
 
 
@@ -257,6 +314,12 @@ paymentMethod:"",
 paymentStatus:"",
 
 
+transactionId:"",
+
+
+amount:"",
+
+
 
 
 });
@@ -271,7 +334,8 @@ paymentStatus:"",
 
 
 
-// UPDATE FORM DATA
+
+// UPDATE DATA
 
 
 const updateData=(data)=>{
@@ -288,6 +352,7 @@ setFormData(prev=>({
 
 
 };
+
 
 
 
@@ -351,6 +416,7 @@ break;
 
 
 
+
 case 1:
 
 
@@ -406,7 +472,7 @@ if(
 
 toast.error(
 
-"Please select program and experience"
+"Please select program, branch and experience"
 
 );
 
@@ -418,6 +484,7 @@ return false;
 
 
 break;
+
 
 
 
@@ -454,6 +521,7 @@ break;
 
 
 
+
 case 4:
 
 
@@ -474,9 +542,6 @@ return false;
 
 
 break;
-
-
-
 
 
 
@@ -504,8 +569,8 @@ return true;
 
 
 
+// ================= SUBMIT APPLICATION =================
 
-// SAVE APPLICATION
 
 
 const submitApplication=()=>{
@@ -552,9 +617,6 @@ new Date()
 
 
 
-// SAVE CURRENT APPLICATION
-
-
 localStorage.setItem(
 
 "admissionApplication",
@@ -571,9 +633,6 @@ JSON.stringify(application)
 
 
 
-// SAVE STATUS
-
-
 localStorage.setItem(
 
 "admissionStatus",
@@ -588,9 +647,6 @@ localStorage.setItem(
 
 
 
-
-
-// SAVE FOR SUPER ADMIN
 
 
 const oldApplications = JSON.parse(
@@ -648,6 +704,7 @@ toast.success(
 
 
 
+
 setTimeout(()=>{
 
 
@@ -670,7 +727,6 @@ navigate("/student/dashboard");
 
 
 
-
 // NEXT
 
 
@@ -680,6 +736,7 @@ const nextPage=()=>{
 if(!validateStep())
 
 return;
+
 
 
 
@@ -737,7 +794,9 @@ prev=>prev-1
 
 
 
-// RENDER STEPS
+
+// ================= STEP RENDER =================
+
 
 
 const renderStep=()=>{
@@ -937,17 +996,11 @@ y:0
 
 
 className="
-
 min-h-screen
-
 bg-[#07131f]
-
 px-3
-
 sm:px-6
-
 py-6
-
 "
 
 >
@@ -956,56 +1009,35 @@ py-6
 
 <div
 
-
 className="
-
 max-w-6xl
-
 mx-auto
-
 bg-[#102235]
-
 border
-
 border-slate-700
-
 rounded-3xl
-
 p-5
-
 sm:p-8
-
 lg:p-10
-
 "
 
 >
-
-
 
 
 
 <h1
 
 className="
-
 text-3xl
-
 sm:text-5xl
-
 font-black
-
 text-white
-
 mb-10
-
 "
 
 >
 
-
 Apply For Admission
-
 
 </h1>
 
@@ -1024,11 +1056,8 @@ Apply For Admission
 <div
 
 className="
-
 overflow-x-auto
-
 pb-5
-
 "
 
 >
@@ -1037,13 +1066,9 @@ pb-5
 <div
 
 className="
-
 flex
-
 gap-6
-
 min-w-max
-
 "
 
 >
@@ -1059,15 +1084,10 @@ steps.map((step,index)=>(
 key={step}
 
 className="
-
 w-24
-
 flex
-
 flex-col
-
 items-center
-
 "
 
 >
@@ -1078,19 +1098,12 @@ items-center
 className={`
 
 w-12
-
 h-12
-
 rounded-full
-
 flex
-
 items-center
-
 justify-center
-
 font-bold
-
 
 ${
 index<=currentStep
@@ -1116,32 +1129,25 @@ index<=currentStep
 
 
 
+
 <p
 
 className="
-
 text-xs
-
 text-slate-300
-
 mt-3
-
 text-center
-
 "
 
 >
 
-
 {step}
-
 
 </p>
 
 
 
 </div>
-
 
 
 ))
@@ -1152,7 +1158,6 @@ text-center
 
 
 </div>
-
 
 
 </div>
@@ -1167,9 +1172,7 @@ text-center
 
 <div className="mt-10">
 
-
 {renderStep()}
-
 
 </div>
 
@@ -1184,23 +1187,15 @@ text-center
 <div
 
 className="
-
 flex
-
 flex-col-reverse
-
 sm:flex-row
-
 justify-between
-
 gap-4
-
 mt-10
-
 "
 
 >
-
 
 
 
@@ -1216,28 +1211,18 @@ onClick={previousPage}
 
 
 className="
-
 w-full
-
 sm:w-auto
-
 px-8
-
 py-3
-
 rounded-xl
-
 bg-[#1B2D44]
-
 disabled:opacity-40
-
 "
 
 >
 
-
 Back
-
 
 </button>
 
@@ -1261,30 +1246,19 @@ onClick={nextPage}
 
 
 className="
-
 w-full
-
 sm:w-auto
-
 px-10
-
 py-3
-
 rounded-xl
-
 bg-teal-500
-
 hover:bg-teal-600
-
 font-bold
-
 "
 
 >
 
-
 Next
-
 
 </button>
 

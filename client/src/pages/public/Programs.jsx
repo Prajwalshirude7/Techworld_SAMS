@@ -118,8 +118,9 @@ duration:.6
 }}
 
 className="
-text-5xl
-sm:text-6xl
+text-3xl
+sm:text-5xl
+lg:text-6xl
 font-black
 "
 
@@ -176,8 +177,10 @@ grid
 grid-cols-1
 md:grid-cols-2
 lg:grid-cols-3
-gap-8
-mt-14
+gap-4
+sm:gap-8
+mt-8
+sm:mt-14
 "
 
 >
@@ -275,8 +278,10 @@ from-[#102235]
 to-[#0b1b2c]
 border
 border-slate-700
-rounded-3xl
-p-7
+gap-4
+sm:gap-8
+mt-8
+sm:mt-14
 shadow-xl
 hover:border-teal-400/50
 transition

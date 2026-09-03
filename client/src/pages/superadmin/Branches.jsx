@@ -577,22 +577,41 @@ className="text-teal-400"
 
 
 
-<span
+<div
 
 className="
-bg-green-500/20
-text-green-400
-px-3
-py-1
-rounded-full
+inline-flex
+items-center
+gap-2
+px-4
+py-2
+rounded-lg
+bg-emerald-500/10
+border
+border-emerald-400/30
+text-emerald-400
 text-sm
+font-semibold
 "
 
 >
 
+<span
+
+className="
+w-2
+h-2
+rounded-full
+bg-emerald-400
+"
+
+></span>
+
+
 {branch.status}
 
-</span>
+
+</div>
 
 
 </div>

@@ -1,64 +1,66 @@
 import { motion } from "framer-motion";
+
 import {
-  Baby,
   Trophy,
   Clock,
   IndianRupee
 } from "lucide-react";
 
+import {
+  useEffect,
+  useState
+} from "react";
+
+import {
+  useNavigate
+} from "react-router-dom";
+
+
 
 export default function Programs(){
 
 
-const programs=[
+const navigate = useNavigate();
 
 
-{
-icon:<Baby size={38}/>,
-title:"Beginner Skating Program",
-
-subtitle:"Start Your Skating Journey",
-
-description:
-"Designed for beginners who want to learn basic skating techniques, balance and confidence.",
-
-fees:"₹1500 / Month",
-
-time:"5:00 PM - 8:00 PM",
-
-features:[
-"Basic skating skills",
-"Balance & control training",
-"Beginner friendly coaching"
-]
-
-},
+const [programs,setPrograms]=useState([]);
 
 
 
 
-{
-icon:<Trophy size={38}/>,
-title:"Professional Skating Program",
 
-subtitle:"Train Like A Champion",
+useEffect(()=>{
 
-description:
-"Advanced training for athletes preparing for competitive skating events.",
 
-fees:"₹1200 / Month",
+const data = JSON.parse(
 
-time:"5:00 PM - 8:00 PM",
+localStorage.getItem("academyPrograms")
 
-features:[
-"Competition preparation",
-"Advanced skating techniques",
-"Road & track training"
-]
+||
 
-}
+"[]"
 
-];
+);
+
+
+
+setPrograms(
+
+data.filter(
+
+item=>item.status==="Active"
+
+)
+
+);
+
+
+
+},[]);
+
+
+
+
 
 
 
@@ -70,40 +72,35 @@ return(
 id="programs"
 
 className="
-relative
-py-20
-sm:py-28
 bg-[#07131f]
-overflow-hidden
+text-white
+py-20
+px-5
+sm:px-8
+lg:px-12
 "
 
 >
+
 
 
 <div
 
 className="
-max-w-7xl
+max-w-6xl
 mx-auto
-px-5
-sm:px-8
-lg:px-10
+text-center
 "
 
 >
 
 
 
-
-
-{/* HEADING */}
-
-
-<motion.div
+<motion.h2
 
 initial={{
 opacity:0,
-y:40
+y:30
 }}
 
 whileInView={{
@@ -111,93 +108,101 @@ opacity:1,
 y:0
 }}
 
-viewport={{
-once:true
-}}
-
-transition={{
-duration:0.7
-}}
-
-className="
-text-center
-"
-
->
-
-
-<h2
-
 className="
 text-4xl
-sm:text-5xl
-md:text-6xl
+sm:text-6xl
 font-black
-text-white
 "
 
 >
+
 
 Our
 
-<span
-
-className="
+<span className="
 text-teal-400
-drop-shadow-[0_0_20px_rgba(20,184,166,0.7)]
-"
-
->
+">
 
  Programs
 
 </span>
 
 
-</h2>
+</motion.h2>
+
+
+
 
 
 <p
 
 className="
-mt-5
-text-slate-300
+mt-4
+text-slate-400
 text-lg
-max-w-3xl
-mx-auto
 "
 
 >
 
-Professional skating programs designed for beginners,
-advanced skaters and competitive athletes.
+Professional skating programs designed for every level.
 
 </p>
 
 
-</motion.div>
+
+</div>
 
 
 
 
 
 
-
-
-{/* PROGRAM CARDS */}
 
 
 
 <div
 
 className="
-mt-14
+max-w-7xl
+mx-auto
 grid
+grid-cols-1
 lg:grid-cols-2
 gap-8
+mt-14
 "
 
 >
+
+
+
+{
+
+programs.length===0 &&
+
+
+<div
+
+className="
+col-span-full
+bg-[#102235]
+rounded-3xl
+p-10
+text-center
+text-slate-400
+"
+
+>
+
+No programs available.
+
+</div>
+
+
+}
+
+
+
 
 
 {
@@ -208,76 +213,73 @@ programs.map((program,index)=>(
 <motion.div
 
 
-key={index}
+key={program.id}
 
 
 initial={{
 opacity:0,
-x:index===0?-50:50
+y:30
 }}
 
 
 whileInView={{
 opacity:1,
-x:0
-}}
-
-
-viewport={{
-once:true
+y:0
 }}
 
 
 transition={{
-duration:0.7
+delay:index*0.1
 }}
 
 
 whileHover={{
-y:-10
+y:-8
 }}
 
 
 
 className="
-relative
 bg-[#102235]
 border
-border-white/10
+border-slate-700
 rounded-3xl
-p-7
-sm:p-10
+p-6
+sm:p-8
 hover:border-teal-400
 transition
-shadow-xl
 "
 
 >
 
 
 
-{/* ICON */}
 
 
 <div
 
 className="
-w-16
-h-16
+bg-teal-500/20
+w-fit
+p-4
 rounded-2xl
-bg-teal-400/10
-text-teal-400
-flex
-items-center
-justify-center
-mb-6
 "
 
 >
 
-{program.icon}
+
+<Trophy
+
+className="
+text-teal-400
+"
+
+/>
+
 
 </div>
+
+
 
 
 
@@ -286,17 +288,19 @@ mb-6
 <h3
 
 className="
+mt-6
 text-2xl
 sm:text-3xl
 font-black
-text-white
 "
 
 >
 
-{program.title}
+{program.name}
 
 </h3>
+
+
 
 
 
@@ -304,14 +308,14 @@ text-white
 <p
 
 className="
-mt-2
 text-teal-400
 font-bold
+mt-2
 "
 
 >
 
-{program.subtitle}
+{program.category}
 
 </p>
 
@@ -319,11 +323,14 @@ font-bold
 
 
 
+
+
+
 <p
 
 className="
-mt-5
 text-slate-300
+mt-5
 leading-relaxed
 "
 
@@ -339,154 +346,131 @@ leading-relaxed
 
 
 
-{/* DETAILS */}
-
-
-
 <div
 
 className="
-mt-7
 grid
 sm:grid-cols-2
 gap-4
-"
-
->
-
-
-
-<div
-
-className="
-flex
-items-center
-gap-3
-bg-[#07131f]
-rounded-xl
-p-4
-"
-
->
-
-<IndianRupee className="text-teal-400"/>
-
-<div>
-
-<p className="text-slate-400 text-sm">
-Fees
-</p>
-
-<p className="text-white font-bold">
-{program.fees}
-</p>
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div
-
-className="
-flex
-items-center
-gap-3
-bg-[#07131f]
-rounded-xl
-p-4
-"
-
->
-
-<Clock className="text-teal-400"/>
-
-<div>
-
-<p className="text-slate-400 text-sm">
-Timing
-</p>
-
-<p className="text-white font-bold">
-{program.time}
-</p>
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-{/* FEATURES */}
-
-
-
-<ul
-
-className="
 mt-7
-space-y-3
 "
 
 >
 
 
-{
-
-program.features.map((feature,i)=>(
 
 
-<li
 
-key={i}
+<div
 
 className="
+bg-[#07131f]
+rounded-xl
+p-4
 flex
 items-center
 gap-3
-text-slate-300
 "
 
 >
 
-<span
+
+<IndianRupee
 
 className="
-w-2
-h-2
-rounded-full
-bg-teal-400
+text-teal-400
 "
 
 />
 
-{feature}
+
+<div>
+
+<p className="
+text-slate-400
+text-sm
+">
+
+Fees
+
+</p>
 
 
-</li>
+<p className="
+font-bold
+">
+
+₹{program.fees}
+
+</p>
 
 
-))
+</div>
 
 
-}
+</div>
 
 
 
-</ul>
+
+
+
+
+
+<div
+
+className="
+bg-[#07131f]
+rounded-xl
+p-4
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<Clock
+
+className="
+text-teal-400
+"
+
+/>
+
+
+<div>
+
+<p className="
+text-slate-400
+text-sm
+">
+
+Duration
+
+</p>
+
+
+<p className="
+font-bold
+">
+
+{program.duration}
+
+</p>
+
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
 
 
 
@@ -495,13 +479,32 @@ bg-teal-400
 
 <button
 
+
+onClick={()=>{
+
+
+localStorage.setItem(
+
+"selectedProgram",
+
+JSON.stringify(program)
+
+);
+
+
+navigate("/register");
+
+
+}}
+
+
+
 className="
 mt-8
 w-full
+bg-teal-500
 py-3
 rounded-xl
-bg-teal-500
-text-white
 font-bold
 hover:bg-teal-600
 transition
@@ -516,6 +519,8 @@ Join This Program
 
 
 
+
+
 </motion.div>
 
 
@@ -525,18 +530,17 @@ Join This Program
 }
 
 
-</div>
-
-
-
-
 
 </div>
+
+
+
 
 
 </section>
 
 
-)
+);
+
 
 }

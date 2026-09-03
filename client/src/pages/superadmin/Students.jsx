@@ -570,17 +570,30 @@ size={30}
 
 
 <span
-
 className="
-bg-green-500/20
-text-green-400
-px-3
-py-1
+px-4
+py-1.5
 rounded-full
+bg-emerald-500/20
+border
+border-emerald-400/30
+text-emerald-400
 text-sm
+font-semibold
+flex
+items-center
+gap-2
 "
-
 >
+
+<span
+className="
+w-5
+h-5
+rounded-full
+bg-emerald-400
+"
+/>
 
 Active
 

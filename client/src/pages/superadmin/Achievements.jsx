@@ -19,12 +19,11 @@ motion
 
 
 
+
 export default function Achievements(){
 
 
-
 const [achievements,setAchievements]=useState([]);
-
 
 const [showModal,setShowModal]=useState(false);
 
@@ -37,6 +36,7 @@ description:"",
 year:""
 
 });
+
 
 
 
@@ -94,7 +94,6 @@ JSON.stringify(data)
 
 
 
-
 const handleChange=(e)=>{
 
 
@@ -116,6 +115,7 @@ setForm({
 
 
 
+
 const addAchievement=()=>{
 
 
@@ -126,11 +126,9 @@ return;
 
 const newAchievement={
 
-
 id:Date.now(),
 
 ...form
-
 
 };
 
@@ -167,6 +165,7 @@ setShowModal(false);
 
 
 
+
 const deleteAchievement=(id)=>{
 
 
@@ -191,8 +190,8 @@ item=>item.id!==id
 
 
 
-
 return(
+
 
 
 <div
@@ -201,8 +200,8 @@ className="
 min-h-screen
 bg-[#07131f]
 text-white
-p-5
-sm:p-8
+p-4
+sm:p-6
 lg:p-10
 "
 
@@ -212,15 +211,23 @@ lg:p-10
 
 
 
+
+{/* HEADER */}
+
+
 <div
 
 className="
 flex
+flex-col
+sm:flex-row
 justify-between
-items-center
+items-start
+gap-5
 "
 
 >
+
 
 
 <div>
@@ -229,8 +236,10 @@ items-center
 <h1
 
 className="
-text-4xl
+text-3xl
+sm:text-4xl
 font-black
+leading-tight
 "
 
 >
@@ -240,11 +249,14 @@ Manage Achievements
 </h1>
 
 
+
 <p
 
 className="
 text-slate-400
 mt-2
+text-sm
+sm:text-base
 "
 
 >
@@ -260,25 +272,35 @@ Achievements displayed on public website.
 
 
 
+
+
+
 <button
 
 onClick={()=>setShowModal(true)}
 
 className="
 bg-teal-500
-px-5
+hover:bg-teal-600
+px-4
 py-3
 rounded-xl
 font-bold
 flex
+items-center
 gap-2
+text-sm
+sm:text-base
 "
 
 >
 
-<Plus/>
+
+<Plus size={18}/>
+
 
 Add Achievement
+
 
 </button>
 
@@ -294,6 +316,10 @@ Add Achievement
 
 
 
+{/* CARDS */}
+
+
+
 <div
 
 className="
@@ -301,35 +327,64 @@ grid
 grid-cols-1
 md:grid-cols-2
 xl:grid-cols-3
-gap-6
-mt-10
+gap-5
+mt-8
 "
 
 >
+
+
+
+
 
 
 {
 
 achievements.length===0 &&
 
+
 <div
 
 className="
 col-span-full
 bg-[#102235]
+border
+border-slate-700
 rounded-3xl
-p-10
+p-8
+sm:p-10
 text-center
 text-slate-400
 "
 
 >
 
+
+<Trophy
+
+size={35}
+
+className="
+mx-auto
+mb-4
+text-teal-400
+"
+
+/>
+
+
+
 No achievements added.
+
 
 </div>
 
+
+
 }
+
+
+
 
 
 
@@ -342,6 +397,7 @@ No achievements added.
 achievements.map(item=>(
 
 
+
 <motion.div
 
 
@@ -349,8 +405,11 @@ key={item.id}
 
 
 whileHover={{
+
 y:-5
+
 }}
+
 
 
 className="
@@ -358,10 +417,11 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 "
 
 >
+
 
 
 <div
@@ -378,12 +438,17 @@ w-fit
 
 <Trophy
 
-className="text-teal-400"
+size={25}
+
+className="
+text-teal-400
+"
 
 />
 
 
 </div>
+
 
 
 
@@ -406,11 +471,14 @@ mt-5
 
 
 
+
+
 <p
 
 className="
 text-slate-400
 mt-3
+text-sm
 "
 
 >
@@ -421,11 +489,15 @@ mt-3
 
 
 
+
+
+
 <p
 
 className="
 text-teal-400
 mt-3
+font-semibold
 "
 
 >
@@ -433,6 +505,7 @@ mt-3
 {item.year}
 
 </p>
+
 
 
 
@@ -453,19 +526,25 @@ rounded-xl
 
 >
 
+
 <Trash2 size={18}/>
 
+
 </button>
+
 
 
 
 </motion.div>
 
 
+
 ))
 
 
 }
+
+
 
 
 </div>
@@ -478,9 +557,14 @@ rounded-xl
 
 
 
+{/* MODAL */}
+
+
+
 {
 
 showModal &&
+
 
 
 <div
@@ -489,14 +573,15 @@ className="
 fixed
 inset-0
 bg-black/60
+z-50
 flex
 items-center
 justify-center
-p-5
-z-50
+p-4
 "
 
 >
+
 
 
 <div
@@ -506,7 +591,7 @@ bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
+p-5
 w-full
 max-w-xl
 "
@@ -514,24 +599,32 @@ max-w-xl
 >
 
 
+
 <div
 
 className="
 flex
 justify-between
+items-center
 "
 
 >
 
 
-<h2 className="
-text-2xl
+<h2
+
+className="
+text-xl
+sm:text-2xl
 font-bold
-">
+"
+
+>
 
 Add Achievement
 
 </h2>
+
 
 
 <button
@@ -540,12 +633,19 @@ onClick={()=>setShowModal(false)}
 
 >
 
+
 <X/>
+
 
 </button>
 
 
+
 </div>
+
+
+
+
 
 
 
@@ -582,9 +682,11 @@ border
 border-slate-700
 rounded-xl
 p-3
+outline-none
 "
 
 />
+
 
 
 ))
@@ -596,7 +698,10 @@ p-3
 
 
 
+
+
 <textarea
+
 
 name="description"
 
@@ -614,9 +719,12 @@ border
 border-slate-700
 rounded-xl
 p-3
+outline-none
 "
 
 />
+
+
 
 
 
@@ -632,6 +740,7 @@ className="
 mt-5
 w-full
 bg-teal-500
+hover:bg-teal-600
 py-3
 rounded-xl
 font-bold
@@ -639,16 +748,24 @@ font-bold
 
 >
 
+
 Save Achievement
+
 
 </button>
 
 
 
-</div>
+
+
 
 
 </div>
+
+
+
+</div>
+
 
 
 }
@@ -658,6 +775,7 @@ Save Achievement
 
 
 </div>
+
 
 
 );

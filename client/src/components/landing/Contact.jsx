@@ -1,15 +1,96 @@
 import {
-  Phone,
-  Mail,
-  MapPin
+Phone,
+Mail,
+MapPin
 } from "lucide-react";
 
+
 import {
-  motion
+motion
 } from "framer-motion";
 
 
+import {
+useEffect,
+useState
+} from "react";
+
+
+
+
+
 export default function Contact(){
+
+
+
+const defaultContact={
+
+
+phone:[
+"8830806221",
+"7218158989",
+"7666345539"
+],
+
+
+email:
+"rushikeshtarde95@gmail.com",
+
+
+branches:[
+"Rahuri",
+"Rahata",
+"Shirdi",
+"Ahmednagar"
+],
+
+
+description:
+"Start your skating journey with Rushikesh Tarde Skates Arena."
+
+};
+
+
+
+
+
+const [contact,setContact]=useState(
+defaultContact
+);
+
+
+
+
+
+
+useEffect(()=>{
+
+
+const saved =
+JSON.parse(
+
+localStorage.getItem(
+"academyContact"
+)
+
+);
+
+
+
+if(saved){
+
+setContact(saved);
+
+}
+
+
+
+},[]);
+
+
+
+
+
 
 
 return(
@@ -41,10 +122,11 @@ text-center
 >
 
 
+
 <h2
 
 className="
-text-4xl
+text-3xl
 sm:text-5xl
 font-black
 "
@@ -53,11 +135,18 @@ font-black
 
 Contact
 
-<span className="text-teal-400">
+<span className="
+text-teal-400
+">
+
  RTSA
+
 </span>
 
 </h2>
+
+
+
 
 
 
@@ -66,12 +155,11 @@ Contact
 className="
 text-slate-400
 mt-4
-text-lg
 "
 
 >
 
-Start your skating journey with Rushikesh Tarde Skates Arena.
+{contact.description}
 
 </p>
 
@@ -79,39 +167,50 @@ Start your skating journey with Rushikesh Tarde Skates Arena.
 
 
 
+
+
+
+
 <motion.div
+
 
 initial={{
 opacity:0,
 y:30
 }}
 
+
 whileInView={{
 opacity:1,
 y:0
 }}
 
-transition={{
-duration:0.5
-}}
+
 
 className="
-mt-12
+mt-10
 bg-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-8
+p-6
 sm:p-10
 "
 
+
+
 >
+
+
+
+
 
 
 <h3
 
 className="
-text-3xl
+text-2xl
+sm:text-3xl
 font-black
 "
 
@@ -125,6 +224,10 @@ Rushikesh Tarde Skates Arena
 
 
 
+
+
+
+
 <div
 
 className="
@@ -132,13 +235,19 @@ grid
 grid-cols-1
 md:grid-cols-3
 gap-8
-mt-10
+mt-8
 "
 
 >
 
 
+
+
+
+
+
 {/* PHONE */}
+
 
 <div>
 
@@ -156,23 +265,20 @@ rounded-2xl
 >
 
 <Phone
-
-className="text-teal-400"
-
+className="
+text-teal-400
+"
 />
+
 
 </div>
 
 
 
-<h4
-
-className="
+<h4 className="
 mt-4
 text-slate-400
-"
-
->
+">
 
 Call Us
 
@@ -180,29 +286,34 @@ Call Us
 
 
 
-<p
-
-className="
+<p className="
 font-bold
 mt-2
 "
 
 >
 
-8830806221
+{
 
+contact.phone.map((item,index)=>(
+
+<span key={index}>
+
+{item}
 <br/>
 
-7218158989
+</span>
 
-<br/>
+))
 
-7666345539
+}
 
 </p>
 
 
 </div>
+
+
 
 
 
@@ -230,24 +341,21 @@ rounded-2xl
 >
 
 <Mail
-
-className="text-teal-400"
-
+className="
+text-teal-400
+"
 />
+
 
 </div>
 
 
 
 
-<h4
-
-className="
+<h4 className="
 mt-4
 text-slate-400
-"
-
->
+">
 
 Email
 
@@ -265,9 +373,10 @@ break-all
 
 >
 
-rushikeshtarde95@gmail.com
+{contact.email}
 
 </p>
+
 
 
 </div>
@@ -279,7 +388,10 @@ rushikeshtarde95@gmail.com
 
 
 
+
+
 {/* BRANCHES */}
+
 
 
 <div>
@@ -299,13 +411,13 @@ rounded-2xl
 
 <MapPin
 
-className="text-teal-400"
+className="
+text-teal-400
+"
 
 />
 
 </div>
-
-
 
 
 
@@ -324,43 +436,51 @@ Branches
 
 
 
-<p
-
-className="
+<p className="
 font-bold
 mt-2
 "
 
 >
 
-Rahuri
+{
 
+contact.branches.map((item,index)=>(
+
+<span key={index}>
+
+{item}
 <br/>
 
-Rahata
+</span>
 
-<br/>
+))
 
-Shirdi
-
-<br/>
-
-Ahmednagar
+}
 
 </p>
 
 
+
+</div>
+
+
+
+
+
+
+
+
 </div>
 
 
 
-
-</div>
 
 
 
 
 </motion.div>
+
 
 
 
