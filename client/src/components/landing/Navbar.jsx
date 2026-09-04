@@ -1,9 +1,22 @@
 import logo from "../../assets/images/logosams.png";
 
-import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import {
+  Link
+} from "react-router-dom";
+
+import {
+  Menu,
+  X
+} from "lucide-react";
+
+import {
+  useState
+} from "react";
+
+import {
+  motion
+} from "framer-motion";
+
 
 
 export default function Navbar(){
@@ -56,7 +69,6 @@ id:"contact"
 
 
 
-
 const handleScroll=(id)=>{
 
 
@@ -65,15 +77,13 @@ const section=document.getElementById(id);
 
 if(section){
 
-const navbarHeight = 80;
-
-const position =
-section.offsetTop - navbarHeight;
+const navbarHeight=75;
 
 
 window.scrollTo({
 
-top:position,
+top:
+section.offsetTop-navbarHeight,
 
 behavior:"smooth"
 
@@ -84,8 +94,8 @@ behavior:"smooth"
 
 setOpen(false);
 
-};
 
+};
 
 
 
@@ -113,7 +123,6 @@ border-white/10
 >
 
 
-
 <div
 
 className="
@@ -123,8 +132,8 @@ h-full
 flex
 items-center
 justify-between
-px-4
-sm:px-6
+px-5
+lg:px-8
 "
 
 >
@@ -133,7 +142,8 @@ sm:px-6
 
 
 
-{/* LOGO */}
+{/* LOGO + BRAND */}
+
 
 
 <Link
@@ -143,7 +153,7 @@ to="/"
 className="
 flex
 items-center
-gap-2
+gap-3
 "
 
 >
@@ -152,15 +162,18 @@ gap-2
 <motion.div
 
 whileHover={{
-scale:1.08
+scale:1.05
 }}
 
 className="
-w-11
-h-11
+w-12
+h-12
+sm:w-14
+sm:h-14
 rounded-full
 overflow-hidden
 shadow-[0_0_25px_rgba(20,184,166,.5)]
+shrink-0
 "
 
 >
@@ -193,32 +206,48 @@ object-cover
 
 <motion.h2
 
+
 animate={{
+
 textShadow:[
+
 "0 0 0px rgba(20,184,166,0)",
-"0 0 20px rgba(20,184,166,0.8)",
+
+"0 0 18px rgba(20,184,166,.7)",
+
 "0 0 0px rgba(20,184,166,0)"
+
 ]
+
 }}
 
+
 transition={{
+
 duration:2.5,
+
 repeat:Infinity
+
 }}
+
 
 className="
 text-white
 font-black
-text-base
-sm:text-lg
-leading-tight
+text-lg
+sm:text-xl
+leading-none
+whitespace-nowrap
 "
 
 >
 
 Rushikesh Tarde
 
+
 </motion.h2>
+
+
 
 
 
@@ -227,15 +256,18 @@ Rushikesh Tarde
 className="
 text-teal-400
 font-bold
-tracking-[3px]
+tracking-[4px]
 text-[9px]
+mt-1
 "
 
 >
 
 SKATES ARENA
 
+
 </p>
+
 
 
 </div>
@@ -250,7 +282,8 @@ SKATES ARENA
 
 
 
-{/* DESKTOP MENU */}
+
+{/* DESKTOP NAV */}
 
 
 
@@ -260,10 +293,11 @@ className="
 hidden
 lg:flex
 items-center
-gap-5
+gap-6
 text-slate-300
 font-semibold
 text-sm
+xl:text-base
 "
 
 >
@@ -271,7 +305,7 @@ text-sm
 
 {
 
-menuItems.map(item=>(
+menuItems.map((item)=>(
 
 
 <button
@@ -289,6 +323,7 @@ duration-300
 >
 
 {item.name}
+
 
 </button>
 
@@ -310,7 +345,7 @@ duration-300
 
 
 
-{/* BUTTONS */}
+{/* AUTH BUTTONS */}
 
 
 
@@ -326,13 +361,14 @@ gap-3
 >
 
 
+
 <Link
 
 to="/login"
 
 className="
-px-5
-py-2
+px-6
+py-2.5
 rounded-xl
 bg-teal-500
 text-white
@@ -340,11 +376,14 @@ font-bold
 text-sm
 hover:bg-teal-600
 transition
+shadow-lg
+shadow-teal-500/20
 "
 
 >
 
 Login
+
 
 </Link>
 
@@ -359,8 +398,8 @@ Login
 to="/register"
 
 className="
-px-5
-py-2
+px-6
+py-2.5
 rounded-xl
 bg-teal-500
 text-white
@@ -368,14 +407,16 @@ font-bold
 text-sm
 hover:bg-teal-600
 transition
+shadow-lg
+shadow-teal-500/20
 "
 
 >
 
 Register
 
-</Link>
 
+</Link>
 
 
 </div>
@@ -387,7 +428,7 @@ Register
 
 
 
-{/* MOBILE ICON */}
+{/* MOBILE MENU BUTTON */}
 
 
 
@@ -402,14 +443,13 @@ text-white
 
 >
 
-
 {
 
 open ?
 
-<X size={28}/> :
+<X size={26}/> :
 
-<Menu size={28}/>
+<Menu size={26}/>
 
 }
 
@@ -436,20 +476,30 @@ open ?
 
 {
 
-open &&
+open && (
 
 
 <motion.div
 
+
 initial={{
+
 opacity:0,
-y:-20
+
+y:-15
+
 }}
 
+
 animate={{
+
 opacity:1,
+
 y:0
+
 }}
+
+
 
 className="
 lg:hidden
@@ -467,7 +517,6 @@ py-6
 >
 
 
-
 <div
 
 className="
@@ -479,10 +528,9 @@ gap-5
 >
 
 
-
 {
 
-menuItems.map(item=>(
+menuItems.map((item)=>(
 
 
 <button
@@ -502,6 +550,7 @@ hover:text-teal-400
 
 {item.name}
 
+
 </button>
 
 
@@ -514,22 +563,24 @@ hover:text-teal-400
 
 
 
+
 <Link
 
 to="/login"
 
 className="
 bg-teal-500
+text-white
 text-center
 py-3
 rounded-xl
 font-bold
-text-white
 "
 
 >
 
 Login
+
 
 </Link>
 
@@ -545,16 +596,17 @@ to="/register"
 
 className="
 bg-teal-500
+text-white
 text-center
 py-3
 rounded-xl
 font-bold
-text-white
 "
 
 >
 
 Register
+
 
 </Link>
 
@@ -564,8 +616,10 @@ Register
 </div>
 
 
-
 </motion.div>
+
+
+)
 
 
 }

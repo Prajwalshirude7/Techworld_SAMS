@@ -8,27 +8,18 @@ import {
   CreditCard,
   BarChart3,
   Package,
+  ShoppingBag,
+  Trophy,
   ArrowRight
 } from "lucide-react";
 
 
-import {
-  motion
-} from "framer-motion";
-
-
-import {
-  useNavigate
-} from "react-router-dom";
-
-
-import {
-  useEffect,
-  useState
-} from "react";
-
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import logo from "../../assets/images/logosams.png";
+
 
 
 
@@ -39,28 +30,20 @@ export default function SuperAdminDashboard(){
 const navigate = useNavigate();
 
 
-const [refresh,setRefresh] = useState(0);
-
-
+const [refresh,setRefresh]=useState(0);
 
 
 
 useEffect(()=>{
 
 
-const update=()=>{
-
-setRefresh(prev=>prev+1);
-
-};
-
+const update=()=>setRefresh(prev=>prev+1);
 
 
 window.addEventListener(
 "storage",
 update
 );
-
 
 
 return()=>{
@@ -73,79 +56,44 @@ update
 };
 
 
-
 },[]);
 
 
 
 
 
-
-const students = JSON.parse(
-
-localStorage.getItem("academyStudents")
-
-||
-
-"[]"
-
-);
+const students =
+JSON.parse(localStorage.getItem("academyStudents") || "[]");
 
 
+const branches =
+JSON.parse(localStorage.getItem("academyBranches") || "[]");
 
 
+const admissions =
+JSON.parse(localStorage.getItem("admissionApplications") || "[]");
 
-const branches = JSON.parse(
 
-localStorage.getItem("academyBranches")
+const payments =
+JSON.parse(localStorage.getItem("payments") || "[]");
 
-||
 
-"[]"
-
-);
+const accessoryRequests =
+JSON.parse(localStorage.getItem("accessoryRequests") || "[]");
 
 
 
-
-
-const admissions = JSON.parse(
-
-localStorage.getItem("admissionApplications")
-
-||
-
-"[]"
-
-);
+const pendingAccessoryRequests =
+accessoryRequests.filter(
+item=>item.status==="Pending"
+).length;
 
 
 
-
-
-const payments = JSON.parse(
-
-localStorage.getItem("payments")
-
-||
-
-"[]"
-
-);
-
-
-
-
-
-
-const totalRevenue = payments.reduce(
-
-(total,item)=>
-
-total + Number(item.amount || 0),
-
+const totalRevenue =
+payments.reduce(
+(total,item)=>total + Number(item.amount || 0),
 0
-
 );
 
 
@@ -156,13 +104,11 @@ total + Number(item.amount || 0),
 
 const stats=[
 
-
 {
 title:"Total Students",
 value:students.length,
 icon:Users
 },
-
 
 {
 title:"Total Branches",
@@ -170,41 +116,28 @@ value:branches.length,
 icon:Building2
 },
 
-
 {
 title:"Pending Admissions",
-
 value:
-
 admissions.filter(
-
-item=>
-
+item =>
+item.status==="Pending" ||
 item.status==="Pending Approval"
-
-||
-
-item.status==="Pending"
-
 ).length,
-
 icon:FileText
-
 },
-
-
 
 {
 title:"Total Revenue",
-
-value:
-
-`₹${totalRevenue.toLocaleString("en-IN")}`,
-
+value:`₹${totalRevenue.toLocaleString("en-IN")}`,
 icon:IndianRupee
+},
 
+{
+title:"Accessory Requests",
+value:pendingAccessoryRequests,
+icon:ShoppingBag
 }
-
 
 ];
 
@@ -219,69 +152,27 @@ icon:IndianRupee
 const actions=[
 
 
-{
-title:"Admissions",
-description:"Review and manage student applications",
-icon:FileText,
-path:"/super-admin/admissions"
-},
+["Admissions","Review student applications",FileText,"/super-admin/admissions"],
 
+["Branches","Manage academy branches",Building2,"/super-admin/branches"],
 
-{
-title:"Branches",
-description:"Create branches and manage locations",
-icon:Building2,
-path:"/super-admin/branches"
-},
+["Students","View approved students",Users,"/super-admin/students"],
 
+["Programs","Manage academy programs",Package,"/super-admin/programs"],
 
-{
-title:"Students",
-description:"View approved academy students",
-icon:Users,
-path:"/super-admin/students"
-},
+["Gallery","Manage academy images",Image,"/super-admin/gallery"],
 
+["Achievements","Manage success stories",Trophy,"/super-admin/achievements"],
 
-{
-title:"Programs",
-description:"Manage programs visible to students",
-icon:Package,
-path:"/super-admin/programs"
-},
+["Announcements","Publish academy updates",Megaphone,"/super-admin/announcements"],
 
+["Payments","Track payments",CreditCard,"/super-admin/payments"],
 
-{
-title:"Gallery",
-description:"Manage academy images",
-icon:Image,
-path:"/super-admin/gallery"
-},
+["Accessories","Manage products",Package,"/super-admin/accessories"],
 
+["Accessory Requests","Manage requests",ShoppingBag,"/super-admin/accessory-requests"],
 
-{
-title:"Announcements",
-description:"Publish academy updates",
-icon:Megaphone,
-path:"/super-admin/announcements"
-},
-
-
-{
-title:"Payments",
-description:"Track student payments",
-icon:CreditCard,
-path:"/super-admin/payments"
-},
-
-
-{
-title:"Reports",
-description:"View academy reports",
-icon:BarChart3,
-path:"/super-admin/reports"
-}
-
+["Reports","View analytics",BarChart3,"/super-admin/reports"]
 
 ];
 
@@ -301,10 +192,10 @@ className="
 min-h-screen
 bg-[#07131f]
 text-white
-p-4
+p-3
 sm:p-6
 lg:p-10
-space-y-10
+space-y-5
 "
 
 >
@@ -313,24 +204,24 @@ space-y-10
 
 
 
+{/* HERO CARD */}
 
-{/* HERO */}
 
 <motion.div
 
+
 initial={{
 opacity:0,
-y:-40
+y:-20
 }}
+
 
 animate={{
 opacity:1,
 y:0
 }}
 
-transition={{
-duration:0.8
-}}
+
 
 className="
 relative
@@ -342,30 +233,29 @@ to-[#102235]
 border
 border-slate-700
 rounded-3xl
-p-6
-sm:p-10
+p-4
+sm:p-8
 "
 
 >
 
 
-{/* Glow */}
-
 <div
 
 className="
 absolute
-w-72
-h-72
+w-40
+h-40
+sm:w-64
+sm:h-64
 bg-teal-400/20
 blur-3xl
 rounded-full
-top-0
 right-0
+top-0
 "
 
 />
-
 
 
 
@@ -378,34 +268,18 @@ relative
 z-10
 flex
 flex-col
-lg:flex-row
-items-center
-justify-between
-gap-10
+gap-4
 "
 
 >
 
-
-
-
-
-{/* LEFT CONTENT */}
-
-<div
-
-className="
-flex-1
-"
-
->
 
 
 <h1
 
 className="
-text-3xl
-sm:text-5xl
+text-2xl
+sm:text-4xl
 lg:text-6xl
 font-black
 leading-tight
@@ -413,18 +287,21 @@ leading-tight
 
 >
 
-<span className="text-white">
+<span>
 
 Welcome,
 
 </span>
 
 
+
 <span
 
 className="
 text-teal-400
-ml-2
+block
+sm:inline
+sm:ml-2
 "
 
 >
@@ -434,7 +311,11 @@ Rushikesh Tarde
 </span>
 
 
+<span>
+
 👋
+
+</span>
 
 
 </h1>
@@ -444,21 +325,20 @@ Rushikesh Tarde
 
 
 
+
 <p
 
 className="
-mt-5
-text-slate-300
-text-base
+text-sm
 sm:text-lg
-lg:text-xl
+text-slate-300
 leading-relaxed
-max-w-3xl
+max-w-xl
 "
 
 >
 
-Manage admissions, branches, students and academy operations from one powerful dashboard.
+Manage admissions, branches, students, products and academy operations from one powerful dashboard.
 
 </p>
 
@@ -468,91 +348,32 @@ Manage admissions, branches, students and academy operations from one powerful d
 
 
 
+{/* SUPER ADMIN BADGE WITH LOGO */}
+
+
+<div
+
+className="
+mt-2
+flex
+items-center
+"
+
+>
+
+
 <div
 
 className="
 flex
-flex-wrap
+items-center
 gap-3
-mt-6
-"
-
->
-
-
-<div
-
-className="
 bg-teal-500/20
-px-5
+px-3
 py-2
+sm:px-5
+sm:py-3
 rounded-full
-text-teal-300
-font-semibold
-"
-
->
-
-Super Admin Panel
-
-</div>
-
-
-
-
-
-<div
-
-className="
-bg-white/10
-px-5
-py-2
-rounded-full
-text-slate-300
-"
-
->
-
-RTSA Academy
-
-</div>
-
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* RIGHT LOGO */}
-
-
-<motion.div
-
-whileHover={{
-scale:1.05
-}}
-
-transition={{
-duration:0.3
-}}
-
-className="
-flex
-justify-center
-lg:justify-end
-w-full
-lg:w-auto
 "
 
 >
@@ -560,29 +381,43 @@ lg:w-auto
 
 <img
 
-
 src={logo}
 
-
-alt="RTSA Logo"
-
+alt="RTSA"
 
 className="
-w-28
-h-28
-sm:w-36
-sm:h-36
-lg:w-52
-lg:h-52
+w-8
+h-8
+sm:w-10
+sm:h-10
 rounded-full
 object-cover
-shadow-[0_0_60px_rgba(20,184,166,.6)]
 "
 
-/>
+ />
 
 
-</motion.div>
+
+<span
+
+className="
+text-teal-300
+font-bold
+text-sm
+sm:text-lg
+"
+
+>
+
+Super Admin Panel
+
+</span>
+
+
+</div>
+
+
+</div>
 
 
 
@@ -591,23 +426,18 @@ shadow-[0_0_60px_rgba(20,184,166,.6)]
 </div>
 
 
-
 </motion.div>
-
-
-
-{/* STATS */}
-
+{/* STATS CARDS */}
 
 
 <div
 
 className="
 grid
-grid-cols-1
-sm:grid-cols-2
-xl:grid-cols-4
-gap-6
+grid-cols-2
+lg:grid-cols-5
+gap-3
+sm:gap-6
 "
 
 >
@@ -623,13 +453,14 @@ const Icon=item.icon;
 
 return(
 
+
 <motion.div
 
 key={index}
 
 initial={{
 opacity:0,
-y:40
+y:20
 }}
 
 animate={{
@@ -638,20 +469,18 @@ y:0
 }}
 
 transition={{
-delay:index*0.15
+delay:index*0.08
 }}
 
-whileHover={{
-y:-10,
-scale:1.04
-}}
 
 className="
 bg-[#102235]
 border
 border-slate-700
-rounded-3xl
-p-6
+rounded-2xl
+sm:rounded-3xl
+p-3
+sm:p-6
 "
 
 >
@@ -663,6 +492,7 @@ className="
 flex
 justify-between
 items-center
+gap-2
 "
 
 >
@@ -670,18 +500,33 @@ items-center
 
 <div>
 
-<p className="text-slate-400">
+
+<p
+
+className="
+text-slate-400
+text-[11px]
+sm:text-sm
+"
+
+>
 
 {item.title}
 
 </p>
 
 
-<h2 className="
-text-4xl
+
+<h2
+
+className="
+text-xl
+sm:text-3xl
 font-black
-mt-3
-">
+mt-1
+"
+
+>
 
 {item.value}
 
@@ -692,29 +537,40 @@ mt-3
 
 
 
+
+
+
 <div
 
 className="
 bg-teal-500/20
-p-4
-rounded-2xl
+p-2
+sm:p-4
+rounded-xl
 "
 
 >
 
+
 <Icon
 
-size={30}
+size={20}
 
-className="text-teal-400"
+className="
+text-teal-400
+sm:w-7
+sm:h-7
+"
 
 />
 
-</div>
-
-
 
 </div>
+
+
+
+</div>
+
 
 
 </motion.div>
@@ -740,7 +596,8 @@ className="text-teal-400"
 
 
 
-{/* ACTIONS */}
+
+{/* QUICK ACTIONS */}
 
 
 
@@ -750,10 +607,10 @@ className="text-teal-400"
 <h2
 
 className="
-text-3xl
-sm:text-4xl
+text-xl
+sm:text-3xl
 font-black
-mb-6
+mb-4
 "
 
 >
@@ -767,15 +624,16 @@ Quick Actions
 
 
 
+
 <div
 
 className="
 grid
-grid-cols-1
-sm:grid-cols-2
-lg:grid-cols-3
-xl:grid-cols-4
-gap-6
+grid-cols-2
+sm:grid-cols-3
+lg:grid-cols-4
+gap-3
+sm:gap-6
 "
 
 >
@@ -783,13 +641,7 @@ gap-6
 
 {
 
-actions.map((item,index)=>{
-
-
-const Icon=item.icon;
-
-
-return(
+actions.map(([title,desc,Icon,path],index)=>(
 
 
 <motion.div
@@ -800,7 +652,7 @@ key={index}
 
 initial={{
 opacity:0,
-y:40
+y:20
 }}
 
 
@@ -811,17 +663,16 @@ y:0
 
 
 transition={{
-delay:index*0.08
+delay:index*0.05
 }}
 
 
 whileHover={{
-y:-10,
-scale:1.03
+y:-5
 }}
 
 
-onClick={()=>navigate(item.path)}
+onClick={()=>navigate(path)}
 
 
 className="
@@ -829,9 +680,12 @@ cursor-pointer
 bg-[#102235]
 border
 border-slate-700
-rounded-3xl
-p-6
+rounded-2xl
+sm:rounded-3xl
+p-3
+sm:p-6
 hover:border-teal-400
+transition
 "
 
 >
@@ -839,10 +693,12 @@ hover:border-teal-400
 
 <div
 
+
 className="
 bg-teal-500/20
-p-4
-rounded-2xl
+p-2
+sm:p-4
+rounded-xl
 w-fit
 "
 
@@ -851,9 +707,13 @@ w-fit
 
 <Icon
 
-size={28}
+size={18}
 
-className="text-teal-400"
+className="
+text-teal-400
+sm:w-6
+sm:h-6
+"
 
 />
 
@@ -863,26 +723,46 @@ className="text-teal-400"
 
 
 
-<h3 className="
-text-xl
-font-bold
-mt-5
-">
 
-{item.title}
+
+<h3
+
+className="
+text-[11px]
+sm:text-xl
+font-bold
+mt-3
+"
+
+>
+
+{title}
 
 </h3>
 
 
 
-<p className="
-text-slate-400
-mt-2
-">
 
-{item.description}
+
+
+<p
+
+className="
+hidden
+sm:block
+text-slate-400
+text-sm
+mt-2
+"
+
+>
+
+{desc}
 
 </p>
+
+
+
 
 
 
@@ -892,30 +772,40 @@ className="
 flex
 justify-between
 items-center
-mt-6
+mt-3
 text-teal-400
-font-semibold
+font-bold
+text-xs
+sm:text-base
 "
 
 >
 
+<span>
+
 Open
 
+</span>
 
-<ArrowRight size={18}/>
+
+<ArrowRight
+
+size={15}
+
+/>
 
 
 </div>
 
 
 
+
+
+
 </motion.div>
 
 
-)
-
-
-})
+))
 
 
 }
@@ -925,8 +815,8 @@ Open
 </div>
 
 
-</section>
 
+</section>
 
 
 

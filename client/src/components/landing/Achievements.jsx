@@ -110,9 +110,9 @@ mx-auto
 <h2
 
 className="
-text-5xl
-sm:text-6xl
-lg:text-7xl
+text-3xl
+sm:text-5xl
+lg:text-6xl
 font-black
 tracking-tight
 "

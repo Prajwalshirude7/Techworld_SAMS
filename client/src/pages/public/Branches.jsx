@@ -73,7 +73,7 @@ sm:px-8
 
 className="
 text-center
-text-4xl
+text-3xl
 sm:text-5xl
 font-black
 mb-12
@@ -164,8 +164,9 @@ className="
 bg-[#102235]
 border
 border-slate-700
-rounded-3xl
-p-6
+rounded-2xl
+p-4
+sm:p-6
 "
 
 >

@@ -128,7 +128,7 @@ mx-auto
 <h2
 
 className="
-text-4xl
+text-3xl
 sm:text-5xl
 md:text-6xl
 font-black

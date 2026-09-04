@@ -1,8 +1,9 @@
 import {
 Plus,
 Trash2,
-Image as ImageIcon,
-X
+X,
+Upload,
+Quote
 } from "lucide-react";
 
 
@@ -15,6 +16,9 @@ import {
 useEffect,
 useState
 } from "react";
+
+
+import toast from "react-hot-toast";
 
 
 
@@ -30,9 +34,14 @@ title:"",
 
 category:"",
 
-image:""
+image:"",
+
+description:"",
+
+quote:""
 
 };
+
 
 
 
@@ -42,6 +51,8 @@ const [gallery,setGallery]=useState([]);
 const [showModal,setShowModal]=useState(false);
 
 const [form,setForm]=useState(emptyForm);
+
+const [preview,setPreview]=useState("");
 
 
 
@@ -68,6 +79,7 @@ localStorage.getItem("academyGallery")
 );
 
 
+
 setGallery(data);
 
 
@@ -88,7 +100,6 @@ const saveGallery=(data)=>{
 setGallery(data);
 
 
-
 localStorage.setItem(
 
 "academyGallery",
@@ -96,7 +107,6 @@ localStorage.setItem(
 JSON.stringify(data)
 
 );
-
 
 
 };
@@ -107,6 +117,9 @@ JSON.stringify(data)
 
 
 
+
+
+// INPUT CHANGE
 
 
 const handleChange=(e)=>{
@@ -131,6 +144,71 @@ setForm({
 
 
 
+// IMAGE UPLOAD
+
+
+const handleImageUpload=(e)=>{
+
+
+const file=e.target.files[0];
+
+
+
+if(file){
+
+
+const imageURL=
+URL.createObjectURL(file);
+
+
+
+setPreview(imageURL);
+
+
+
+
+
+const reader=new FileReader();
+
+
+
+reader.onloadend=()=>{
+
+
+setForm({
+
+...form,
+
+image:reader.result
+
+});
+
+
+};
+
+
+
+reader.readAsDataURL(file);
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+// ADD IMAGE
+
+
 const addImage=()=>{
 
 
@@ -143,8 +221,8 @@ if(
 ){
 
 
-alert(
-"Please add image details"
+toast.error(
+"Please upload image and add title"
 );
 
 
@@ -152,7 +230,6 @@ return;
 
 
 }
-
 
 
 
@@ -169,7 +246,9 @@ id:Date.now(),
 
 createdAt:
 
-new Date().toLocaleDateString()
+new Date()
+
+.toLocaleDateString()
 
 
 };
@@ -195,7 +274,15 @@ newImage
 
 setForm(emptyForm);
 
+setPreview("");
+
 setShowModal(false);
+
+
+
+toast.success(
+"Gallery image added"
+);
 
 
 
@@ -209,10 +296,15 @@ setShowModal(false);
 
 
 
+// DELETE IMAGE
+
+
 const deleteImage=(id)=>{
 
 
-const updated = gallery.filter(
+const updated=
+
+gallery.filter(
 
 item=>
 
@@ -222,7 +314,15 @@ item.id!==id
 
 
 
+
+
 saveGallery(updated);
+
+
+
+toast.success(
+"Image deleted"
+);
 
 
 
@@ -305,7 +405,7 @@ mt-2
 
 >
 
-Manage academy images displayed on website.
+Manage academy achievements, memories and success stories.
 
 </p>
 
@@ -362,7 +462,7 @@ Add Image
 
 
 
-{/* GALLERY */}
+{/* GALLERY GRID */}
 
 
 
@@ -378,7 +478,6 @@ gap-6
 "
 
 >
-
 
 
 
@@ -419,16 +518,18 @@ No images uploaded yet.
 
 
 
+
+
 {
 
 gallery.map((item,index)=>(
+
 
 
 <motion.div
 
 
 key={item.id}
-
 
 
 initial={{
@@ -438,7 +539,6 @@ opacity:0,
 y:20
 
 }}
-
 
 
 animate={{
@@ -459,14 +559,6 @@ delay:index*0.05
 
 
 
-whileHover={{
-
-y:-5
-
-}}
-
-
-
 className="
 bg-[#102235]
 border
@@ -479,18 +571,11 @@ overflow-hidden
 
 
 
-
-
-
-
 <img
-
 
 src={item.image}
 
-
 alt={item.title}
-
 
 className="
 w-full
@@ -498,11 +583,7 @@ h-56
 object-cover
 "
 
-
-
-
 />
-
 
 
 
@@ -518,6 +599,7 @@ p-5
 "
 
 >
+
 
 
 <h2
@@ -540,7 +622,7 @@ font-bold
 <p
 
 className="
-text-slate-400
+text-teal-400
 mt-2
 "
 
@@ -549,6 +631,93 @@ mt-2
 {item.category}
 
 </p>
+
+
+
+
+
+
+
+<p
+
+className="
+text-slate-300
+mt-4
+text-sm
+"
+
+>
+
+{item.description}
+
+</p>
+
+
+
+
+
+
+
+
+
+{
+
+item.quote &&
+
+
+<div
+
+className="
+mt-4
+bg-[#07131f]
+rounded-xl
+p-4
+"
+
+>
+
+
+<div className="
+flex
+gap-2
+items-center
+text-teal-400
+"
+
+>
+
+<Quote size={18}/>
+
+Success Quote
+
+</div>
+
+
+
+<p
+
+className="
+text-slate-300
+italic
+mt-2
+text-sm
+"
+
+>
+
+"{item.quote}"
+
+</p>
+
+
+
+</div>
+
+
+}
+
+
+
 
 
 
@@ -588,9 +757,7 @@ Delete
 
 
 
-
 </div>
-
 
 
 
@@ -616,13 +783,14 @@ Delete
 
 
 
-{/* MODAL */}
+{/* ADD MODAL */}
 
 
 
 {
 
 showModal &&
+
 
 
 <div
@@ -636,9 +804,11 @@ items-center
 justify-center
 p-4
 z-50
+overflow-y-auto
 "
 
 >
+
 
 
 <div
@@ -651,9 +821,16 @@ rounded-3xl
 p-6
 w-full
 max-w-xl
+my-10
 "
 
 >
+
+
+
+
+
+
 
 
 
@@ -704,6 +881,98 @@ onClick={()=>setShowModal(false)}
 
 
 
+
+{/* IMAGE UPLOAD */}
+
+
+
+<label
+
+className="
+mt-5
+block
+border
+border-dashed
+border-slate-600
+rounded-xl
+p-5
+text-center
+cursor-pointer
+"
+
+>
+
+
+<input
+
+type="file"
+
+accept="image/*"
+
+hidden
+
+onChange={handleImageUpload}
+
+/>
+
+
+
+{
+
+preview ?
+
+<img
+
+src={preview}
+
+className="
+h-48
+w-full
+object-cover
+rounded-xl
+"
+
+/>
+
+
+:
+
+<div
+
+className="
+text-slate-400
+"
+
+>
+
+<Upload
+
+className="
+mx-auto
+mb-2
+"
+
+/>
+
+Upload Academy Image
+
+</div>
+
+
+}
+
+
+
+</label>
+
+
+
+
+
+
+
+
+
 {
 
 [
@@ -712,13 +981,16 @@ onClick={()=>setShowModal(false)}
 
 ["category","Category"],
 
-["image","Image URL"]
+["description","Success Story"],
+
+["quote","Academy Success Quote"]
+
 
 ].map(([key,label])=>(
 
 
 
-<input
+<textarea
 
 
 key={key}
@@ -736,6 +1008,22 @@ value={form[key]}
 onChange={handleChange}
 
 
+rows={
+
+key==="description" ||
+key==="quote"
+
+?
+
+3
+
+:
+
+1
+
+}
+
+
 className="
 w-full
 mt-4
@@ -745,17 +1033,22 @@ border-slate-700
 rounded-xl
 p-3
 outline-none
+text-white
 "
 
 
-
 />
+
 
 
 ))
 
 
 }
+
+
+
+
 
 
 
@@ -771,6 +1064,7 @@ className="
 mt-5
 w-full
 bg-teal-500
+hover:bg-teal-600
 py-3
 rounded-xl
 font-bold
@@ -786,10 +1080,15 @@ Save Image
 
 
 
+
+
+
+
 </div>
 
 
 </div>
+
 
 
 }

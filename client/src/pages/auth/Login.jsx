@@ -1,651 +1,1104 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  useState
+} from "react";
+
+
+import {
+  Link,
+  useNavigate
+} from "react-router-dom";
+
 
 import {
   Mail,
   Lock,
   Eye,
-  EyeOff,
+  EyeOff
 } from "lucide-react";
 
-import { motion } from "framer-motion";
+
+import {
+  motion
+} from "framer-motion";
+
+
 import toast from "react-hot-toast";
+
 
 import AuthCard from "../../components/auth/AuthCard";
 import AuthButton from "../../components/auth/AuthButton";
 import AuthInput from "../../components/auth/AuthInput";
 
 
-export default function Login() {
 
-  const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false);
+export default function Login(){
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const [loading, setLoading] = useState(false);
+const navigate = useNavigate();
 
 
-  const handleLogin = async (e) => {
 
-    e.preventDefault();
+const [showPassword,setShowPassword]=useState(false);
 
+const [email,setEmail]=useState("");
 
-    if (!email || !password) {
+const [password,setPassword]=useState("");
 
-      toast.error(
-        "Please enter email and password."
-      );
+const [loading,setLoading]=useState(false);
 
-      return;
 
-    }
 
 
-    try {
 
-      setLoading(true);
+const handleLogin=async(e)=>{
 
 
-      const response = await fetch(
-        "http://localhost:5001/api/auth/login",
-        {
-          method: "POST",
+e.preventDefault();
 
-          headers: {
-            "Content-Type": "application/json",
-          },
 
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
 
+if(!email || !password){
 
-      const data =
-        await response.json();
+toast.error(
+"Please enter email and password"
+);
 
+return;
 
-      console.log(
-        "LOGIN RESPONSE:",
-        data
-      );
+}
 
 
-      if (!response.ok) {
 
-        toast.error(
-          data.message ||
-          "Login failed"
-        );
+try{
 
-        return;
 
-      }
+setLoading(true);
 
 
-      if (!data.token) {
 
-        toast.error(
-          "Login successful but token was not received."
-        );
+const response = await fetch(
 
-        return;
+"http://localhost:5001/api/auth/login",
 
-      }
+{
 
+method:"POST",
 
-      // ==============================
-      // STORE JWT TOKEN
-      // ==============================
+headers:{
 
-      localStorage.setItem(
-        "token",
-        data.token
-      );
+"Content-Type":"application/json"
 
+},
 
-      // ==============================
-      // LOGIN STATE
-      // ==============================
+body:JSON.stringify({
 
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
+email,
 
+password
 
-      // ==============================
-      // USER ROLE
-      // ==============================
+})
 
-      localStorage.setItem(
-        "userRole",
-        String(data.user.role_id)
-      );
+}
 
+);
 
-      // ==============================
-      // USER ID
-      // ==============================
 
-      localStorage.setItem(
-        "userId",
-        String(data.user.id)
-      );
 
 
-      // ==============================
-      // USER NAME
-      // ==============================
 
-      localStorage.setItem(
-        "studentName",
-        data.user.name
-      );
+const data = await response.json();
 
 
-      // ==============================
-      // USER OBJECT
-      // ==============================
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(data.user)
-      );
 
 
-      toast.success(
-        `Welcome ${data.user.name}! Login successful!`
-      );
+if(!response.ok){
 
+toast.error(
 
-      setTimeout(() => {
+data.message || "Login failed"
 
-        // SUPER ADMIN
+);
 
-        if (
-          Number(data.user.role_id) === 1
-        ) {
+return;
 
-          navigate(
-            "/super-admin/dashboard"
-          );
+}
 
-        }
 
-        // BRANCH ADMIN
 
-        else if (
-          Number(data.user.role_id) === 2
-        ) {
 
-          navigate(
-            "/admin/dashboard"
-          );
 
-        }
+if(!data.token){
 
-        // STUDENT
+toast.error(
+"Token missing"
+);
 
-        else if (
-          Number(data.user.role_id) === 3
-        ) {
+return;
 
-          navigate(
-            "/student/dashboard"
-          );
+}
 
-        }
 
-        // UNKNOWN ROLE
 
-        else {
 
-          navigate("/");
 
-        }
+localStorage.setItem(
+"token",
+data.token
+);
 
-      }, 1000);
 
+localStorage.setItem(
+"isLoggedIn",
+"true"
+);
 
-    } catch (error) {
 
-      console.error(
-        "LOGIN ERROR:",
-        error
-      );
 
+localStorage.setItem(
+"userRole",
+String(data.user.role_id)
+);
 
-      toast.error(
-        "Unable to connect to server. Please check backend."
-      );
 
 
-    } finally {
+localStorage.setItem(
+"userId",
+String(data.user.id)
+);
 
-      setLoading(false);
 
-    }
 
-  };
+localStorage.setItem(
+"studentName",
+data.user.name
+);
 
 
-  return (
 
-    <div
-      className="
-        min-h-screen
-        bg-[#08131E]
-        relative
-        overflow-hidden
-        flex
-        items-center
-        justify-center
-        px-6
-      "
-    >
+localStorage.setItem(
+"user",
+JSON.stringify(data.user)
+);
 
-      {/* BACKGROUND GLOW */}
 
-      <div
-        className="
-          absolute
-          w-96
-          h-96
-          bg-teal-500/20
-          rounded-full
-          blur-[150px]
-          -top-24
-          -left-24
-        "
-      />
 
 
-      <div
-        className="
-          absolute
-          w-80
-          h-80
-          bg-cyan-500/20
-          rounded-full
-          blur-[150px]
-          bottom-0
-          right-0
-        "
-      />
+toast.success(
+`Welcome ${data.user.name}!`
+);
 
 
-      <div
-        className="
-          relative
-          z-10
-          w-full
-          max-w-7xl
-          grid
-          lg:grid-cols-2
-          gap-16
-          items-center
-        "
-      >
 
-        {/* LEFT SECTION */}
 
-        <motion.div
 
-          initial={{
-            opacity: 0,
-            x: -60,
-          }}
 
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
+setTimeout(()=>{
 
-          transition={{
-            duration: 0.8,
-          }}
 
-          className="
-            hidden
-            lg:block
-          "
-        >
+if(Number(data.user.role_id)===1){
 
-          <h1
-            className="
-              text-6xl
-              font-bold
-              text-white
-              leading-tight
-            "
-          >
+navigate(
+"/super-admin/dashboard"
+);
 
-            Welcome to
 
-            <span
-              className="
-                block
-                text-teal-400
-              "
-            >
-              SAMS Academy
-            </span>
+}
 
-          </h1>
+else if(Number(data.user.role_id)===2){
 
+navigate(
+"/admin/dashboard"
+);
 
-          <p
-            className="
-              mt-6
-              text-slate-300
-              text-lg
-              leading-8
-            "
-          >
 
-            Manage students, coaches, attendance,
-            fees and competitions through one
-            modern management system.
+}
 
-          </p>
+else if(Number(data.user.role_id)===3){
 
+navigate(
+"/student/dashboard"
+);
 
-          <div
-            className="
-              mt-10
-              space-y-4
-            "
-          >
 
-            {[
-              "Professional Coaches",
-              "Smart Student Management",
-              "Attendance & Fee Tracking",
-            ].map((item) => (
+}
 
-              <div
-                key={item}
-                className="
-                  flex
-                  items-center
-                  gap-3
-                "
-              >
+else{
 
-                <div
-                  className="
-                    w-3
-                    h-3
-                    rounded-full
-                    bg-teal-400
-                  "
-                />
+navigate("/");
 
-                <p className="text-white">
-                  {item}
-                </p>
+}
 
-              </div>
 
-            ))}
 
-          </div>
+},800);
 
-        </motion.div>
 
 
-        {/* LOGIN CARD */}
 
-        <AuthCard>
+}
 
-          <div
-            className="
-              bg-[#102235]
-              border
-              border-teal-500/20
-              rounded-3xl
-              p-10
-              shadow-2xl
-            "
-          >
+catch(error){
 
-            <motion.h2
 
-              initial={{
-                opacity: 0,
-                y: -15,
-              }}
+console.log(error);
 
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
 
-              className="
-                text-3xl
-                font-bold
-                text-center
-                text-white
-              "
-            >
+toast.error(
+"Server connection failed"
+);
 
-              Welcome Back
 
-            </motion.h2>
+}
 
+finally{
 
-            <p
-              className="
-                text-center
-                text-slate-400
-                mt-2
-                mb-8
-              "
-            >
 
-              Sign in to continue
+setLoading(false);
 
-            </p>
 
+}
 
-            <form
-              onSubmit={handleLogin}
-              className="space-y-5"
-            >
 
-              {/* EMAIL */}
 
-              <AuthInput
+};
 
-                icon={Mail}
 
-                type="email"
 
-                placeholder="Enter Email"
 
-                value={email}
 
-                onChange={(e) =>
-                  setEmail(e.target.value)
-                }
 
-              />
 
 
-              {/* PASSWORD */}
+return(
 
-              <div className="relative">
 
-                <AuthInput
 
-                  icon={Lock}
+<div
 
-                  type={
-                    showPassword
-                      ? "text"
-                      : "password"
-                  }
+className="
 
-                  placeholder="Enter Password"
+min-h-screen
 
-                  value={password}
+bg-[#08131E]
 
-                  onChange={(e) =>
-                    setPassword(e.target.value)
-                  }
+relative
 
-                />
+overflow-hidden
 
+flex
 
-                <button
+items-center
 
-                  type="button"
+justify-center
 
-                  onClick={() =>
-                    setShowPassword(
-                      !showPassword
-                    )
-                  }
+px-4
 
-                  className="
-                    absolute
-                    right-4
-                    top-1/2
-                    -translate-y-1/2
-                    text-slate-400
-                    hover:text-teal-400
-                  "
-                >
+py-6
 
-                  {showPassword ? (
+sm:px-6
 
-                    <EyeOff
-                      size={20}
-                    />
+lg:px-10
 
-                  ) : (
+"
 
-                    <Eye
-                      size={20}
-                    />
 
-                  )}
+>
 
-                </button>
 
-              </div>
 
+{/* GLOW */}
 
-              {/* OPTIONS */}
 
-              <div
-                className="
-                  flex
-                  justify-between
-                  items-center
-                  text-sm
-                "
-              >
 
-                <label
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-slate-300
-                  "
-                >
+<div
 
-                  <input
-                    type="checkbox"
-                    className="
-                      accent-teal-500
-                    "
-                  />
+className="
 
-                  Remember Me
+absolute
 
-                </label>
+w-72
 
+h-72
 
-                <Link
+lg:w-96
 
-                  to="/forgot-password"
+lg:h-96
 
-                  className="
-                    text-teal-400
-                    hover:text-teal-300
-                  "
-                >
+bg-teal-500/20
 
-                  Forgot Password?
+blur-[130px]
 
-                </Link>
+rounded-full
 
-              </div>
+top-0
 
+left-0
 
-              {/* LOGIN BUTTON */}
+"
 
-              <AuthButton
+/>
 
-                type="submit"
 
-                disabled={loading}
 
-              >
 
-                {loading
-                  ? "Logging in..."
-                  : "Login"}
 
-              </AuthButton>
+<div
 
+className="
 
-              {/* REGISTER */}
+absolute
 
-              <p
-                className="
-                  text-center
-                  text-slate-400
-                "
-              >
+w-72
 
-                Don't have an account?{" "}
+h-72
 
-                <Link
+lg:w-96
 
-                  to="/register"
+lg:h-96
 
-                  className="
-                    text-teal-400
-                    font-semibold
-                    hover:text-teal-300
-                  "
-                >
+bg-cyan-500/20
 
-                  Register
+blur-[130px]
 
-                </Link>
+rounded-full
 
-              </p>
+bottom-0
 
-            </form>
+right-0
 
-          </div>
+"
 
-        </AuthCard>
+/>
 
-      </div>
 
-    </div>
 
-  );
+
+
+
+
+
+
+<div
+
+className="
+
+relative
+
+z-10
+
+w-full
+
+max-w-6xl
+
+flex
+
+flex-col
+
+lg:flex-row
+
+items-center
+
+justify-between
+
+gap-8
+
+lg:gap-16
+
+"
+
+>
+
+
+
+
+
+
+
+
+
+{/* LEFT CONTENT */}
+
+
+
+<motion.div
+
+
+initial={{
+
+opacity:0,
+
+x:-40
+
+}}
+
+
+animate={{
+
+opacity:1,
+
+x:0
+
+}}
+
+
+
+transition={{
+
+duration:.7
+
+}}
+
+
+
+className="
+
+w-full
+
+lg:w-[45%]
+
+text-center
+
+lg:text-left
+
+"
+
+>
+
+
+
+
+
+
+<h1
+
+className="
+
+text-3xl
+
+sm:text-4xl
+
+lg:text-5xl
+
+xl:text-6xl
+
+font-black
+
+leading-[0.95]
+
+text-white
+
+"
+
+>
+
+
+Your Dream
+
+
+<span
+
+className="
+
+block
+
+text-teal-400
+
+"
+
+>
+
+Your Journey
+
+</span>
+
+
+
+<span
+
+className="
+
+block
+
+"
+
+>
+
+Your Victory 🏆
+
+</span>
+
+
+
+</h1>
+
+
+
+
+
+
+
+
+<p
+
+className="
+
+mt-3
+
+text-sm
+
+sm:text-base
+
+lg:text-lg
+
+text-slate-300
+
+leading-relaxed
+
+"
+
+>
+
+
+Champions don't start perfect.
+
+They start with one decision to improve every day.
+
+
+</p>
+
+
+
+
+
+
+
+
+
+<p
+
+className="
+
+mt-4
+
+text-xs
+
+sm:text-sm
+
+italic
+
+text-slate-400
+
+"
+
+>
+
+
+
+
+</p>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+
+mt-5
+
+flex
+
+flex-wrap
+
+justify-center
+
+lg:justify-start
+
+gap-3
+
+text-teal-400
+
+font-bold
+
+text-xs
+
+sm:text-sm
+
+"
+
+>
+
+
+<span>
+
+🔥 Train Hard
+
+</span>
+
+
+<span>
+
+🏆 Chase Goals
+
+</span>
+
+
+<span>
+
+🚀 Improve Daily
+
+</span>
+
+
+</div>
+
+
+
+
+
+</motion.div>
+
+
+
+
+
+
+
+
+
+{/* LOGIN */}
+
+
+
+<motion.div
+
+
+initial={{
+
+opacity:0,
+
+y:30
+
+}}
+
+
+
+animate={{
+
+opacity:1,
+
+y:0
+
+}}
+
+
+
+transition={{
+
+duration:.7
+
+}}
+
+
+
+className="
+
+w-full
+
+max-w-md
+
+"
+
+>
+
+
+
+
+
+<AuthCard>
+
+
+<div
+
+
+className="
+
+bg-[#102235]
+
+border
+
+border-teal-500/20
+
+rounded-3xl
+
+p-5
+
+sm:p-7
+
+lg:p-8
+
+shadow-2xl
+
+"
+
+
+>
+
+
+
+<h2
+
+className="
+
+text-2xl
+
+sm:text-3xl
+
+font-black
+
+text-center
+
+text-white
+
+"
+
+>
+
+
+Welcome Back
+
+
+</h2>
+
+
+
+
+
+<p
+
+className="
+
+text-center
+
+text-sm
+
+text-slate-400
+
+mt-2
+
+mb-5
+
+"
+
+>
+
+Sign in to continue
+
+</p>
+
+
+
+
+
+
+
+
+
+<form
+
+onSubmit={handleLogin}
+
+className="
+
+space-y-4
+
+"
+
+>
+
+
+
+
+
+<AuthInput
+
+icon={Mail}
+
+type="email"
+
+placeholder="Enter Email"
+
+value={email}
+
+onChange={(e)=>setEmail(e.target.value)}
+
+/>
+
+
+
+
+
+
+
+
+
+<div className="relative">
+
+
+<AuthInput
+
+icon={Lock}
+
+type={
+showPassword
+?
+"text"
+:
+"password"
+}
+
+placeholder="Enter Password"
+
+value={password}
+
+onChange={(e)=>setPassword(e.target.value)}
+
+/>
+
+
+
+
+
+<button
+
+type="button"
+
+onClick={()=>setShowPassword(!showPassword)}
+
+className="
+
+absolute
+
+right-4
+
+top-1/2
+
+-translate-y-1/2
+
+text-slate-400
+
+"
+
+>
+
+
+{
+
+showPassword ?
+
+<EyeOff size={18}/> :
+
+<Eye size={18}/>
+
+}
+
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div
+
+className="
+
+flex
+
+justify-between
+
+items-center
+
+text-xs
+
+sm:text-sm
+
+"
+
+>
+
+
+<label
+
+className="
+
+flex
+
+gap-2
+
+items-center
+
+text-slate-300
+
+"
+
+>
+
+<input
+
+type="checkbox"
+
+/>
+
+Remember Me
+
+</label>
+
+
+
+
+
+<Link
+
+to="/forgot-password"
+
+className="
+
+text-teal-400
+
+"
+
+>
+
+Forgot Password?
+
+</Link>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<AuthButton
+
+type="submit"
+
+disabled={loading}
+
+>
+
+{
+
+loading
+
+?
+
+"Logging in..."
+
+:
+
+"Login"
+
+}
+
+
+</AuthButton>
+
+
+
+
+
+
+
+<p
+
+className="
+
+text-center
+
+text-sm
+
+text-slate-400
+
+"
+
+>
+
+Don't have an account?
+
+
+<Link
+
+to="/register"
+
+className="
+
+text-teal-400
+
+ml-2
+
+font-semibold
+
+"
+
+>
+
+Register
+
+</Link>
+
+
+</p>
+
+
+
+
+
+</form>
+
+
+
+</div>
+
+
+</AuthCard>
+
+
+
+</motion.div>
+
+
+
+
+
+
+</div>
+
+
+</div>
+
+
+);
+
 
 }

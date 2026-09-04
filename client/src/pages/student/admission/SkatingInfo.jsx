@@ -1,29 +1,33 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState
+} from "react";
+
 
 
 export default function SkatingInfo({
 
-formData={},
+  formData = {},
 
-updateData
+  updateData
 
-}){
-
-
-
-const [programs,setPrograms]=useState([]);
-
-const [branches,setBranches]=useState([]);
+}) {
 
 
+
+const [programs,setPrograms] = useState([]);
+
+const [branches,setBranches] = useState([]);
 
 
 
 
-
-// LOAD PROGRAMS AND BRANCHES
+// LOAD SUPER ADMIN DATA DYNAMICALLY
 
 useEffect(()=>{
+
+
+const loadData = ()=>{
 
 
 const savedPrograms = JSON.parse(
@@ -52,17 +56,16 @@ localStorage.getItem("academyBranches")
 
 
 
-// ONLY ACTIVE DATA
-
 setPrograms(
 
 savedPrograms.filter(
 
-item=>item.status==="Active"
+item => item.status === "Active"
 
 )
 
 );
+
 
 
 
@@ -71,7 +74,7 @@ setBranches(
 
 savedBranches.filter(
 
-item=>item.status==="Active"
+item => item.status === "Active"
 
 )
 
@@ -79,8 +82,45 @@ item=>item.status==="Active"
 
 
 
-},[]);
+};
 
+
+
+// initial load
+
+loadData();
+
+
+
+// update whenever super admin changes data
+
+window.addEventListener(
+
+"storage",
+
+loadData
+
+);
+
+
+
+return()=>{
+
+
+window.removeEventListener(
+
+"storage",
+
+loadData
+
+);
+
+
+};
+
+
+
+},[]);
 
 
 
@@ -100,10 +140,6 @@ space-y-8
 "
 
 >
-
-
-
-
 
 
 
@@ -130,9 +166,7 @@ Skating Information
 
 
 
-
 {/* EXPERIENCE */}
-
 
 
 <div>
@@ -179,15 +213,16 @@ bg-[#07131f]
 border
 border-slate-700
 rounded-xl
-px-5
-py-4
+px-4
+sm:px-5
+py-3
+sm:py-4
 text-white
 outline-none
 focus:border-teal-500
 "
 
 >
-
 
 
 <option value="">
@@ -197,14 +232,11 @@ Select Experience
 </option>
 
 
-
 <option value="No Experience">
 
 No Experience
 
 </option>
-
-
 
 
 <option value="Beginner">
@@ -214,15 +246,11 @@ Beginner
 </option>
 
 
-
-
 <option value="Intermediate">
 
 Intermediate
 
 </option>
-
-
 
 
 <option value="Professional">
@@ -232,9 +260,7 @@ Professional
 </option>
 
 
-
 </select>
-
 
 
 </div>
@@ -249,7 +275,9 @@ Professional
 
 {/* PROGRAM */}
 
+
 <div>
+
 
 <label
 
@@ -266,6 +294,9 @@ Select Program
 
 
 
+
+
+
 <select
 
 
@@ -277,9 +308,7 @@ onChange={(e)=>{
 
 const selectedProgram = programs.find(
 
-item=>
-
-item.name===e.target.value
+item => item.name === e.target.value
 
 );
 
@@ -287,10 +316,9 @@ item.name===e.target.value
 
 updateData({
 
-program:selectedProgram.name,
+program:selectedProgram?.name || "",
 
-programFees:selectedProgram.fees
-
+programFees:selectedProgram?.fees || ""
 
 });
 
@@ -306,8 +334,10 @@ bg-[#07131f]
 border
 border-slate-700
 rounded-xl
-px-5
-py-4
+px-4
+sm:px-5
+py-3
+sm:py-4
 text-white
 outline-none
 focus:border-teal-500
@@ -322,6 +352,29 @@ focus:border-teal-500
 Select Program
 
 </option>
+
+
+
+
+
+{
+
+programs.length===0 &&
+
+
+<option
+
+disabled
+
+>
+
+No programs available
+
+</option>
+
+
+}
+
 
 
 
@@ -338,9 +391,7 @@ value={program.name}
 
 >
 
-{program.name}
-
- - ₹{program.fees}
+{program.name} - ₹{program.fees}
 
 </option>
 
@@ -355,7 +406,6 @@ value={program.name}
 </select>
 
 
-
 </div>
 
 
@@ -365,7 +415,8 @@ value={program.name}
 
 
 
-{/* BRANCH */}
+
+{/* BRANCH SELECTION */}
 
 
 
@@ -390,10 +441,12 @@ Select Branch
 
 
 
+
 <select
 
 
 value={formData.branch || ""}
+
 
 
 onChange={(e)=>
@@ -407,6 +460,7 @@ branch:e.target.value
 }
 
 
+
 className="
 w-full
 mt-2
@@ -414,8 +468,10 @@ bg-[#07131f]
 border
 border-slate-700
 rounded-xl
-px-5
-py-4
+px-4
+sm:px-5
+py-3
+sm:py-4
 text-white
 outline-none
 focus:border-teal-500
@@ -425,11 +481,35 @@ focus:border-teal-500
 
 
 
+
 <option value="">
 
-Select Branch
+Choose Branch
 
 </option>
+
+
+
+
+
+
+
+{
+
+branches.length===0 &&
+
+<option
+
+disabled
+
+>
+
+No active branches available
+
+</option>
+
+
+}
 
 
 
@@ -443,15 +523,23 @@ branches.map(branch=>(
 
 <option
 
+
 key={branch.id}
 
+
 value={branch.branchName}
+
 
 >
 
 {branch.branchName}
 
-- {branch.location}
+{branch.location &&
+
+` - ${branch.location}`
+
+}
+
 
 </option>
 
@@ -463,9 +551,7 @@ value={branch.branchName}
 
 
 
-
 </select>
-
 
 
 
@@ -476,11 +562,16 @@ value={branch.branchName}
 
 branches.length===0 &&
 
-<p className="
+
+<p
+
+className="
 text-yellow-400
 text-sm
 mt-2
-">
+"
+
+>
 
 No branches available. Please contact academy.
 
@@ -492,7 +583,6 @@ No branches available. Please contact academy.
 
 
 </div>
-
 
 
 

@@ -1,54 +1,250 @@
-import { motion } from "framer-motion";
+import { 
+  motion 
+} from "framer-motion";
+
+
+import {
+  useEffect,
+  useState
+} from "react";
+
+
 import {
   ShoppingBag,
-  ShieldCheck,
-  Footprints,
-  Dumbbell
+  Send,
+  X
 } from "lucide-react";
+
+
+import toast from "react-hot-toast";
+
+
+
 
 
 export default function Accessories(){
 
 
-const products=[
 
-{
-icon:<Footprints size={40}/>,
-title:"Professional Skates",
-description:
-"High quality skating shoes designed for beginners and professional athletes."
-},
+const [products,setProducts]=useState([]);
 
 
-{
-icon:<ShieldCheck size={40}/>,
-title:"Safety Equipment",
-description:
-"Protective gear including helmets, knee pads and elbow protection."
-},
+const [showModal,setShowModal]=useState(false);
 
 
-{
-icon:<Dumbbell size={40}/>,
-title:"Training Equipment",
-description:
-"Essential skating accessories to improve practice sessions and performance."
-},
+const [selectedProduct,setSelectedProduct]=useState(null);
 
 
-{
-icon:<ShoppingBag size={40}/>,
-title:"Complete Skating Kit",
-description:
-"Everything a skater needs in one place with trusted quality products."
+
+const [form,setForm]=useState({
+
+name:"",
+mobile:""
+
+});
+
+
+
+
+
+
+
+// LOAD PRODUCTS
+
+
+useEffect(()=>{
+
+
+const data = JSON.parse(
+
+localStorage.getItem("academyAccessories")
+
+||
+
+"[]"
+
+);
+
+
+
+setProducts(
+
+data.filter(
+
+item=>item.status==="Active"
+
+)
+
+);
+
+
+
+},[]);
+
+
+
+
+
+
+
+
+
+const handleChange=(e)=>{
+
+
+setForm({
+
+...form,
+
+[e.target.name]:e.target.value
+
+});
+
+
+};
+
+
+
+
+
+
+
+
+const sendRequest=()=>{
+
+
+if(
+!form.name ||
+!form.mobile
+){
+
+
+toast.error(
+"Please enter name and mobile number"
+);
+
+
+return;
+
+
 }
 
 
-];
+
+if(form.mobile.length!==10){
+
+
+toast.error(
+"Enter valid mobile number"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+const request={
+
+
+id:Date.now(),
+
+
+productId:selectedProduct.id,
+
+
+productName:selectedProduct.name,
+
+
+price:selectedProduct.price,
+
+
+customerName:form.name,
+
+
+mobile:form.mobile,
+
+
+status:"Pending",
+
+
+date:new Date().toLocaleDateString()
+
+
+};
+
+
+
+
+
+
+const oldRequests = JSON.parse(
+
+localStorage.getItem("accessoryRequests")
+
+||
+
+"[]"
+
+);
+
+
+
+
+
+localStorage.setItem(
+
+"accessoryRequests",
+
+JSON.stringify(
+
+[
+...oldRequests,
+request
+]
+
+)
+
+);
+
+
+
+
+
+toast.success(
+"Request sent successfully!"
+);
+
+
+
+setForm({
+
+name:"",
+mobile:""
+
+});
+
+
+setShowModal(false);
+
+
+};
+
+
+
+
+
+
 
 
 
 return(
+
 
 
 <section
@@ -66,7 +262,8 @@ overflow-hidden
 >
 
 
-{/* BACKGROUND GLOW */}
+
+
 
 <div
 
@@ -82,6 +279,10 @@ rounded-full
 "
 
 />
+
+
+
+
 
 
 
@@ -105,7 +306,10 @@ lg:px-10
 
 
 
-{/* HEADING */}
+
+
+{/* HEADER */}
+
 
 
 <motion.div
@@ -124,10 +328,6 @@ viewport={{
 once:true
 }}
 
-transition={{
-duration:0.7
-}}
-
 className="
 text-center
 "
@@ -135,10 +335,11 @@ text-center
 >
 
 
+
 <h2
 
 className="
-text-4xl
+text-3xl
 sm:text-5xl
 md:text-6xl
 font-black
@@ -147,7 +348,9 @@ text-white
 
 >
 
+
 Skating
+
 
 <span
 
@@ -163,7 +366,12 @@ drop-shadow-[0_0_30px_rgba(20,184,166,0.8)]
 </span>
 
 
+
 </h2>
+
+
+
+
 
 
 
@@ -171,8 +379,6 @@ drop-shadow-[0_0_30px_rgba(20,184,166,0.8)]
 
 className="
 mt-5
-max-w-3xl
-mx-auto
 text-slate-300
 text-lg
 "
@@ -180,12 +386,15 @@ text-lg
 >
 
 Premium skating equipment and accessories
-to support every skater's journey.
+managed by RTSA Academy.
 
 </p>
 
 
+
+
 </motion.div>
+
 
 
 
@@ -203,6 +412,7 @@ to support every skater's journey.
 className="
 mt-14
 grid
+grid-cols-1
 sm:grid-cols-2
 lg:grid-cols-4
 gap-6
@@ -211,20 +421,60 @@ gap-6
 >
 
 
+
+
+
+
+{
+
+products.length===0 &&
+
+
+<div
+
+className="
+col-span-full
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-10
+text-center
+text-slate-400
+"
+
+>
+
+No accessories available.
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
 {
 
 products.map((item,index)=>(
 
 
+
 <motion.div
 
 
-key={index}
+key={item.id}
 
 
 initial={{
 opacity:0,
-y:50
+y:40
 }}
 
 
@@ -234,20 +484,15 @@ y:0
 }}
 
 
-viewport={{
-once:true
-}}
-
-
 transition={{
-duration:0.5,
-delay:index*0.15
+delay:index*0.1
 }}
 
 
 whileHover={{
-scale:1.05
+y:-8
 }}
+
 
 
 className="
@@ -255,8 +500,7 @@ bg-[#102235]
 border
 border-white/10
 rounded-3xl
-p-7
-text-center
+overflow-hidden
 hover:border-teal-400
 transition
 shadow-xl
@@ -266,25 +510,58 @@ shadow-xl
 
 
 
+
+
+
+<img
+
+
+src={item.image}
+
+
+alt={item.name}
+
+
+className="
+w-full
+h-48
+object-cover
+"
+
+/>
+
+
+
+
+
+
+
 <div
 
 className="
-mx-auto
-w-20
-h-20
-rounded-full
-bg-teal-400/10
-text-teal-400
-flex
-items-center
-justify-center
+p-3
+sm:p-5
 "
 
 >
 
-{item.icon}
+
+<div
+
+className="
+flex
+items-center
+gap-2
+text-teal-400
+"
+
+>
+
+<ShoppingBag size={20}/>
+
 
 </div>
+
 
 
 
@@ -293,7 +570,7 @@ justify-center
 <h3
 
 className="
-mt-6
+mt-4
 text-xl
 font-black
 text-white
@@ -301,9 +578,34 @@ text-white
 
 >
 
-{item.title}
+{item.name}
 
 </h3>
+
+
+
+
+
+
+
+
+<p
+
+className="
+text-xs
+sm:text-sm
+text-slate-400
+mt-2
+line-clamp-2
+"
+>
+
+{item.description}
+
+</p>
+
+
+
 
 
 
@@ -313,37 +615,68 @@ text-white
 
 className="
 mt-4
-text-slate-400
-leading-relaxed
+text-white
+font-bold
 "
 
 >
 
-{item.description}
+₹{item.price}
 
 </p>
 
 
 
+
+
+
+
+
 <button
 
+
+onClick={()=>{
+
+
+setSelectedProduct(item);
+
+setShowModal(true);
+
+
+}}
+
+
+
 className="
-mt-6
-px-6
+mt-5
+w-full
+bg-teal-500
 py-3
 rounded-xl
-bg-teal-500
-text-white
 font-bold
+flex
+justify-center
+items-center
+gap-2
 hover:bg-teal-600
-transition
 "
 
 >
 
-View Products
+
+<Send size={18}/>
+
+Send Request
+
 
 </button>
+
+
+
+
+
+
+</div>
 
 
 
@@ -365,59 +698,218 @@ View Products
 
 
 
-{/* CTA */}
+
+
+</div>
 
 
 
-<motion.div
 
-initial={{
-opacity:0,
-scale:0.9
-}}
 
-whileInView={{
-opacity:1,
-scale:1
-}}
 
-viewport={{
-once:true
-}}
+
+
+
+{/* REQUEST MODAL */}
+
+
+
+{
+
+showModal &&
+
+
+<div
 
 className="
-mt-16
-text-center
+fixed
+inset-0
+bg-black/70
+z-50
+flex
+items-center
+justify-center
+p-4
 "
 
 >
+
+
+<div
+
+className="
+bg-[#102235]
+border
+border-slate-700
+rounded-3xl
+p-6
+w-full
+max-w-md
+"
+
+>
+
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
+"
+
+>
+
+
+<h2
+
+className="
+text-2xl
+font-black
+text-white
+"
+
+>
+
+Request Product
+
+</h2>
+
+
 
 
 <button
 
-className="
-px-10
-py-4
-rounded-xl
-border
-border-teal-400
-text-teal-400
-font-black
-text-lg
-hover:bg-teal-400
-hover:text-white
-transition
-"
+onClick={()=>setShowModal(false)}
 
 >
 
-Explore Collection
+<X/>
 
 </button>
 
 
-</motion.div>
+</div>
 
+
+
+
+
+
+
+<p
+
+className="
+text-teal-400
+mt-3
+font-bold
+"
+
+>
+
+{selectedProduct?.name}
+
+</p>
+
+
+
+
+
+
+
+
+<input
+
+
+name="name"
+
+
+placeholder="Your Name"
+
+
+value={form.name}
+
+
+onChange={handleChange}
+
+
+className="
+w-full
+mt-5
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+text-white
+"
+
+
+/>
+
+
+
+
+
+
+
+<input
+
+
+name="mobile"
+
+
+placeholder="Mobile Number"
+
+
+value={form.mobile}
+
+
+onChange={handleChange}
+
+
+className="
+w-full
+mt-4
+bg-[#07131f]
+border
+border-slate-700
+rounded-xl
+p-3
+text-white
+"
+
+
+/>
+
+
+
+
+
+
+
+
+<button
+
+
+onClick={sendRequest}
+
+
+className="
+mt-5
+w-full
+bg-teal-500
+py-3
+rounded-xl
+font-bold
+"
+
+>
+
+Send Request
+
+</button>
 
 
 
@@ -425,9 +917,17 @@ Explore Collection
 </div>
 
 
+</div>
+
+
+}
+
+
+
 </section>
 
 
-)
+);
+
 
 }

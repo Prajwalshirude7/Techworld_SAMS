@@ -29,7 +29,7 @@ return(
 
 {/* MAIN CONTENT */}
 
-<main className="pt-20">
+<main className="pt-[60px] sm:pt-20">
 
 
 
